@@ -5,6 +5,8 @@
 
 # Qivivo - Plugin pour Jeedom
 
+## *[Beta tests en cours]*
+
 Intégration du Thermostat Qivivo.
 
 ## Pré-requis
@@ -45,7 +47,7 @@ Renseignez pour chaque module, son nom et son Objet parent. Ils apparaitrons ain
   <img src="../images/thermostat.jpg" width="450">
 </p>
 
-Certains informations sont visible ici, notamment les réglages de température. Ceci sont les même que dans les réglages sur le site de Qivivo.
+Certaines informations sont visible ici, notamment les réglages de température. Ceci sont les même que dans les réglages sur le site de Qivivo.
 Pour une question de place, ils ne sont pas affichés sur le dashboard. Vous pouvez toutefois les afficher en allant sur l'onglet *Commandes*. Vous pouvez également paramétrer le widget normalement, sous forme de tableau etc.
 
 
@@ -56,6 +58,7 @@ Pour une question de place, ils ne sont pas affichés sur le dashboard. Vous pou
 </p>
 
 Le module fil-pilote possède une info *Ordre* affichant l'ordre courant sous forme de *string*. Cette info n'est pas historisée, mais une autre info *OrdreNum* représente l'ordre sous forme de numéro de 1 à 6, et est historisée :
+
 off : 1
 frost : 2
 eco : 3
@@ -65,13 +68,15 @@ comfort : 6
 
 Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour ordre *monozone [Zone Thermostat]*. C'est celui qui correspond à la zone thermostat, et il ne peux pas recevoir d'ordre.
 
+L'information *LastMsg* remonte la dernière communication entre le module et les serveurs Qivivo.
+
 ### Dashboard
 Voici un exemple sur le dashboard:
 
 <p align="center">
   <img src="../images/dashboard.jpg" width="450">
 </p>
-Vous pouvez visualiser ainsi:
+Vous pouvez ainsi visualiser:
 
 - L'ordre en cours sur les modules fil-pilote
 - La température de consigne du thermostat
@@ -95,6 +100,8 @@ La commande SetTempérature permet de lancer un programme temporaire, de la mêm
 Vous pouvez également annuler un programme temporaire avec la commande *Annule_Ordre_Temp*.
 
 Au lieu de lancer un programme temporaire, vous pouvez aussi laisser le programme en cours, mais changer les températures (Absence, Hors-Gel, Presence 1, 2, 3, 4 etc). Vous pouvez par exemple vérifier régulièrement la météo, l'ensoleillement etc et augmenter ou abaisser la température en cours.
+
+PS: Pour l'instant, il n'y a pas de version stable disponible. Le temps de peaufiner certaines choses, de corrigers les bugs qui ne manqueront pas se présenter, et peu-être l'ajout de fonctionnalités. Comme la gestion des départ/arrivée qui, couplée aux scénarios Jeedom, peux devenir intéressante.
 
 
 ## Changelog
