@@ -1,0 +1,19 @@
+{
+	"id" : "qivivo",
+	"name" : "Qivivo",
+	"description" : "Intégration du Thermostat Qivivo",
+	"licence" : "AGPL",
+	"author" : "KiboOst",
+	"require" : "3.0",
+	"category" : "wellness",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://github.com/KiboOst/jeedom-qivivo/blob/master/docs/fr_FR/changelog.md",
+	"documentation" : "https://github.com/KiboOst/jeedom-qivivo/blob/master/docs/fr_FR/index.md",
+	"language" : ["fr_FR"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy"],
+	"link" : {
+		"forum": "https://www.jeedom.com/forum/viewtopic.php?f=144&t=35997"
+	}
+}
