@@ -562,6 +562,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('Ordre', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setDisplay('icon', '<i class="divers-thermometer31"></i>');
+                $qivivoCmd->setDisplay('forceReturnLineBefore', True);
                 $qivivoCmd->setOrder($order);
                 $order ++;
 
@@ -619,6 +621,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setIsVisible(0);
                 if ($_thisType == 'Module Chauffage') $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setDisplay('icon', '<i class="nature-leaf37"></i>');
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
