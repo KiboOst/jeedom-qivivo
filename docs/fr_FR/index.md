@@ -1,6 +1,7 @@
 
 
 
+
 <img align="right" src="/plugin_info/qivivo_icon.png" width="150">
 
 # Qivivo - Plugin pour Jeedom
@@ -68,7 +69,7 @@ Le module fil-pilote possède une info *Ordre* affichant l'ordre courant sous fo
 
 Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour ordre *monozone [Zone Thermostat]*. C'est celui qui correspond à la zone thermostat, et il ne peux pas recevoir d'ordre (il est commandé directement par le thermostat).
 
-L'information *LastMsg* remonte la dernière communication entre le module et les serveurs Qivivo.
+>L'information *LastMsg* remonte la dernière communication entre le module et les serveurs Qivivo.
 
 ### Dashboard
 Voici un exemple sur le dashboard:
@@ -95,12 +96,12 @@ Comme pour toutes les commandes dans Jeedom, vous pouvez bien sûr consulter l'h
   <img src="../images/history.jpg" width="450">
 </p>
 
-Les commandes suivantes sont créees par défaut sans mode de lissage, en conservant les valeurs pendant 1an:
-- Thermostat Consigne
-- Thermostat Temperature
-- Thermostat Humidité
-- Thermostat Presence
-- Module Chauffage OrdreNum
+>Les commandes suivantes sont créees par défaut sans mode de lissage, en conservant les valeurs pendant 1an:
+>- Thermostat Consigne
+>- Thermostat Temperature
+>- Thermostat Humidité
+>- Thermostat Presence
+>- Module Chauffage OrdreNum
 
 ### Actions
 
@@ -110,8 +111,7 @@ Le thermostat dispose de plusieurs actions que vous pouvez intégrer normalement
   <img src="../images/thermostat_actions.jpg" width="450">
 </p>
 
-Remarque:
-La commande SetTempérature permet de lancer un programme temporaire, de la même manière que par le site Qivivo ou physiquement sur le thermostat. Le thermostat dispose dans Jeedom d'une info *DuréeOrdre* qui sera la durée du programme temporaire. Celle-ci se remet à 120mins (comme pour le thermostat physique) toutes les 15mins (ou 5mins si vous activez le cron5). Toutefois, si vous souhaitez spécifier une autre durée, lancer une commande *SetDuréeOrdre* avant la commande *SetTempérature*.
+>La commande SetTempérature permet de lancer un programme temporaire, de la même manière que par le site Qivivo ou physiquement sur le thermostat. Le thermostat dispose dans Jeedom d'une info *DuréeOrdre* qui sera la durée du programme temporaire. Celle-ci se remet à 120mins (comme pour le thermostat physique) toutes les 15mins (ou 5mins si vous activez le cron5). Toutefois, si vous souhaitez spécifier une autre durée, lancer une commande *SetDuréeOrdre* avant la commande *SetTempérature*.
 Vous pouvez également annuler un programme temporaire avec la commande *Annule_Ordre_Temp*.
 
 Au lieu de lancer un programme temporaire, vous pouvez aussi laisser le programme en cours, mais changer les températures (Absence, Hors-Gel, Presence 1, 2, 3, 4 etc).
@@ -120,7 +120,8 @@ Vous pouvez par exemple vérifier régulièrement la météo, l'ensoleillement e
 Vous pouvez également faire un scénario pour augmenter la consigne si une présence non prévue dans le planning est détectée.
 Ou interfacer votre Qivivo avec SNIPS, Google Home, Alexa ...
 
-PS: Pour l'instant, il n'y a pas de version stable disponible. Le temps de peaufiner certaines choses, de corrigers les bugs qui ne manqueront pas se présenter, et peu-être l'ajout de fonctionnalités. Comme la gestion des départ/arrivée qui, couplée aux scénarios Jeedom, peux devenir intéressante.
+
+>*Pour l'instant, il n'y a pas de version stable disponible. Le temps de peaufiner certaines choses, de corrigers les bugs qui ne manqueront pas se présenter, et peu-être l'ajout de fonctionnalités. Comme la gestion des départ/arrivée qui, couplée aux scénarios Jeedom, peux devenir intéressante.*
 
 
 ## Changelog
