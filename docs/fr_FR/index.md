@@ -14,7 +14,7 @@ Ce plugin repose sur l'API officielle Qivivo, vous devez donc créer un accès (
 [https://account.qivivo.com/](https://account.qivivo.com/)
 
 ## Limitations
-L'API Qivivo ne gère toujours pas les configurations multizone. Vous pourrez toutefois utiliser ce plugin pour voir les ordres des modules de vos zones, et avoir accès aux fonctions du thermostat.
+L'API Qivivo ne gère toujours pas les configurations multi-zone. Vous pourrez toutefois utiliser ce plugin pour voir les ordres des modules de vos zones, et avoir accès aux fonctions du thermostat.
 
 ## Configuration du plugin Qivivo
 
@@ -59,14 +59,14 @@ Pour une question de place, ils ne sont pas affichés sur le dashboard. Vous pou
 
 Le module fil-pilote possède une info *Ordre* affichant l'ordre courant sous forme de *string*. Cette info n'est pas historisée, mais une autre info *OrdreNum* représente l'ordre sous forme de numéro de 1 à 6, et est historisée :
 
-off : 1
-frost : 2
-eco : 3
-comfort_minus_two : 4
-comfort_minus_one : 5
-comfort : 6
+- off : 1
+- frost : 2
+- eco : 3
+- comfort_minus_two : 4
+- comfort_minus_one : 5
+- comfort : 6
 
-Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour ordre *monozone [Zone Thermostat]*. C'est celui qui correspond à la zone thermostat, et il ne peux pas recevoir d'ordre.
+Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour ordre *monozone [Zone Thermostat]*. C'est celui qui correspond à la zone thermostat, et il ne peux pas recevoir d'ordre (il est commandé directement par le thermostat).
 
 L'information *LastMsg* remonte la dernière communication entre le module et les serveurs Qivivo.
 
@@ -87,6 +87,16 @@ Vous pouvez ainsi visualiser:
 
 Vous pouvez bien sûr intégrer ces informations dans des scénarios !
 
+### Historique
+
+Comme pour toutes les commandes dans Jeedom, vous pouvez bien sûr consulter l'historique de celles-ci et ainsi avoir une synthèse quotidienne, que Qivivo ne propose plus aux nouveaux clients depuis plus d'un an.
+
+<p align="center">
+  <img src="../images/history.jpg" width="450">
+</p>
+
+Penser par contre à changer l'historique de ces commandes avec un mode de lissage : aucun, et par exemple purger si plus vieux que 3 mois.
+
 ### Actions
 
 Le thermostat dispose de plusieurs actions que vous pouvez intégrer normalement dans Jeedom, dans les scénarios par exemple.
@@ -96,10 +106,14 @@ Le thermostat dispose de plusieurs actions que vous pouvez intégrer normalement
 </p>
 
 Remarque:
-La commande SetTempérature permet de lancer un programme temporaire, de la même manière que par le site Qivivo ou physiquement sur le thermostat. Le thermostat dispose dans Jeedom d'une info *DuréeOrdre* qui sera la durée du programme temporaire. Celle-ci se remet à 120mins (comme pour le thermostat physique) toutes les 15mins. Toutefois, si vous souhaitez spécifier une autre durée, lancer une commande *SetDuréeOrdre* avant la commande *SetTempérature*.
+La commande SetTempérature permet de lancer un programme temporaire, de la même manière que par le site Qivivo ou physiquement sur le thermostat. Le thermostat dispose dans Jeedom d'une info *DuréeOrdre* qui sera la durée du programme temporaire. Celle-ci se remet à 120mins (comme pour le thermostat physique) toutes les 15mins (ou 5mins si vous activez le cron5). Toutefois, si vous souhaitez spécifier une autre durée, lancer une commande *SetDuréeOrdre* avant la commande *SetTempérature*.
 Vous pouvez également annuler un programme temporaire avec la commande *Annule_Ordre_Temp*.
 
-Au lieu de lancer un programme temporaire, vous pouvez aussi laisser le programme en cours, mais changer les températures (Absence, Hors-Gel, Presence 1, 2, 3, 4 etc). Vous pouvez par exemple vérifier régulièrement la météo, l'ensoleillement etc et augmenter ou abaisser la température en cours.
+Au lieu de lancer un programme temporaire, vous pouvez aussi laisser le programme en cours, mais changer les températures (Absence, Hors-Gel, Presence 1, 2, 3, 4 etc).
+
+Vous pouvez par exemple vérifier régulièrement la météo, l'ensoleillement etc et augmenter ou abaisser la température en cours.
+Vous pouvez également faire un scénario pour augmenter la consigne si une présence non prévue dans le planning est détectée.
+Ou interfacer votre Qivivo avec SNIPS, Google Home, Alexa ...
 
 PS: Pour l'instant, il n'y a pas de version stable disponible. Le temps de peaufiner certaines choses, de corrigers les bugs qui ne manqueront pas se présenter, et peu-être l'ajout de fonctionnalités. Comme la gestion des départ/arrivée qui, couplée aux scénarios Jeedom, peux devenir intéressante.
 
