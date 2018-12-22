@@ -7,3 +7,5 @@ Intégration du Thermostat Qivivo
 *[Documentation](/docs/fr_FR/index.md)*
 
 *[changelog](/docs/fr_FR/changelog.md)*
+
+
