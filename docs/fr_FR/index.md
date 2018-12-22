@@ -95,7 +95,12 @@ Comme pour toutes les commandes dans Jeedom, vous pouvez bien sûr consulter l'h
   <img src="../images/history.jpg" width="450">
 </p>
 
-Penser par contre à changer l'historique de ces commandes avec un mode de lissage : aucun, et par exemple purger si plus vieux que 3 mois.
+Les commandes suivantes sont créees par défaut sans mode de lissage, en conservant les valeurs pendant 1an:
+Thermostat Consigne
+Thermostat Temperature
+Thermostat Humidité
+Thermostat Presence
+Module Chauffage OrdreNum
 
 ### Actions
 
