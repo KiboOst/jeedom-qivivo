@@ -96,11 +96,11 @@ Comme pour toutes les commandes dans Jeedom, vous pouvez bien sûr consulter l'h
 </p>
 
 Les commandes suivantes sont créees par défaut sans mode de lissage, en conservant les valeurs pendant 1an:
-Thermostat Consigne
-Thermostat Temperature
-Thermostat Humidité
-Thermostat Presence
-Module Chauffage OrdreNum
+- Thermostat Consigne
+- Thermostat Temperature
+- Thermostat Humidité
+- Thermostat Presence
+- Module Chauffage OrdreNum
 
 ### Actions
 
