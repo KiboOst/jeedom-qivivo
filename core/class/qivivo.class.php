@@ -196,6 +196,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('Consigne', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
                 $qivivoCmd->setConfiguration('minValue', 5);
                 $qivivoCmd->setConfiguration('maxValue', 35);
                 $qivivoCmd->setOrder($order);
@@ -215,6 +217,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('Temperature', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
                 $qivivoCmd->setConfiguration('minValue', 5);
                 $qivivoCmd->setConfiguration('maxValue', 35);
                 $qivivoCmd->setOrder($order);
@@ -233,6 +237,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('Humidité', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
                 $qivivoCmd->setConfiguration('minValue', 0);
                 $qivivoCmd->setConfiguration('maxValue', 100);
                 $qivivoCmd->setOrder($order);
@@ -251,6 +257,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('Presence', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
@@ -570,6 +578,8 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('OrdreNum', __FILE__));
                 $qivivoCmd->setIsVisible(0);
                 $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
                 $qivivoCmd->setOrder($order);
                 $order ++;
 
@@ -587,14 +597,14 @@ class qivivo extends eqLogic {
                 $qivivoCmd = new qivivoCmd();
                 $qivivoCmd->setName(__('SetOrdre', __FILE__));
                 $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setOrder($order);
+                $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetOrdre');
             $qivivoCmd->setType('action');
             $qivivoCmd->setSubType('select');
-            //not verified:
-            $qivivoCmd->setConfiguration('listValue','1|off;2|frost;3|eco;4|comfort_minus_two;5|comfort_minus_one;6|comfort');
+            $qivivoCmd->setConfiguration('listValue','1|Arrêt;2|Hors-Gel;3|Eco;4|Confort -2;5|Confort -1;6|Confort');
             $qivivoCmd->save();
             */
         }
@@ -725,15 +735,15 @@ class qivivoCmd extends cmd {
 
         $_qivivo = $eqLogic->getAPI();
 
-        /*
         if ($_type == 'Module Chauffage') {
             if ($_action == 'SetOrdre') {
-                //$result =
+                log::add('qivivo', 'debug', 'updateModule to '.$_options['select']);
+                $result = $_qivivo->updateModule($_uuid, $_options['select']);
+                log::add('qivivo', 'debug', print_r($result, true));
                 return True;
             }
             return False;
         }
-        */
 
         if ($_type == 'Thermostat') {
             if ($_action == 'SetDuréeOrdre') {
