@@ -274,6 +274,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setName(__('DernierePresence', __FILE__));
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setDisplay('icon', '<i class="fa-smile-o"></i>');
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
