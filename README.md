@@ -8,3 +8,4 @@ Intégration du Thermostat Qivivo
 
 *[changelog](/docs/fr_FR/changelog.md)*
 
+
