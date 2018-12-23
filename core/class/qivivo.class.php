@@ -738,8 +738,7 @@ class qivivo extends eqLogic {
 
         //only custom template for thermostat dashboard:
         $_thisType = $this->getConfiguration('type');
-        log::add('qivivo', 'debug', 'toHtml version: '.$_version.' type: '.$_thisType.' '.print_r($replace, 1));
-        //if (in_array($_thisType, array('Module Chauffage', 'Passerelle'))) return '';
+        //log::add('qivivo', 'debug', 'toHtml version: '.$_version.' type: '.$_thisType.' '.print_r($replace, 1));
 
         if ($_thisType == 'Thermostat')
         {
