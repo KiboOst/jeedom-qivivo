@@ -75,7 +75,7 @@ Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour o
 Voici un exemple sur le dashboard:
 
 <p align="center">
-  <img src="../images/dashboard.jpg" width="450">
+  <img src="../images/dashboard_2.jpg" width="650">
 </p>
 Vous pouvez ainsi visualiser:
 
