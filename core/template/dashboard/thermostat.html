@@ -1,0 +1,52 @@
+<div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
+      style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
+      data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
+  <span class="statusCmd" style="position : absolute;left : 5px; width : 30px;z-index: 1030;"></span>
+  <i class='fa fa-refresh pull-right cursor refresh' style="margin-top: 3px;margin-right: 3px;"></i>
+  <span class="cmd cmd-widget" data-cmd_id="#refresh_id#" style="display:none;"></span>
+  <center class="widget-name"><a href="#eqLink#" style="font-size : 1.1em;#hideEqLogicName#">#name_display# <span style="font-size: 0.75em;position: relative;top:-2px;">#object_name#</span></a></center>
+
+  <center>
+    <div>
+      <a class="btn btn_consigne_down" data-cmd_id="#IncOne_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="26px"></a>
+      <strong class="tooltips #consigne_history#"" data-cmd_id="#consigne_id#"" title="#consigne_collectDate#" style="font-size:1.5em">#consigne#</strong> °C
+      <a class="btn btn_consigne_up" data-cmd_id="#DecOne_id#"><img src="/plugins/qivivo/core/img/icon_up.png" title="+1°C" width="26px"></a>
+      <a class="btn btn_consigne_cancel" data-cmd_id="#cancel_id#" style="margin-left:-20px;"><img src="/plugins/qivivo/core/img/icon_cross.png" title="Cancel" width="26px"></a>
+    </div>
+
+    <div class="#temperature_history#" data-cmd_id="#temperature_id#">
+      Température  <strong class="tooltips" title="#temperature_collectDate#">#temperature#</strong> °C
+    </div>
+
+    <div class="#humidity_history#" data-cmd_id="#humidity_id#">
+      Humidité  <strong class="tooltips" title="#humidity_collectDate#">#humidity#</strong> %
+    </div>
+
+    <div class="#presence_history#" data-cmd_id="#presence_id#">
+      Presence  <i class="#pres_class#" title="#presence_collectDate#"></i>
+      <img style="position:absolute;right:5px" src="#imgheating#" title="Chauffage" width="42px">
+    </div>
+
+    <div class="#lastpres_history#" data-cmd_id="#lastpres_id#">
+      <i class="fa fa-smile-o"></i> <strong class="tooltips" title="#lastpres_collectDate#">#lastpres#</strong>
+    </div>
+  </center>
+
+  <script type="text/javascript">
+    $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
+      jeedom.cmd.execute({id: '#refresh_id#'});
+    });
+
+    $('.btn_consigne_up').on('click', function () {
+      jeedom.cmd.execute({id: '#IncOne_id#'});
+    });
+
+    $('.btn_consigne_down').on('click', function () {
+      jeedom.cmd.execute({id: '#DecOne_id#'});
+    });
+
+    $('.btn_consigne_cancel').on('click', function () {
+      jeedom.cmd.execute({id: '#cancel_id#'});
+    });
+  </script>
+</div>
