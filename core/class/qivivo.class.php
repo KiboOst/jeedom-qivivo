@@ -201,6 +201,7 @@ class qivivo extends eqLogic {
                     $eqLogic->getCmd(null, 'Ordre')->event($order);
                     $eqLogic->getCmd(null, 'OrdreNum')->event($ordernum);
                 }
+                $eqLogic->refreshWidget();
             }
             log::add('qivivo', 'debug', '___refreshQivivoInfos ending');
         } catch (Exception $e) {
@@ -793,9 +794,6 @@ class qivivo extends eqLogic {
             $replace['#lastpres#'] = $cmd->execCmd();
             $replace['#lastpres_id#'] = $cmd->getId();
             $replace['#lastpres_collectDate#'] = $cmd->getCollectDate();
-            if ($cmd->getIsHistorized() == 1) {
-                $replace['#lastpres_history#'] = 'history cursor';
-            }
 
             if ($tmpConsigne > $tmpRoom) $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_on.png';
             else $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_off.png';
@@ -919,6 +917,7 @@ class qivivoCmd extends cmd {
                 log::add('qivivo', 'debug', 'IncOne to '.$temp.' Temp: '.$Temp);
                 $result = $_qivivo->setThermostatTemperature($temp, 120);
                 $info->event($temp);
+                $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
             }
 
@@ -929,6 +928,7 @@ class qivivoCmd extends cmd {
                 log::add('qivivo', 'debug', 'DecOne to '.$temp.' Temp: '.$Temp);
                 $result = $_qivivo->setThermostatTemperature($temp, 120);
                 $info->event($temp);
+                $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
             }
 
