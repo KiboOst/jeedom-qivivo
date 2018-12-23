@@ -147,22 +147,47 @@ class qivivo extends eqLogic {
                     log::add('qivivo', 'debug', 'getModuleLastOrder: '.print_r($moduleOrder, true));
                     $moduleInfos = $_qivivo->getModuleInfos($_uuid);
                     log::add('qivivo', 'debug', 'getModuleInfos: '.print_r($moduleInfos, true));
-                    $order = $moduleOrder['current_pilot_wire_order'];
+
+                    $firmware = $moduleInfos['softwareVersion'];
+                    $eqLogic->getCmd(null, 'Firmware')->event($firmware);
+
                     $lastMsg = $moduleInfos['lastCommunicationDate'];
                     $lastMsg = date("d-m-Y H:i", strtotime($lastMsg));
-                    $firmware = $moduleInfos['softwareVersion'];
-
-                    $eqLogic->getCmd(null, 'Ordre')->event($order);
-                    $eqLogic->getCmd(null, 'Firmware')->event($firmware);
                     $eqLogic->getCmd(null, 'LastMsg')->event($lastMsg);
 
+                    $order = $moduleOrder['current_pilot_wire_order'];
                     $ordernum = 0;
-                    if ($order == 'off') $ordernum = 1;
-                    if ($order == 'frost') $ordernum = 2;
-                    if ($order == 'eco') $ordernum = 3;
-                    if ($order == 'comfort_minus_two') $ordernum = 4;
-                    if ($order == 'comfort_minus_one') $ordernum = 5;
-                    if ($order == 'comfort') $ordernum = 6;
+                    if ($order == 'off')
+                    {
+                        $ordernum = 1;
+                        $order = 'Arrêt';
+                    }
+                    if ($order == 'frost')
+                    {
+                        $ordernum = 2;
+                        $order = 'Hors-Gel';
+                    }
+                    if ($order == 'eco')
+                    {
+                        $ordernum = 3;
+                        $order = 'Eco';
+                    }
+                    if ($order == 'comfort_minus_two')
+                    {
+                        $ordernum = 4;
+                        $order = 'Confort-2';
+                    }
+                    if ($order == 'comfort_minus_one')
+                    {
+                        $ordernum = 5;
+                        $order = 'Confort-1';
+                    }
+                    if ($order == 'comfort')
+                    {
+                        $ordernum = 6;
+                        $order = 'Confort';
+                    }
+                    $eqLogic->getCmd(null, 'Ordre')->event($order);
                     $eqLogic->getCmd(null, 'OrdreNum')->event($ordernum);
                 }
             }
