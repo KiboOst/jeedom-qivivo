@@ -52,7 +52,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=uuid]').on('change',functio
             handleAjaxError(request, status, error);
         },
         success: function (data) {
-            if (data.result.type != 'Passerelle' && data.result.type != undefined) uuid_callback(data)
+            if (data.result.type != undefined) uuid_callback(data)
         }
     });
 
@@ -66,7 +66,6 @@ function uuid_callback(data) {
     //common infos:
     $("div[data-cmd_id='LastMsg']").show()
     $("span[data-cmd_id='LastMsg']").html(data.result.lastmsg)
-
 
     $("div[data-cmd_id='Firmware']").show()
     $("span[data-cmd_id='Firmware']").html(data.result.firmware)
@@ -100,10 +99,6 @@ function uuid_callback(data) {
 
         $("div[data-cmd_id='paramTempPres4']").show()
         $("span[data-cmd_id='paramTempPres4']").html(data.result.paramTempPres4 + ' °C')
-
-
-
-
     }
 
     if (_type == 'Module Chauffage')

@@ -91,7 +91,18 @@ class qivivo extends eqLogic {
                 log::add('qivivo', 'debug', '________type: '.$_type.' uuid: '.$_uuid);
                 $eqLogic = eqLogic::byLogicalId($_uuid, 'qivivo');
                 if (!is_object($eqLogic)) continue;
-                if ($_type == 'gateway') continue;
+
+                if ($_type == 'gateway')
+                {
+                    $gatewayInfos = $_qivivo->getGatewayInfos();
+                    log::add('qivivo', 'debug', 'getGatewayInfos: '.print_r($gatewayInfos, true));
+                    $firmware = $gatewayInfos['softwareVersion'];
+                    $eqLogic->getCmd(null, 'Firmware')->event($firmware);
+
+                    $lastMsg = $gatewayInfos['lastCommunicationDate'];
+                    $lastMsg = date("d-m-Y H:i", strtotime($lastMsg));
+                    $eqLogic->getCmd(null, 'LastMsg')->event($lastMsg);
+                }
 
                 if ($_type == 'thermostat')
                 {
@@ -637,7 +648,7 @@ class qivivo extends eqLogic {
             */
         }
 
-        if (in_array($_thisType, array('Module Chauffage', 'Thermostat')))
+        if (in_array($_thisType, array('Module Chauffage', 'Thermostat', 'Passerelle')))
         {
             //common infos:
             $qivivoCmd = $this->getCmd(null, 'LastMsg');
