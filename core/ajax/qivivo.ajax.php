@@ -45,7 +45,7 @@ try {
                 {
                     $type = $eqLogic->getConfiguration('type', '');
                     $result = array('type' => $type);
-                    if ($type == 'Thermostat' or $type == 'Module Chauffage')
+                    if (in_array($type, array('Module Chauffage', 'Thermostat', 'Passerelle')))
                     {
                         $firmware = $eqLogic->getCmd(null, 'Firmware')->execCmd();
                         $lastmsg = $eqLogic->getCmd(null, 'LastMsg')->execCmd();
