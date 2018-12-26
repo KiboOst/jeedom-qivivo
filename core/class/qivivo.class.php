@@ -201,6 +201,7 @@ class qivivo extends eqLogic {
                     $eqLogic->getCmd(null, 'Ordre')->event($order);
                     $eqLogic->getCmd(null, 'OrdreNum')->event($ordernum);
                 }
+                $eqLogic->refreshWidget();
             }
             log::add('qivivo', 'debug', '___refreshQivivoInfos ending');
         } catch (Exception $e) {
@@ -793,9 +794,6 @@ class qivivo extends eqLogic {
             $replace['#lastpres#'] = $cmd->execCmd();
             $replace['#lastpres_id#'] = $cmd->getId();
             $replace['#lastpres_collectDate#'] = $cmd->getCollectDate();
-            if ($cmd->getIsHistorized() == 1) {
-                $replace['#lastpres_history#'] = 'history cursor';
-            }
 
             if ($tmpConsigne > $tmpRoom) $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_on.png';
             else $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_off.png';
@@ -914,22 +912,26 @@ class qivivoCmd extends cmd {
 
             if ($_action == 'IncOne') {
                 $info = $eqLogic->getCmd(null, 'Consigne');
-                $temp = floatval($info->execCmd());
+                $temp = $info->execCmd();
                 $temp += 1;
                 log::add('qivivo', 'debug', 'IncOne to '.$temp.' Temp: '.$Temp);
-                $result = $_qivivo->setThermostatTemperature($temp, 120);
+                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120);
                 $info->event($temp);
+                $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
+                return True;
             }
 
             if ($_action == 'DecOne') {
                 $info = $eqLogic->getCmd(null, 'Consigne');
-                $temp = floatval($info->execCmd());
+                $temp = $info->execCmd();
                 $temp -= 1;
                 log::add('qivivo', 'debug', 'DecOne to '.$temp.' Temp: '.$Temp);
-                $result = $_qivivo->setThermostatTemperature($temp, 120);
+                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120);
                 $info->event($temp);
+                $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
+                return True;
             }
 
             if ($_action == 'SetTemperature') {
@@ -938,6 +940,8 @@ class qivivoCmd extends cmd {
                 $duree_temp = intval($info->execCmd());
                 log::add('qivivo', 'debug', 'SetTemperature to '.$temp.' duree_temp: '.$duree_temp);
                 $result = $_qivivo->setThermostatTemperature($temp, $duree_temp);
+                $eqLogic->getCmd(null, 'Consigne')->event($temp);
+                $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
                 return True;
             }
