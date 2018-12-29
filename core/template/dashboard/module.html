@@ -7,15 +7,37 @@
   <center class="widget-name"><a href="#eqLink#" style="font-size : 1.1em;#hideEqLogicName#">#name_display# <span style="font-size: 0.75em;position: relative;top:-2px;">#object_name#</span></a></center>
 
   <center>
-    <div class="#order_history#" data-cmd_id="#order_id#">
     </br>
-      <i class="divers-thermometer31"></i> <strong class="tooltips" title="#order_collectDate#">#order#</strong>
+    <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#SetMode_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:90%;" title="#order_collectDate#">
+        <i class="divers-thermometer31"></i>
+        <strong><select class="selectCmd" style="border:none;color:#cmdColor#;background-color:#background-color#;width: 85%;">#SetMode_listValue#</select></strong>
+    </br>
+    </div>
+
+    <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#SetProgram_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:90%;">
+        <i class="divers-today1"></i>
+        <strong><select class="selectCmd" style="border:none;color:#cmdColor#;background-color:#background-color#;width: 85%;">#SetProgram_listValue#</select></strong>
+    </br></br>
     </div>
 
     <div class="#lastmsg_history#" data-cmd_id="#lastmsg_id#">
-    </br>
-      <i class="nature-leaf37"></i> <strong class="tooltips" title="#lastpres_collectDate#">#lastmsg#</strong>
+      <i class="nature-leaf37"></i> <strong class="tooltips" title="#lastpres_collectDate#" style="font-size:12px;">#lastmsg#</strong>
     </div>
   </center>
 
+  <script>
+    $('select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
+        jeedom.cmd.execute({id: '#refresh_id#'});
+      })
+
+    $(".cmd[data-cmd_id=#SetMode_id#] .selectCmd").on('change', function () {
+      jeedom.cmd.execute({id: '#SetMode_id#', value: {select: $(this).value()}});
+    })
+
+    $(".cmd[data-cmd_id=#SetProgram_id#] .selectCmd").on('change', function () {
+      jeedom.cmd.execute({id: '#SetProgram_id#', value: {select: $(this).value()}});
+    })
+  </script>
 </div>
