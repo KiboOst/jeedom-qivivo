@@ -430,10 +430,10 @@ class qivivoAPI {
 
 
         $response = curl_exec($this->_curlHdl);
-
+        return $response;
         //$info   = curl_getinfo($this->_curlHdl);
         //echo "<pre>cURL info".json_encode($info, JSON_PRETTY_PRINT)."</pre><br>";
-
+        /*
         if(curl_errno($this->_curlHdl))
         {
             echo 'Curl error: '.curl_error($this->_curlHdl);
@@ -447,6 +447,7 @@ class qivivoAPI {
         {
             return $response;
         }
+        */
     }
 
     //AUTHORIZATION=======================================================
