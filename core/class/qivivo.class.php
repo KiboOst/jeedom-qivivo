@@ -26,27 +26,35 @@ if (!class_exists('qivivoAPI')) {
 }
 
 class qivivo extends eqLogic {
-    public static function getAPI() {
+    public static function getAPI($typeCmd='info', $msg='') {
         $client_id = config::byKey('client_id', 'qivivo');
         $client_secret = config::byKey('client_secret', 'qivivo');
         $_qivivo = new splQivivoAPI($client_id, $client_secret);
         if (isset($_qivivo->error))
         {
-            $_apiError = $_qivivo->error;
-            log::add('qivivo', 'error', 'API error: '.$_apiError);
+            if ($typeCmd == 'action')
+            {
+                $_apiError = $_qivivo->error;
+                if ($msg != '') $_apiError .= ' : '.$msg;
+                log::add('qivivo', 'error', 'API error: '.$_apiError);
+            }
             return False;
         }
         return $_qivivo;
     }
 
-    public static function getCustomAPI() {
+    public static function getCustomAPI($typeCmd='info', $msg='') {
         $login = config::byKey('login', 'qivivo');
         $pass = config::byKey('pass', 'qivivo');
         $_customQivivo = new qivivoAPI($login, $pass);
         if (isset($_customQivivo->error))
         {
-            $_apiError = $_customQivivo->error;
-            log::add('qivivo', 'error', 'custom API error: '.$_apiError);
+            if ($typeCmd == 'action')
+            {
+                $_apiError = $_customQivivo->error;
+                if ($msg != '') $_apiError .= ' : '.$msg;
+                log::add('qivivo', 'error', 'custom API error: '.$_apiError);
+            }
             return False;
         }
         return $_customQivivo;
@@ -1024,7 +1032,7 @@ class qivivoCmd extends cmd {
                 $modeNum = $_options['select'];
                 if ($modeNum == '') return;
 
-                $_fullQivivo = qivivo::getCustomAPI();
+                $_fullQivivo = qivivo::getCustomAPI('action', $_action);
                 if ($_fullQivivo == False)
                 {
                     log::add('qivivo', 'error', "SetMode: can't connect to Qivivo website");
@@ -1070,7 +1078,7 @@ class qivivoCmd extends cmd {
                 $program = $_options['select'];
                 if ($program == '') return;
 
-                $_fullQivivo = qivivo::getCustomAPI();
+                $_fullQivivo = qivivo::getCustomAPI('action', $_action);
                 if ($_fullQivivo == False)
                 {
                     log::add('qivivo', 'error', "SetMode: can't connect to Qivivo website");
@@ -1152,7 +1160,7 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'IncOne') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $info = $eqLogic->getCmd(null, 'Consigne');
                 $temp = $info->execCmd();
                 $temp += 1;
@@ -1165,7 +1173,7 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'DecOne') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $info = $eqLogic->getCmd(null, 'Consigne');
                 $temp = $info->execCmd();
                 $temp -= 1;
@@ -1178,7 +1186,7 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'SetTemperature') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $temp = $_options['slider'];
                 $info = $eqLogic->getCmd(null, 'duree_temp');
                 $duree_temp = intval($info->execCmd());
@@ -1191,7 +1199,7 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'Annule_Ordre_Temp') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 log::add('qivivo', 'debug', 'Annule_Ordre_Temp');
                 $result = $_qivivo->cancelThermostatTemperature();
                 log::add('qivivo', 'debug', print_r($result, true));
@@ -1199,49 +1207,49 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'SetTempAbsence') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('absence_temperature', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempHorsGel') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('frost_protection_temperature', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempNuit') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('night_temperature', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempPres1') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('presence_temperature_1', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempPres2') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('presence_temperature_2', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempPres3') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('presence_temperature_3', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
 
             if ($_action == 'SetTempPres4') {
-                $_qivivo = $eqLogic->getAPI();
+                $_qivivo = $eqLogic->getAPI('action', $_action);
                 $result = $_qivivo->setSetting('presence_temperature_4', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
