@@ -2,6 +2,7 @@
 
 
 
+
 <img align="right" src="/plugin_info/qivivo_icon.png" width="150">
 
 # Qivivo - Plugin pour Jeedom
@@ -9,25 +10,25 @@
 ## *[Beta tests en cours]*
 
 Intégration du Thermostat Qivivo.
+- L'ensemble des fonctions du thermostat (changement de consigne, récupération des informations) repose sur l'API Qivivo.
+- L'API Qivivo ne gérant pas encore le multi-zone, toutes les fonctions de changement d'ordre et de programme par zone/module repose sur une [API développée début 2018](https://github.com/KiboOst/php-qivivoAPI).
 
 ## Pré-requis
-Ce plugin repose sur l'API officielle Qivivo, vous devez donc créer un accès (gratuit) sur cette API puis récupérer vos Client ID et Secret ID.
+Ce plugin repose en partie sur l'API officielle Qivivo, vous devez donc créer un accès (gratuit) sur cette API puis récupérer vos Client ID et Secret ID.
 [https://account.qivivo.com/](https://account.qivivo.com/)
 
-## Limitations
-L'API Qivivo ne gère toujours pas les configurations multi-zone. Vous pourrez toutefois utiliser ce plugin pour voir les ordres des modules de vos zones, et avoir accès aux fonctions du thermostat.
 
 ## Configuration du plugin Qivivo
 
 Après installation du plugin, il vous suffit de l’activer.
 Il apparaitra alors dans le menu *Plugins > Confort*.
-La première chose à faire est alors de cliquer sur *Configuration*, de renseigner vos Client ID et Secret ID, puis de cliquer sur *Synchroniser mes équipements*.
+La première chose à faire est alors de cliquer sur *Configuration*, de renseigner vos Login et password Qivivo, et vos Client ID et Secret ID. Cliquez ensuite sur *Synchroniser mes équipements*.
 
 <p align="center">
-  <img src="../images/config.jpg" width="450">
+  <img src="../images/configuration.jpg" width="450">
 </p>
 
-Ceci aura pour effet d'installer votre thermostat, la passerelle (qui n'a ici aucune fonction), et vos modules fil-pilote.
+Ceci aura pour effet d'installer votre thermostat, la passerelle (qui n'a ici aucune fonction), et vos modules fil-pilote, nommés par zone.
 Il ne reste qu'à rafraichir la page du plugin !
 
 <p align="center">
@@ -40,7 +41,7 @@ Toutefois, l'actualisation des données sur les serveurs Qivivo se faisant toute
 
 ## Utilisation
 
-Renseignez pour chaque module, son nom et son Objet parent. Ils apparaitrons ainsi au bon endroit sur votre dashboard.
+Renseignez pour chaque module, son nom et son Objet parent si nécessaire. Ils apparaitrons ainsi au bon endroit sur votre dashboard.
 
 ### Thermostat
 
@@ -55,7 +56,7 @@ Pour une question de place, ils ne sont pas affichés sur le dashboard. Vous pou
 ### Module fil-pilote
 
 <p align="center">
-  <img src="../images/module.jpg" width="450">
+  <img src="../images/modulechauffage.jpg" width="450">
 </p>
 
 Le module fil-pilote possède une info *Ordre* affichant l'ordre courant sous forme de *string*. Cette info n'est pas historisée, mais une autre info *OrdreNum* représente l'ordre sous forme de numéro de 1 à 6, et est historisée :
@@ -75,7 +76,7 @@ Remarque: si vous êtes en multi-zone, l'un de vos module fil-pilote aura pour o
 Voici un exemple sur le dashboard:
 
 <p align="center">
-  <img src="../images/qivivoUI.jpg" width="585">
+  <img src="../images/dashboard.jpg" width="846">
 </p>
 Vous pouvez ainsi visualiser:
 
@@ -85,6 +86,8 @@ Vous pouvez ainsi visualiser:
 - Le taux d'humidité mesuré par le thermostat
 - Si le thermostat relève une présence
 - La dernière présence relevée par le thermostat
+- L'ordre en cours par zone
+- Le programme en cours par zone
 
 Vous pouvez bien sûr intégrer ces informations dans des scénarios !
 
@@ -120,8 +123,13 @@ Vous pouvez par exemple vérifier régulièrement la météo, l'ensoleillement e
 Vous pouvez également faire un scénario pour augmenter la consigne si une présence non prévue dans le planning est détectée.
 Ou interfacer votre Qivivo avec SNIPS, Google Home, Alexa ...
 
+### Programmes
+<p align="center">
+  <img src="../images/programmes.jpg" width="450">
+</p>
 
->*Pour l'instant, il n'y a pas de version stable disponible. Le temps de peaufiner certaines choses, de corrigers les bugs qui ne manqueront pas se présenter, et peu-être l'ajout de fonctionnalités. Comme la gestion des départ/arrivée qui, couplée aux scénarios Jeedom, peux devenir intéressante.*
+Sur chaque module, y compris celui de la zone thermostat, vous trouverez un onglet *Programmes*. Vous pourrez y créer plusieurs programmes, pour pouvoir en changer, ou depuis le dashboard ou depuis un scénario.
+> Sur chaque jour, vous pouvez bien sûr créer des périodes de chauffe, mais aussi copier un jour entier pour le coller ailleurs, y compris sur un autre programme.
 
 
 ## Changelog
