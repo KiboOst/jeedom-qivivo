@@ -254,7 +254,9 @@ class splQivivoAPI {
         if (isset($post)) curl_setopt($this->_curlHdl, CURLOPT_POSTFIELDS, $post);
 
         $response = curl_exec($this->_curlHdl);
+        return $response;
 
+        /*
         if(curl_errno($this->_curlHdl))
         {
             echo 'Curl error: '.curl_error($this->_curlHdl);
@@ -268,6 +270,7 @@ class splQivivoAPI {
         {
             return $response;
         }
+        */
     }
 
     //AUTHORIZATION=======================================================
