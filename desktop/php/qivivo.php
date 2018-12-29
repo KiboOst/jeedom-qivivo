@@ -8,6 +8,33 @@ sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
 
+<style type="text/css">
+  .select-mode-off {
+    background-color:#9df9fe
+  }
+  .select-mode-frost {
+    background-color:#8dedfd
+  }
+  .select-mode-abs {
+    background-color:#7edafd
+  }
+  .select-mode-eco, .select-mode-nuit {
+    background-color:#91c3fc
+  }
+  .select-mode-pres1, .select-mode-confort-2 {
+    background-color:#90affb
+  }
+  .select-mode-pres2, .select-mode-confort-1 {
+    background-color:#fde972
+  }
+  .select-mode-pres3, .select-mode-confort {
+    background-color:#fdd45d
+  }
+  .select-mode-pres4 {
+    background-color:#fcc64f
+  }
+</style>
+
 <div class="row row-overflow">
   <div class="col-sm-2">
     <div class="bs-sidebar">
@@ -67,9 +94,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
     <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+    <li id="bt_tab_programs" role="presentation"  style="display: none;"><a href="#tab_programs" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Programmes}}</a></li>
     <li role="presentation"><a href="#tab_cmds" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
   </ul>
   <div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
+
 
   <div role="tabpanel" class="tab-pane active" id="eqlogictab">
     <br/>
@@ -135,6 +164,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
           <label class="col-sm-3 control-label">{{Type}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" style="font-size:1em;" data-l1key="configuration" data-l2key="type"></span>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: none;" data-cmd_id="moduleZone">
+          <label class="col-sm-3 control-label">{{Zone}}</label>
+          <div class="col-sm-5">
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-l1key="configuration" data-l2key="zone_name"></span>
           </div>
         </div>
 
@@ -228,6 +264,12 @@ $eqLogics = eqLogic::byType($plugin->getId());
     </form>
     </div>
 
+    <!--Programs Tab-->
+    <div role="tabpanel" class="tab-pane" id="tab_programs">
+      <a class="btn btn-success pull-right" id="bt_addProgram" style="margin-top: 5px;"><i class="fa fa-plus-circle"></i> {{Ajouter Programme}}</a><br/><br/>
+      <div id="div_programs"></div>
+    </div>
+
     <!--Commands Tab-->
     <div role="tabpanel" class="tab-pane" id="tab_cmds">
       <div id="div_cmds"></div>
@@ -257,5 +299,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
   </div>
 </div>
 
+<?php include_file('3rdparty', 'jquery-clock-timepicker.min', 'js', 'qivivo');?>
 <?php include_file('desktop', 'qivivo', 'js', 'qivivo');?>
 <?php include_file('core', 'plugin.template', 'js');?>
