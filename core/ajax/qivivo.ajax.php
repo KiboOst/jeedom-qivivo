@@ -28,7 +28,7 @@ try {
 
 	if (init('action') == 'syncWithQivivo') {
 		qivivo::syncWithQivivo();
-		qivivo::cron15();
+		qivivo::refreshQivivoInfos();
 		ajax::success();
 	}
 
