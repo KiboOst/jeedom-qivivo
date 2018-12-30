@@ -7,15 +7,11 @@
 
 Remarque : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
-### 29/12/2018 (beta)
-- Intégration API multi-zone
-  - Changement des ordres des modules / zones
-  - Création, édition, changement de programmes multiple par zone
-  - Nommage des modules par zone
+### 30/12/2018 (beta)
 
-! Pour ceux qui ont déjà une beta précédente:
-- Renseignez vos login/password Qivivo dans Configuration
-- Refaire une synchronisation
+### 29/12/2018 (beta)
+- Thermostat : nouvelle commande info *Chauffe*, historisée (0 ou température)
+  -> Si beta déjà installée, il faut sauvegarder le Thermostat pour créer la commande.
 
 ### 23/12/2018 (beta)
 - Refonte des widgets dashboard et mobile
