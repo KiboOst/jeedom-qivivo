@@ -64,7 +64,6 @@ class qivivo extends eqLogic {
         $_qivivo = qivivo::getAPI();
         if ($_qivivo == False)
         {
-            echo "Impossible de se connecter à l'API Qivivo, vérifiez vos login/password ou réessayer plus tard";
             return;
         }
         $devices = $_qivivo->getDevices();
@@ -72,7 +71,6 @@ class qivivo extends eqLogic {
         $_fullQivivo = qivivo::getCustomAPI();
         if ($_fullQivivo == False)
         {
-            echo "Impossible de se connecter au site Qivivo, vérifiez vos login/password ou réessayer plus tard";
             return;
         }
         $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
@@ -141,7 +139,6 @@ class qivivo extends eqLogic {
             $eqLogic->setLogicalId($device['uuid']);
             $eqLogic->save();
         }
-        echo "Synchronisation réussie";
     }
 
     public static function refreshQivivoInfos() {
@@ -278,7 +275,7 @@ class qivivo extends eqLogic {
             }
             log::add('qivivo', 'debug', '___refreshQivivoInfos ending');
         } catch (Exception $e) {
-            log::add('qivivo', 'error', '___refreshQivivoInfos Exception'.print_r($e, true));
+            log::add('qivivo', 'warning', '___refreshQivivoInfos Exception'.print_r($e, true));
             return;
         }
     }
@@ -1033,11 +1030,8 @@ class qivivoCmd extends cmd {
                 if ($modeNum == '') return;
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $_action);
-                if ($_fullQivivo == False)
-                {
-                    log::add('qivivo', 'error', "SetMode: can't connect to Qivivo website");
-                    return;
-                }
+                if ($_fullQivivo == False) return;
+
                 $zone_name = $_type = $eqLogic->getConfiguration('zone_name');
                 $modeString = '';
                 switch($modeNum)
@@ -1079,11 +1073,8 @@ class qivivoCmd extends cmd {
                 if ($program == '') return;
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $_action);
-                if ($_fullQivivo == False)
-                {
-                    log::add('qivivo', 'error', "SetMode: can't connect to Qivivo website");
-                    return;
-                }
+                if ($_fullQivivo == False) return;
+
                 log::add('qivivo', 'debug', 'SetProgram '.$eqLogic->getName().' to '.$program);
                 $program_name = $eqLogic->getConfiguration('program_name');
                 if ($eqLogic->getConfiguration('isModuleThermostat') == 0)
@@ -1146,7 +1137,7 @@ class qivivoCmd extends cmd {
                         return;
                     }
                 }
-                log::add('qivivo', 'error', 'Unfound program!');
+                log::add('qivivo', 'warning', 'Unfound program!');
                 return;
             }
         }
