@@ -207,6 +207,10 @@ class qivivo extends eqLogic {
                     $eqLogic->checkAndUpdateCmd('Consigne', (round($order * 2)/2));
                     $eqLogic->checkAndUpdateCmd('Temperature', $temp);
 
+                    $heating = 0;
+                    if ($temp < $order) $heating = $order;
+                    $eqLogic->checkAndUpdateCmd('Chauffe', $heating);
+
                     $settings = $_qivivo->getSettings();
                     log::add('qivivo', 'debug', 'getSettings: '.print_r($settings, true));
                     $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['settings']['frost_protection_temperature']);
@@ -275,7 +279,7 @@ class qivivo extends eqLogic {
             }
             log::add('qivivo', 'debug', '___refreshQivivoInfos ending');
         } catch (Exception $e) {
-            log::add('qivivo', 'warning', '___refreshQivivoInfos Exception'.print_r($e, true));
+            log::add('qivivo', 'warning', '___refreshQivivoInfos Exception: '.$e->getMessage());
             return;
         }
     }
@@ -310,7 +314,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setIsHistorized(1);
                 $qivivoCmd->setConfiguration('historizeMode', 'none');
                 $qivivoCmd->setConfiguration('historyPurge', '-1 year');
-                $qivivoCmd->setConfiguration('minValue', 5);
+                $qivivoCmd->setConfiguration('minValue', 0);
                 $qivivoCmd->setConfiguration('maxValue', 35);
                 $qivivoCmd->setOrder($order);
                 $order ++;
@@ -320,7 +324,6 @@ class qivivo extends eqLogic {
             $qivivoCmd->setLogicalId('Consigne');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
-
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'Temperature');
@@ -331,7 +334,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setIsHistorized(1);
                 $qivivoCmd->setConfiguration('historizeMode', 'none');
                 $qivivoCmd->setConfiguration('historyPurge', '-1 year');
-                $qivivoCmd->setConfiguration('minValue', 5);
+                $qivivoCmd->setConfiguration('minValue', 0);
                 $qivivoCmd->setConfiguration('maxValue', 35);
                 $qivivoCmd->setOrder($order);
                 $order ++;
@@ -339,6 +342,26 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setUnite('°C');
             $qivivoCmd->setLogicalId('Temperature');
+            $qivivoCmd->setType('info');
+            $qivivoCmd->setSubType('numeric');
+            $qivivoCmd->save();
+
+            $qivivoCmd = $this->getCmd(null, 'Chauffe');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('Chauffe', __FILE__));
+                $qivivoCmd->setIsVisible(0);
+                $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('historizeMode', 'none');
+                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
+                $qivivoCmd->setConfiguration('minValue', 0);
+                $qivivoCmd->setConfiguration('maxValue', 35);
+                $qivivoCmd->setConfiguration('repeatEventManagement', 'always');
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setLogicalId('Chauffe');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
             $qivivoCmd->save();
@@ -917,7 +940,9 @@ class qivivo extends eqLogic {
             $replace['#lastpres_id#'] = $cmd->getId();
             $replace['#lastpres_collectDate#'] = $cmd->getCollectDate();
 
-            if ($tmpConsigne > $tmpRoom) $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_on.png';
+            $heating = $this->getCmd(null, 'Chauffe')->execCmd();
+
+            if ($heating > 0) $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_on.png';
             else $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_off.png';
 
             $html = template_replace($replace, getTemplate('core', $version, 'thermostat', 'qivivo'));
@@ -1012,6 +1037,7 @@ class qivivoCmd extends cmd {
     }
 
     public function execute($_options = array()) {
+        log::add('qivivo', 'debug', 'execute options: '.print_r($_options, true));
         if ($this->getLogicalId() == 'refresh') {
             qivivo::refreshQivivoInfos();
             return;
