@@ -604,7 +604,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempAbsence');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempHorsGel');
@@ -618,7 +618,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempHorsGel');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempNuit');
@@ -632,7 +632,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempNuit');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempPres1');
@@ -646,7 +646,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempPres1');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempPres2');
@@ -660,7 +660,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempPres2');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempPres3');
@@ -674,7 +674,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempPres3');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'SetTempPres4');
@@ -688,7 +688,7 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setLogicalId('SetTempPres4');
             $qivivoCmd->setType('action');
-            $qivivoCmd->setSubType('other');
+            $qivivoCmd->setSubType('slider');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'IncOne');
