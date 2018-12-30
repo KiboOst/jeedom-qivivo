@@ -8,7 +8,7 @@
 Remarque : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
 ### 30/12/2018 (beta)
-- Thermostat : nouvelle commande info *Chauffe*, historisée (0 ou température)
+- Thermostat : nouvelle commande info *Chauffe*, historisée (0 ou ordre).
 
   -> Si beta déjà installée:
     - il faut sauvegarder le Thermostat pour créer la commande.
