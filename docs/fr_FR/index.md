@@ -104,7 +104,17 @@ Comme pour toutes les commandes dans Jeedom, vous pouvez bien sûr consulter l'h
 >- Thermostat Temperature
 >- Thermostat Humidité
 >- Thermostat Presence
+>- Thermostat Chauffe
 >- Module Chauffage OrdreNum
+
+Vous pouvez également ajouter un *Graphique* sur un Design pour avoir la synthèse pré-configurée. Une fois le graphique crée sur le design, faites un clic droit dessus puis *Configuration avancée* pour choisir vos courbes et paramètres.
+
+Exemple:
+<p align="center">
+  <img src="../images/synthese.jpg" width="450">
+</p>
+
+> Vous pouvez bien sûr y ajouter d'autres courbes d'autres capteurs de températures, etc.
 
 ### Actions
 
