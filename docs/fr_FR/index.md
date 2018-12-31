@@ -36,7 +36,7 @@ Il ne reste qu'à rafraichir la page du plugin !
   <img src="../images/plugin.jpg" width="450">
 </p>
 
-#### Gestion des erreurs
+### Gestion des erreurs
 Lors d'un rafraichissement des informations, si l'appel à l'API Qivivo échoue trois fois de suite, un log d'erreur sera créé.
 
 Lorsque vous passez une commande (une action), par un widget ou un scénario, un échec peut-être très embêtant. Si vous quittez la maison pendant une semaine et qu'un scénario passe votre Qivivo en programme absence, le risque est que le chauffage reste allumé toute la semaine.
@@ -46,7 +46,7 @@ Dans ce cas, vous avez deux possibilité de configuration:
 - Répéter l'action sur échec : le plugin répétera la même action 90sec plus tard en utilisant le système de cron de Jeedom. Lors de ce 2èm appel, si la commande passe, aucune autre action ne se passe. Si elle échoue à nouveau (ou si vous décochez l'option), un log d'erreur est créé, et un message si l'option est cochée (par défaut) dans la configuration de Jeedom.
 -  Actions sur erreur: Vous pouvez définir ici des actions à exécuter si une commande ne passe pas. Par exemple, vous envoyer un email, une notification sur l'application mobile, etc. Vous pouvez spécifier dans un champ *Message* le raccourci #message# pour obtenir une description de la commande ayant échouée.
 
-#### Auto actualisation
+### Auto actualisation
 Dans la page de configuration, onglet *Fonctionnalités*, l'option cron15 est activée par défaut. Ceci permet d'actualiser toutes les infos des modules et du thermostat toutes les 15mins. Au regard de la réactivité du chauffage, c'est suffisant.
 Toutefois, l'actualisation des données sur les serveurs Qivivo se faisant toutes les 5 minutes, vous pouvez si vous le souhaitez passer le cron à 5mins.
 
