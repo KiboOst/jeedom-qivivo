@@ -46,6 +46,7 @@ class qivivo extends eqLogic {
                 if (config::byKey('refreshFailed', 'qivivo', 0) > 3)
                 {
                     log::add('qivivo', 'error', 'Erreur: la synchro Qivivo a échouée lors des 3 dernières tentatives.');
+                    config::save('refreshFailed', 0, 'qivivo');
                 }
                 else
                 {
