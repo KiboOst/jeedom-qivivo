@@ -35,7 +35,7 @@ try {
     if (init('action') == 'getTypeAndValues') {
         try
         {
-            $_uuid = init('_uuid') ;
+            $_uuid = init('_uuid');
             $plugin = plugin::byId('qivivo');
             $eqLogics = eqLogic::byType($plugin->getId());
             foreach ($eqLogics as $eqLogic)
@@ -86,6 +86,19 @@ try {
             log::add('qivivo', 'debug', 'ajax getTypeAndValues ERROR'.print_r($e, true));
             return '';
         }
+    }
+
+    if (init('action') == 'getActionsOnError') {
+        $actionsOnError = config::byKey('actionsOnError', 'qivivo');
+        //log::add('qivivo', 'debug', 'ajax getActionsOnError: '.print_r($actionsOnError, 1));
+        ajax::success($actionsOnError);
+    }
+
+    if (init('action') == 'saveActionsOnError') {
+        $actionsOnError = init('actionsOnError');
+        //log::add('qivivo', 'debug', 'ajax saveActionsOnError: '.print_r($actionsOnError, 1));
+        config::save('actionsOnError', $actionsOnError, 'qivivo');
+        ajax::success();
     }
 
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
