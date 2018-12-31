@@ -1,6 +1,6 @@
 <img align="right" src="/plugin_info/qivivo_icon.png" width="150">
 
-# qivivo-jeelog
+# Jeedom-Qivivo
 
 Intégration du Thermostat Qivivo
 
