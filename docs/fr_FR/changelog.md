@@ -7,6 +7,12 @@
 
 Remarque : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
+### 31/12/2018 (beta)
+- Gestion d'erreurs API
+  - Configuration *Répéter l'action*
+  - Configuration *Actions sur erreur*
+- Update de la doc
+
 ### 30/12/2018 (beta)
 - Thermostat : nouvelle commande info *Chauffe*, historisée (0 ou ordre).
 
