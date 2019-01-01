@@ -117,7 +117,7 @@ Certaines informations sont visible ici, notamment les réglages de température
 ### Module fil-pilote
 
 <p align="center">
-  <img src="../images/modulechauffage.jpg" width="450">
+  <img src="../images/modulechauffage2.jpg" width="450">
 </p>
 
 Le module fil-pilote possède une info *Ordre* affichant l'ordre courant sous forme de lisible (*string*). Cette info n'est pas historisée, mais une autre info *OrdreNum* représente l'ordre sous forme de numéro de 1 à 6, et est historisée :
