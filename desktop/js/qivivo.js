@@ -40,9 +40,9 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=uuid]').on('change',functio
     //hide all infos divs:
     $("div[data-cmd_id='moduleOrder']").hide()
     $("div[data-cmd_id='moduleZone']").hide()
-    $("div[data-cmd_id='LastMsg']").hide()
-    $("div[data-cmd_id='Firmware']").hide()
-    $("div[data-cmd_id='consigne']").hide()
+    $("div[data-cmd_id='last_communication']").hide()
+    $("div[data-cmd_id='firmware_version']").hide()
+    $("div[data-cmd_id='temperature_order']").hide()
     $("div[data-cmd_id='dureeordre']").hide()
 
     $("div[data-cmd_id='paramTempAbsence']").hide()
@@ -73,17 +73,17 @@ function uuid_callback(data) {
     //console.log(data.result)
 
     //common infos:
-    $("div[data-cmd_id='LastMsg']").show()
-    $("span[data-cmd_id='LastMsg']").html(data.result.lastmsg)
+    $("div[data-cmd_id='last_communication']").show()
+    $("span[data-cmd_id='last_communication']").html(data.result.last_communication)
 
-    $("div[data-cmd_id='Firmware']").show()
-    $("span[data-cmd_id='Firmware']").html(data.result.firmware)
+    $("div[data-cmd_id='firmware_version']").show()
+    $("span[data-cmd_id='firmware_version']").html(data.result.firmware_version)
 
     //specific infos:
     if (_type == 'Thermostat')
     {
-        $("div[data-cmd_id='consigne']").show()
-        $("span[data-cmd_id='consigne']").html(data.result.consigne + ' °C')
+        $("div[data-cmd_id='temperature_order']").show()
+        $("span[data-cmd_id='temperature_order']").html(data.result.temperature_order + ' °C')
 
         $("div[data-cmd_id='dureeordre']").show()
         $("span[data-cmd_id='dureeordre']").html(data.result.dureeordre + ' Mins')
@@ -113,9 +113,9 @@ function uuid_callback(data) {
     if (_type == 'Module Chauffage')
     {
         $("div[data-cmd_id='moduleOrder']").show()
-        value = data.result.ordre
+        value = data.result.module_order
         if (value == 'monozone') value += ' [Zone Thermostat]'
-        $("span[data-cmd_id='moduleOrder']").html(value)
+        $("span[data-cmd_id='module_order']").html(value)
 
         $("div[data-cmd_id='moduleZone']").show()
     }
