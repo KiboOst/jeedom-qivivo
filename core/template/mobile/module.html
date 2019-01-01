@@ -7,17 +7,17 @@
   <center class="widget-name" style="#hideEqLogicName#">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></center>
 
   <center>
-    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#SetMode_id#" data-version="#version#" data-eqLogic_id="#id#">
-        <div><select>#SetMode_listValue#</select></div>
+    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#set_order_id#" data-version="#version#" data-eqLogic_id="#id#">
+        <div><select>#set_order_listValue#</select></div>
     </span>
 
 
-    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#SetProgram_id#" data-version="#version#" data-eqLogic_id="#id#">
-        <div><select>#SetProgram_listValue#</select></div>
+    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#">
+        <div><select>#set_program_listValue#</select></div>
     </span>
 
-    <span class="cmd #lastmsg_history#" data-cmd_id="#lastmsg_id#">
-      <div><i class="nature-leaf37"></i> <strong class="tooltips" title="#lastpres_collectDate#" style="font-size:12px;">#lastmsg#</strong></div>
+    <span class="cmd #last_communication_history#" data-cmd_id="#last_communication_id#">
+      <div><i class="nature-leaf37"></i> <strong class="tooltips" title="#lastpres_collectDate#" style="font-size:12px;">#last_communication#</strong></div>
     </span>
   </center>
 
@@ -28,12 +28,12 @@
         jeedom.cmd.execute({id: '#refresh_id#'});
       })
 
-    $(".cmd[data-cmd_id=#SetMode_id#] select").on('change', function () {
-      jeedom.cmd.execute({id: '#SetMode_id#', value: {select: $(this).value()}})
+    $(".cmd[data-cmd_id=#set_order_id#] select").on('change', function () {
+      jeedom.cmd.execute({id: '#set_order_id#', value: {select: $(this).value()}})
     })
 
-    $(".cmd[data-cmd_id=#SetProgram_id#] select").on('change', function () {
-      jeedom.cmd.execute({id: '#SetProgram_id#', value: {select: $(this).value()}})
+    $(".cmd[data-cmd_id=#set_program_id#] select").on('change', function () {
+      jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}})
     })
   </script>
 </div>

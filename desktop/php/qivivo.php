@@ -175,24 +175,24 @@ $eqLogics = eqLogic::byType($plugin->getId());
         </div>
 
         <!--common infos but Passerelle-->
-        <div class="form-group" style="display: none;" data-cmd_id="moduleOrder">
+        <div class="form-group" style="display: none;" data-cmd_id="module_order">
           <label class="col-sm-3 control-label">{{Ordre}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="moduleOrder"></span>
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="module_order"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="LastMsg">
+        <div class="form-group" style="display: none;" data-cmd_id="last_communication">
           <label class="col-sm-3 control-label">{{Dernière communication}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="LastMsg"></span>
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="last_communication"></span>
           </div>
         </div>
 
         <!--thermostat infos-->
-        <div class="form-group" style="display: none;" data-cmd_id="consigne">
+        <div class="form-group" style="display: none;" data-cmd_id="temperature_order">
           <label class="col-sm-3 control-label">{{Consigne}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="consigne"></span>
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="temperature_order"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="dureeordre">
@@ -247,10 +247,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 
         <!--common infos but Passerelle-->
-        <div class="form-group" style="display: none;" data-cmd_id="Firmware">
+        <div class="form-group" style="display: none;" data-cmd_id="firmware_version">
           <label class="col-sm-3 control-label">{{Firmware}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="Firmware"></span>
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="firmware_version"></span>
           </div>
         </div>
         <!--common info-->
