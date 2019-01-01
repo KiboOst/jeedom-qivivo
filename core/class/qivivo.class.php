@@ -1308,19 +1308,27 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'SetTemperature') {
-                $temp = $_options['slider'];
+                $order = $_options['slider'];
                 $info = $eqLogic->getCmd(null, 'duree_temp');
                 $duree_temp = intval($info->execCmd());
-                $message = 'SetTemperature to '.$temp.' duree_temp: '.$duree_temp;
+                $message = 'SetTemperature to '.$order.' duree_temp: '.$duree_temp;
                 log::add('qivivo', 'debug', $message);
 
                 $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
                 if ($_qivivo == False) return;
 
-                $result = $_qivivo->setThermostatTemperature($temp, $duree_temp);
-                $eqLogic->checkAndUpdateCmd('Consigne', $temp);
-                $eqLogic->refreshWidget();
+                $result = $_qivivo->setThermostatTemperature($order, $duree_temp);
+                $eqLogic->checkAndUpdateCmd('Consigne', $order);
                 log::add('qivivo', 'debug', print_r($result, true));
+
+                //update Chauffe ?
+                $temp = $eqLogic->getCmd(null, 'Temperature')->execCmd();
+                $heating = $eqLogic->getCmd(null, 'Chauffe')->execCmd();
+                $newHeating = 0;
+                if ($temp < $order) $newHeating = $order;
+                if ($newHeating != $heating) $eqLogic->checkAndUpdateCmd('Chauffe', $newHeating);
+
+                $eqLogic->refreshWidget();
                 return;
             }
 
