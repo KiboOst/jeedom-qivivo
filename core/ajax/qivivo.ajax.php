@@ -47,20 +47,20 @@ try {
                     $result = array('type' => $type);
                     if (in_array($type, array('Module Chauffage', 'Thermostat', 'Passerelle')))
                     {
-                        $firmware = $eqLogic->getCmd(null, 'Firmware')->execCmd();
-                        $lastmsg = $eqLogic->getCmd(null, 'LastMsg')->execCmd();
-                        $result['firmware'] = $firmware;
-                        $result['lastmsg'] = $lastmsg;
+                        $firmware_version = $eqLogic->getCmd(null, 'firmware_version')->execCmd();
+                        $last_communication = $eqLogic->getCmd(null, 'last_communication')->execCmd();
+                        $result['firmware_version'] = $firmware_version;
+                        $result['last_communication'] = $last_communication;
                     }
                     if ($type == 'Module Chauffage')
                     {
-                        $ordre = $eqLogic->getCmd(null, 'Ordre')->execCmd();
-                        $result['ordre'] = $ordre;
+                        $module_order = $eqLogic->getCmd(null, 'module_order')->execCmd();
+                        $result['module_order'] = $module_order;
                     }
                     if ($type == 'Thermostat')
                     {
-                        $consigne = $eqLogic->getCmd(null, 'Consigne')->execCmd();
-                        $result['consigne'] = $consigne;
+                        $consigne = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
+                        $result['temperature_order'] = $consigne;
                         $dureeordre = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
                         $result['dureeordre'] = $dureeordre;
 
