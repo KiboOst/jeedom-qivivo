@@ -385,6 +385,7 @@ class qivivo extends eqLogic {
     }
 
     public static function getDebugInfos() { //log both APIs data to debug user configuration
+        //official API:
         $_qivivo = qivivo::getAPI();
         if ($_qivivo == False)
         {
@@ -395,6 +396,7 @@ class qivivo extends eqLogic {
         $data = json_encode($_qivivo, JSON_PRETTY_PRINT);
         log::add('qivivo_debug', 'error', $data);
 
+        //custom API:
         $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
         if ($_fullQivivo == False)
         {
@@ -403,6 +405,14 @@ class qivivo extends eqLogic {
         }
 
         $data = json_encode($_fullQivivo, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', $data);
+
+        $getProducts = $_fullQivivo->getProducts();
+        $data = json_encode($getProducts, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', $data);
+
+        $getCurrentProgram = $_fullQivivo->getCurrentProgram();
+        $data = json_encode($getCurrentProgram, JSON_PRETTY_PRINT);
         log::add('qivivo_debug', 'error', $data);
     }
 
