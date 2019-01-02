@@ -376,6 +376,11 @@ class qivivo extends eqLogic {
 
     public static function cron15($_eqlogic_id = null) {
         log::add('qivivo', 'debug', '___cron15()');
+        if (config::byKey('functionality::cron5::enable', 'qivivo', 0) == 1)
+        {
+            config::save('functionality::cron15::enable', 0, 'qivivo');
+            return;
+        }
         qivivo::refreshQivivoInfos();
     }
 
