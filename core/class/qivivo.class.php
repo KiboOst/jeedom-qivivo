@@ -384,6 +384,28 @@ class qivivo extends eqLogic {
         qivivo::refreshQivivoInfos();
     }
 
+    public static function getDebugInfos() { //log both APIs data to debug user configuration
+        $_qivivo = qivivo::getAPI();
+        if ($_qivivo == False)
+        {
+            log::add('qivivo_debug', 'error', 'getAPI() error!');
+            return;
+        }
+
+        $data = json_encode($_qivivo, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', $data);
+
+        $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+        if ($_fullQivivo == False)
+        {
+            log::add('qivivo_debug', 'error', 'getCustomAPI() error!');
+            return;
+        }
+
+        $data = json_encode($_fullQivivo, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', $data);
+    }
+
     public function postSave()
     {
         log::add('qivivo', 'debug', 'postSave()');
@@ -952,6 +974,24 @@ class qivivo extends eqLogic {
             $qivivoCmd->save();
         }
 
+        if (in_array($_thisType, array('Passerelle')))
+        {
+            $qivivoCmd = $this->getCmd(null, 'debug');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('debug', __FILE__));
+                $qivivoCmd->setIsVisible(0);
+                $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setLogicalId('debug');
+            $qivivoCmd->setType('action');
+            $qivivoCmd->setSubType('other');
+            $qivivoCmd->save();
+        }
+
         $refresh = $this->getCmd(null, 'refresh');
         if (!is_object($refresh)) {
             $refresh = new qivivoCmd();
@@ -1431,6 +1471,13 @@ class qivivoCmd extends cmd {
                 $result = $_qivivo->setSetting('presence_temperature_4', $_options['slider']);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
+            }
+        }
+
+        if ($_type == 'Passerelle') {
+            if ($_action == 'debug') {
+                log::add('qivivo', 'debug', '___debug action!');
+                qivivo::getDebugInfos();
             }
         }
     }
