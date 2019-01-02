@@ -10,28 +10,28 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 <style type="text/css">
   .select-mode-off {
-    background-color:#9df9fe
+    background-color:#9df9fe !important;
   }
   .select-mode-frost {
-    background-color:#8dedfd
+    background-color:#8dedfd !important;
   }
   .select-mode-abs {
-    background-color:#7edafd
+    background-color:#7edafd !important;
   }
   .select-mode-eco, .select-mode-nuit {
-    background-color:#91c3fc
+    background-color:#91c3fc !important;
   }
   .select-mode-pres1, .select-mode-confort-2 {
-    background-color:#90affb
+    background-color:#90affb !important;
   }
   .select-mode-pres2, .select-mode-confort-1 {
-    background-color:#fde972
+    background-color:#fde972 !important;
   }
   .select-mode-pres3, .select-mode-confort {
-    background-color:#fdd45d
+    background-color:#fdd45d !important;
   }
   .select-mode-pres4 {
-    background-color:#fcc64f
+    background-color:#fcc64f !important;
   }
 </style>
 
