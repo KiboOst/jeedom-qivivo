@@ -468,6 +468,11 @@ function pasteDay(day){
     updateGraphDay(dayDiv)
 }
 
+
+//Standard
+
+$("#div_programs").sortable({axis: "y", cursor: "move", items: ".program", handle: ".panel-heading", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true})
+
 function printEqLogic(_eqLogic) {
     $('#div_programs').empty()
     if (_eqLogic.configuration.type != 'Module Chauffage') return
@@ -515,7 +520,6 @@ function printEqLogic(_eqLogic) {
             })
         }
     }
-    $("#div_programs").sortable()
 }
 
 function saveEqLogic(_eqLogic) {
