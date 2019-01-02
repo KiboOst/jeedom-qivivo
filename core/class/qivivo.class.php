@@ -38,7 +38,7 @@ class qivivo extends eqLogic {
             if ($_typeCmd == 'action')
             {
                 if ($_msg) $_options['error'] = $_msg;
-                qivivo::checkAndRetryAction($_action, $_options);
+                if ($_action) qivivo::checkAndRetryAction($_action, $_options);
             }
             else
             {
@@ -74,7 +74,7 @@ class qivivo extends eqLogic {
             if ($_typeCmd == 'action')
             {
                 if ($_msg) $_options['error'] = $_msg;
-                qivivo::checkAndRetryAction($_action, $_options);
+                if ($_action) qivivo::checkAndRetryAction($_action, $_options);
             }
             return False;
         }
