@@ -7,7 +7,7 @@ https://github.com/KiboOst/php-simpleQivivoAPI
 
 class splQivivoAPI {
 
-    public $_version = '0.1';
+    public $_version = '0.16';
 
     //USER FUNCTIONS======================================================
 
@@ -15,13 +15,6 @@ class splQivivoAPI {
     public function getGatewayInfos()
     {
         $url = $this->_apiRoot.'/devices/gateways/'.$this->_gatewayUUID.'/info';
-        $answer = $this->_request('GET', $url);
-        return json_decode($answer, true);
-    }
-
-    public function getThermostatInfos()
-    {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/info';
         $answer = $this->_request('GET', $url);
         return json_decode($answer, true);
     }
@@ -52,6 +45,13 @@ class splQivivoAPI {
         return json_decode($answer, true);
     }
 
+    public function getModulePrograms($uuid)
+    {
+        $url = $this->_apiRoot.'/devices/wireless-modules/'.$uuid.'/programs';
+        $answer = $this->_request('GET', $url);
+        return json_decode($answer, true);
+    }
+
     public function getModuleLastOrder($uuid)
     {
         $url = $this->_apiRoot.'/devices/wireless-modules/'.$uuid.'/pilot-wire-order';
@@ -59,30 +59,42 @@ class splQivivoAPI {
         return json_decode($answer, true);
     }
 
-    public function getThermostatTemperature()
+    public function getThermostatInfos($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/temperature';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/info';
         $answer = $this->_request('GET', $url);
         return json_decode($answer, true);
     }
 
-    public function getThermostatHumidity()
+    public function getThermostatTemperature($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/humidity';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/temperature';
         $answer = $this->_request('GET', $url);
         return json_decode($answer, true);
     }
 
-    public function getThermostatPresence()
+    public function getThermostatHumidity($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/presence';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/humidity';
         $answer = $this->_request('GET', $url);
         return json_decode($answer, true);
     }
 
-    public function getThermostatPrograms()
+    public function getThermostatPresence($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/programs';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/presence';
+        $answer = $this->_request('GET', $url);
+        return json_decode($answer, true);
+    }
+
+    public function getThermostatPrograms($uuid=null)
+    {
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/programs';
         $answer = $this->_request('GET', $url);
         return json_decode($answer, true);
     }
@@ -110,18 +122,28 @@ class splQivivoAPI {
 
 
     //SET FUNCTIONS:
-    public function setAbsence($startDate, $EndDate)
+    public function setAbsence($startDate, $EndDate, $uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/absence';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/absence';
         $post = array('start_date'=> $startDate, 'end_date'=> $EndDate);
         $answer = $this->_request('POST', $url, json_encode($post));
         return json_decode($answer, true);
     }
 
-    public function cancelAbsence()
+    public function cancelAbsence($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/absence';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/absence';
         $answer = $this->_request('DELETE', $url);
+        return json_decode($answer, true);
+    }
+
+    public function setModuleProgram($uuid, $program)
+    {
+        $program = intval($program);
+        $url = $this->_apiRoot.'/devices/wireless-modules/'.$uuid.'/programs/'.$program.'/active';
+        $answer = $this->_request('PUT', $url);
         return json_decode($answer, true);
     }
 
@@ -144,52 +166,59 @@ class splQivivoAPI {
         return json_decode($answer, true);
     }
 
-    public function setThermostatTemperature($temperature, $minutes)
+    public function setThermostatTemperature($temperature, $minutes, $uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/temperature/temporary-instruction';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $temperature = floatval(number_format($temperature+0.01, 2, '.', '')); //add 0.01 so php can handle 0.00 as float!!
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/temperature/temporary-instruction';
         $post = array('temperature'=> $temperature, 'duration'=> $minutes);
         $answer = $this->_request('POST', $url, json_encode($post));
         return json_decode($answer, true);
     }
 
-    public function cancelThermostatTemperature()
+    public function cancelThermostatTemperature($uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/temperature/temporary-instruction';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/temperature/temporary-instruction';
         $answer = $this->_request('DELETE', $url);
         return json_decode($answer, true);
     }
 
-    public function createThermostatProgram($program)
+    public function createThermostatProgram($program, $uuid=null)
     {
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/programs';
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/programs';
         $answer = $this->_request('POST', $url, json_encode($program));
         return json_decode($answer, true);
     }
 
-    public function setActiveThermostatProgram($name)
+    public function setActiveThermostatProgram($name, $uuid=null)
     {
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
         $progID = $this->getProgramIDbyName($name);
 
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/programs/'.$progID.'/active';
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/programs/'.$progID.'/active';
         $answer = $this->_request('PUT', $url);
         return json_decode($answer, true);
     }
 
-    public function renameThermostatProgram($name, $newName)
+    public function renameThermostatProgram($name, $newName, $uuid=null)
     {
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
         $progID = $this->getProgramIDbyName($name);
 
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/programs/'.$progID.'/name';
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/programs/'.$progID.'/name';
         $post = array('new_name'=> $newName);
         $answer = $this->_request('PUT', $url, json_encode($post));
         return json_decode($answer, true);
     }
 
-    public function deleteThermostatProgram($name)
+    public function deleteThermostatProgram($name, $uuid=null)
     {
+        if (!$uuid) $uuid = $this->_thermostatsUUID[0];
         $progID = $this->getProgramIDbyName($name);
 
-        $url = $this->_apiRoot.'/devices/thermostats/'.$this->_thermostatUUID.'/programs/'.$progID ;
+        $url = $this->_apiRoot.'/devices/thermostats/'.$uuid.'/programs/'.$progID ;
         $answer = $this->_request('DELETE', $url);
         return json_decode($answer, true);
     }
@@ -214,11 +243,12 @@ class splQivivoAPI {
         $jsonAnswer = json_decode($answer, true);
 
         $this->_devices = $jsonAnswer['devices'];
+        $this->_thermostatsUUID = array();
         foreach ($this->_devices as $device)
         {
             if ($device['type'] == 'thermostat')
             {
-                $this->_thermostatUUID = $device['uuid'];
+                array_push($this->_thermostatsUUID, $device['uuid']);
             }
             if ($device['type'] == 'gateway')
             {
@@ -281,7 +311,7 @@ class splQivivoAPI {
     public $_grantType = 'client_credentials';
 
     public $_devices = null;
-    public $_thermostatUUID = null;
+    public $_thermostatsUUID = null;
     public $_gatewayUUID = null;
 
     public $_isMultizone = false;
