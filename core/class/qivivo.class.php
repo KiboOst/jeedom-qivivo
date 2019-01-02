@@ -259,7 +259,7 @@ class qivivo extends eqLogic {
                 {
                     $eqLogic->getCmd(null, 'duree_temp')->event(120);
 
-                    $thermostatInfos = $_qivivo->getThermostatInfos();
+                    $thermostatInfos = $_qivivo->getThermostatInfos($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatInfos: '.print_r($thermostatInfos, true));
                     $last_communication = $thermostatInfos['lastCommunicationDate'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
@@ -267,12 +267,12 @@ class qivivo extends eqLogic {
                     $firmware_version = $thermostatInfos['softwareVersion'];
                     $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
-                    $thermostatHumidity = $_qivivo->getThermostatHumidity();
+                    $thermostatHumidity = $_qivivo->getThermostatHumidity($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatHumidity: '.print_r($thermostatHumidity, true));
                     $humidity = $thermostatHumidity['humidity'];
                     $eqLogic->checkAndUpdateCmd('humidity', $humidity);
 
-                    $thermostatPresence = $_qivivo->getThermostatPresence();
+                    $thermostatPresence = $_qivivo->getThermostatPresence($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatPresence: '.print_r($thermostatPresence, true));
                     $Pres = $thermostatPresence['presence_detected'];
                     $presence = 0;
@@ -285,7 +285,7 @@ class qivivo extends eqLogic {
                     $lastP = date("d-m-Y H:i", strtotime($lastP));
                     $eqLogic->checkAndUpdateCmd('last_presence', $lastP);
 
-                    $thermostatTemperature = $_qivivo->getThermostatTemperature();
+                    $thermostatTemperature = $_qivivo->getThermostatTemperature($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatTemperature: '.print_r($thermostatTemperature, true));
                     $order = $thermostatTemperature['current_temperature_order'];
                     $temp = $thermostatTemperature['temperature'];
@@ -1338,7 +1338,7 @@ class qivivoCmd extends cmd {
                 $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
                 if ($_qivivo == False) return;
 
-                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120);
+                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
                 $eqLogic->checkAndUpdateCmd('temperature_order', $temp);
                 $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
@@ -1355,7 +1355,7 @@ class qivivoCmd extends cmd {
                 $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
                 if ($_qivivo == False) return;
 
-                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120);
+                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
                 $eqLogic->checkAndUpdateCmd('temperature_order', $temp);
                 $eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
@@ -1372,7 +1372,7 @@ class qivivoCmd extends cmd {
                 $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
                 if ($_qivivo == False) return;
 
-                $result = $_qivivo->setThermostatTemperature($order, $duree_temp);
+                $result = $_qivivo->setThermostatTemperature($order, $duree_temp, $_uuid);
                 $eqLogic->checkAndUpdateCmd('temperature_order', $order);
                 log::add('qivivo', 'debug', print_r($result, true));
 
@@ -1394,7 +1394,7 @@ class qivivoCmd extends cmd {
                 $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
                 if ($_qivivo == False) return;
 
-                $result = $_qivivo->cancelThermostatTemperature();
+                $result = $_qivivo->cancelThermostatTemperature($_uuid);
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
