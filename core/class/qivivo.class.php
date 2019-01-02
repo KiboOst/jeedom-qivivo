@@ -818,7 +818,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd = new qivivoCmd();
                 $qivivoCmd->setName(__('+1', __FILE__));
                 $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setDisplay('icon', '<i class="fas fa-chevron-up";></i>');
+                $qivivoCmd->setDisplay('icon', '<i class="fa fa-chevron-up";></i>');
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
@@ -833,7 +833,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd = new qivivoCmd();
                 $qivivoCmd->setName(__('-1', __FILE__));
                 $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setDisplay('icon', '<i class="fas fa-chevron-down"></i>');
+                $qivivoCmd->setDisplay('icon', '<i class="fa fa-chevron-down"></i>');
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
