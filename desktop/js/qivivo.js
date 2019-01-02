@@ -410,7 +410,7 @@ function addPeriod(dayDiv, time=null, periodMode=null){
             div += '<input class="timePicker form-control input-sm" type="text" value="'+time+'" style="width:50px; min-width:50px;" onchange="checkTimePicker(this)" title="Heure de début de période au format 00:00">'
 
 
-            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" onchange="definePeriodMode(this)" style="width:calc(100% - 83px);display:inline-block" title="Mode de chauffage">'
+            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" data-l2key="graphColor" onchange="definePeriodMode(this)" style="width:calc(100% - 83px);display:inline-block" title="Mode de chauffage">'
                 l = PROGRAM_MODE_LIST.length
                 for (var i = 0; i < l; i++) {
                     div += PROGRAM_MODE_LIST[i]
