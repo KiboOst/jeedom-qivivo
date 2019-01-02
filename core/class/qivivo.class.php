@@ -1233,7 +1233,7 @@ class qivivoCmd extends cmd {
                         break;
                 }
                 $message = 'set_order '.$eqLogic->getName().' to '.$modeString;
-                log::add('qivivo', 'debug', 'set_order '.$message);
+                log::add('qivivo', 'debug', $message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) return;
@@ -1250,14 +1250,14 @@ class qivivoCmd extends cmd {
                 if ($program == '') return;
 
                 $message = 'set_order '.$eqLogic->getName().' to '.$program;
-                log::add('qivivo', 'debug', 'set_program '.$message);
+                log::add('qivivo', 'debug', $message);
 
                 $program_name = $eqLogic->getConfiguration('program_name');
                 if ($eqLogic->getConfiguration('isModuleThermostat') == 0)
                 {
                     $mode_refs_array = ['Confort'=>'mz_comfort',
-                                        'Confort -1'=>'mz_comfort_minus_one',
-                                        'Confort -2'=>'mz_comfort_minus_two',
+                                        'Confort-1'=>'mz_comfort_minus_one',
+                                        'Confort-2'=>'mz_comfort_minus_two',
                                         'Eco'=>'mz_eco',
                                         'Hors-Gel'=>'mz_frost',
                                         'Arrêt'=>'mz_off'
