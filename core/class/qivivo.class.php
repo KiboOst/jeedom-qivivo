@@ -1179,6 +1179,17 @@ class qivivo extends eqLogic {
 
         return $html;
     }
+
+    public static function exportProgram($_name, $_program)
+    {
+        $folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
+        if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
+
+        $fileName = $_name.'.json';
+        log::add('qivivo', 'debug', '____exportProgram: '.$fileNam);
+        $file = fopen($folderPath.$fileName, 'w');
+        $res = fwrite($file, json_encode($_program));
+    }
 }
 
 class qivivoCmd extends cmd {

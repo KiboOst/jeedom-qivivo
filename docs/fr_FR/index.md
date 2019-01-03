@@ -84,7 +84,7 @@ Les modules de zone disposent également de leurs actions *SetMode* pour changer
 
 ## Programmes
 <p align="center">
-  <img src="../images/programmes.jpg" width="450">
+  <img src="../images/programmes_2.jpg" width="450">
 </p>
 
 Sur chaque module, y compris celui de la zone thermostat, vous trouverez un onglet *Programmes*. Vous pourrez y créer plusieurs programmes, pour pouvoir en changer, depuis le dashboard ou depuis un scénario.
@@ -92,6 +92,8 @@ Sur chaque module, y compris celui de la zone thermostat, vous trouverez un ongl
 > Sur chaque jour, vous pouvez bien sûr créer des périodes de chauffe, mais aussi copier un jour entier pour le coller ailleurs, y compris sur un autre programme.
 
 Une fois vos programmes crées et votre équipement sauvegardé, la liste de vos programmes apparaitra sur le widget de zone sur votre dashboard, et dans la liste proposée sur l'action *SetProgramme* dans vos scénarios.
+
+Vous pouvez également exporter chaque programme (un fichier json correspondant sera crée dans plugins/qivivo/exportedPrograms), pour pouvoir ensuite l'importer dans un autre programme.
 
 ## Equipements
 

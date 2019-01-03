@@ -17,6 +17,22 @@
 //reference module type for use in programs:
 JSONCLIPBOARD = null
 PROGRAM_MODE_LIST = null
+PROGRAM_OPTIONS_THERMOSTAT = ['<option class="select-mode-frost" value="Hors-Gel">Hors-Gel</option>',
+                                 '<option class="select-mode-abs" value="Absence">Absence</option>',
+                                 '<option class="select-mode-nuit" value="Nuit">Nuit</option>',
+                                 '<option class="select-mode-pres1" value="Pres 1">Pres 1</option>',
+                                 '<option class="select-mode-pres2" value="Pres 2">Pres 2</option>',
+                                 '<option class="select-mode-pres3" value="Pres 3">Pres 3</option>',
+                                 '<option class="select-mode-pres4" value="Pres 4">Pres 4</option>'
+                                 ]
+
+PROGRAM_OPTIONS_ZONE = ['<option class="select-mode-off" value="Arrêt">Arrêt</option>',
+                                 '<option class="select-mode-frost" value="Hors-Gel">Hors-Gel</option>',
+                                 '<option class="select-mode-eco" value="Eco">Eco</option>',
+                                 '<option class="select-mode-confort-2" value="Confort-2">Confort-2</option>',
+                                 '<option class="select-mode-confort-1" value="Confort-1">Confort-1</option>',
+                                 '<option class="select-mode-confort" value="Confort">Confort</option>'
+                                 ]
 //-->
 
 //show module image:
@@ -154,8 +170,8 @@ function addProgram(_program, _updateProgram) {
             div += '<div class="btn-group pull-right" role="group">'
             div += '<a class="btn btn-sm bt_removeProgram btn-primary"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>'
             div += '<a class="btn btn-sm bt_duplicateProgram btn-default"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>'
-            //div += '<a class="btn btn-sm bt_exportProgram btn-default"><i class="fa fa-sign-out"></i> {{Exporter}}</a>'
-            //div += '<a class="btn btn-sm bt_importProgram btn-default"><i class="fa fa-sign-in"></i> {{Importer}}</a>'
+            div += '<a class="btn btn-sm bt_exportProgram btn-default"><i class="fa fa-sign-out"></i> {{Exporter}}</a>'
+            div += '<a class="btn btn-sm bt_importProgram btn-default"><i class="fa fa-sign-in"></i> {{Importer}}</a>'
             div += '</div>'
         div += '</div>'
         div += '</div>'
@@ -270,16 +286,6 @@ $('body').off('click','.bt_copyDay').on('click','.bt_copyDay',  function () {
 $('body').off('click','.bt_pasteDay').on('click','.bt_pasteDay',  function () {
     dayDiv = $(this).closest('.weekDay')
     pasteDay(dayDiv)
-})
-
-$('#div_programs').off('click','.bt_exportProgram').on('click','.bt_exportProgram',  function () {
-    program = $(this).closest('.program')
-    exportProgram(program)
-})
-
-$('#div_programs').off('click','.bt_importProgram').on('click','.bt_importProgram',  function () {
-    program = $(this).closest('.program')
-    importProgram(program)
 })
 
 function definePeriodMode(selectObject){
@@ -462,15 +468,165 @@ function copyDay(day){
 function pasteDay(day){
     if (JSONCLIPBOARD == null) return
     clearDay(day)
-    JSONCLIPBOARD.data.forEach( function( item ) {
+    JSONCLIPBOARD.data.forEach(function(item) {
         addPeriod(day, item.period_start, item.temperature_setting)
-    });
+    })
     updateGraphDay(dayDiv)
 }
 
+$('#div_programs').off('click','.bt_exportProgram').on('click','.bt_exportProgram',  function () {
+    program = $(this).closest('.program')
+    exportProgram(program)
+})
+
+function exportProgram(_program) {
+    _uuid = $('.eqLogicAttr[data-l1key=configuration][data-l2key=uuid]').html()
+    _thisProgram = {}
+    _thisProgram.name = _program.find('.name').html()
+    _thisProgram.origin = _uuid
+
+    if ($('#div_programs').hasClass('isThermostat')) _thisProgram.isThermostat = 1
+    else _thisProgram.isThermostat = 0
+
+    days = []
+    _program.find('.weekDay').each(function () {
+        day = {}
+        day.name = $(this).find('.dayName').html()
+        //get each period:
+        periods = []
+        $(this).find('.dayPeriod').each(function () {
+            period = {}
+            period_start = $(this).find('.timePicker').val()
+            temperature_setting = $(this).find('.selectPeriodMode :selected').text()
+            periods.push({'period_start':period_start, 'temperature_setting':temperature_setting})
+        })
+        day.periods = periods
+        days.push(day)
+    })
+    _thisProgram.days = days
+
+    bootbox.prompt({
+        title: '<i class="fa fa-download"></i> {{Export program}}',
+        inputType: 'text',
+        buttons: {
+            confirm: {label: '{{Export}}', className: 'btn-success'},
+            cancel: {label: '{{Cancel}}', className: 'btn-danger'}
+        },
+        callback: function (result) {
+            if (result !== null && result != '') {
+                $.ajax({
+                    type: "POST",
+                    url: "plugins/qivivo/core/ajax/qivivo.ajax.php",
+                    data: {
+                        action: "exportProgram",
+                        name: result,
+                        program: _thisProgram
+                    },
+                    dataType: 'json',
+                    global: false,
+                    error: function (request, status, error) {handleAjaxError(request, status, error)},
+                    success: function (data) {
+                        if (data.state != 'ok') {
+                            $('#div_alert').showAlert({
+                                message: data.result,
+                                level: 'danger'
+                            })
+                            return
+                        }
+                        $('#div_alert').showAlert({
+                            message: '{{Successfully exported!}}',
+                            level: 'success'
+                        })
+                    }
+                })
+            } else if (result = '') {
+                $('#div_alert').showAlert({
+                    message: '{{Please specify a name!}}',
+                    level: 'warning'
+                })
+            }
+        }
+    })
+}
+
+$('#div_programs').off('click','.bt_importProgram').on('click','.bt_importProgram',  function () {
+    program = $(this).closest('.program')
+    importProgram(program)
+})
+
+function importProgram(_program) {
+    if ($('#div_programs').hasClass('isThermostat')) isThermostat = 1
+    else isThermostat = 0
+    _importProgramTo = _program.find('.name').html()
+    $('#md_modal').dialog({title: "{{Importation de programme}}"});
+    $('#md_modal').load('index.php?v=d&plugin=qivivo&modal=importProgram&isThermostat=' + isThermostat + '&programName=' + _importProgramTo).dialog('open');
+}
+
+$('.bt_importProgram').on('click',function(){ //called from modal!
+    _filename = $(this).attr("filename")
+    programFilePath = "/plugins/qivivo/exportedPrograms/" + _filename
+    $.getJSON(programFilePath, function(data)
+    {
+        jsonDatas = data
+        PROGRAM_MODE_LIST = []
+        isModuleThermostat = jsonDatas.isThermostat
+        if (isModuleThermostat == 1) PROGRAM_MODE_LIST = PROGRAM_OPTIONS_THERMOSTAT
+        else PROGRAM_MODE_LIST = PROGRAM_OPTIONS_ZONE
+        $('#div_programs .program').each(function () {
+            programName = $(this).find('.name').html()
+            if (programName != importProgramTo_) return
+            divDays = $(this).find(".div_programDays")
+            divDays.find('.weekDay').each(function () {
+                clearDay($(this))
+                dayElName = $(this).find('.dayName').html()
+                for (j in jsonDatas.days) {
+                    day = jsonDatas.days[j]
+                    dayName = day.name
+                    if (dayName == dayElName){
+                        periods = day.periods
+                        for (k in periods) {
+                            period = periods[k]
+                            addPeriod($(this), period.period_start, period.temperature_setting)
+                        }
+                    }
+                }
+            })
+        })
+    });
+    $('#md_modal').dialog("close")
+})
+
+$('.bt_deleteProgram').on('click',function(){ //called from modal!
+    _mayDeleteProgramDiv = $(this).closest(".mayImportProgram")
+    _filename = $(this).closest(".bt_deleteProgram").attr("filename")
+    bootbox.confirm({
+        message: "Voulez vous vraiment supprimer ce fichier de programme ?",
+        buttons: {
+            confirm: {label: 'Yes', className: 'btn-success'},
+            cancel: {label: 'No', className: 'btn-danger'}
+        },
+        callback: function (result) {
+            if (result === true) {
+                $.ajax({
+                    type: "POST",
+                    url: "plugins/qivivo/core/ajax/qivivo.ajax.php",
+                    data: { action: "deleteProgramFile", fileName: _filename},
+                    dataType: 'json',
+                    error: function (request, status, error) {
+                        handleAjaxError(request, status, error)
+                    },
+                    success: function (data) {
+                        if (data.state == 'ok') {
+                            _mayDeleteProgramDiv.remove()
+                        }
+                    }
+                })
+            }
+        }
+    })
+})
 
 //Standard
-
 $("#div_programs").sortable({axis: "y", cursor: "move", items: ".program", handle: ".panel-heading", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true})
 
 function printEqLogic(_eqLogic) {
@@ -481,23 +637,12 @@ function printEqLogic(_eqLogic) {
     PROGRAM_MODE_LIST = []
     isModuleThermostat = _eqLogic.configuration.isModuleThermostat
     if (isModuleThermostat == 1) {
-        PROGRAM_MODE_LIST = ['<option class="select-mode-frost" value="Hors-Gel">Hors-Gel</option>',
-                             '<option class="select-mode-abs" value="Absence">Absence</option>',
-                             '<option class="select-mode-nuit" value="Nuit">Nuit</option>',
-                             '<option class="select-mode-pres1" value="Pres 1">Pres 1</option>',
-                             '<option class="select-mode-pres2" value="Pres 2">Pres 2</option>',
-                             '<option class="select-mode-pres3" value="Pres 3">Pres 3</option>',
-                             '<option class="select-mode-pres4" value="Pres 4">Pres 4</option>'
-                             ]
+        $('#div_programs').addClass('isThermostat')
+        PROGRAM_MODE_LIST = PROGRAM_OPTIONS_THERMOSTAT
     }
     else {
-        PROGRAM_MODE_LIST = ['<option class="select-mode-off" value="Arrêt">Arrêt</option>',
-                             '<option class="select-mode-frost" value="Hors-Gel">Hors-Gel</option>',
-                             '<option class="select-mode-eco" value="Eco">Eco</option>',
-                             '<option class="select-mode-confort-2" value="Confort-2">Confort-2</option>',
-                             '<option class="select-mode-confort-1" value="Confort-1">Confort-1</option>',
-                             '<option class="select-mode-confort" value="Confort">Confort</option>'
-                             ]
+        $('#div_programs').addClass('isNotThermostat')
+        PROGRAM_MODE_LIST = PROGRAM_OPTIONS_ZONE
     }
 
     if (isset(_eqLogic.configuration) && isset(_eqLogic.configuration.programs)) {
@@ -553,22 +698,6 @@ function saveEqLogic(_eqLogic) {
     })
     return _eqLogic
 }
-
-function importProgram(_program) {
-    console.log('importProgram')
-}
-
-function exportProgram(_program) {
-    console.log('exportProgram')
-    _program.find('.weekDay').each(function () {
-        day.name = $(this).find('.dayName').html()
-        console.log(day.name)
-    })
-}
-
-
-
-
 
 //Commandes:
 function addCmdToTable(_cmd) {
