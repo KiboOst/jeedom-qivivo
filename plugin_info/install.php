@@ -23,8 +23,8 @@ function qivivo_install() {
 	config::save('functionality::cron15::enable', 1, 'qivivo');
 
 	//import-export:
-	$folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
-    if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
+	$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
+	if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 }
 
 function qivivo_update() {
@@ -75,8 +75,8 @@ function qivivo_update() {
 	}
 
 	//import-export:
-	$folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
-    if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
+	$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
+	if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 
 }
 
