@@ -101,6 +101,19 @@ try {
         ajax::success();
     }
 
+    if (init('action') == 'exportProgram') {
+        qivivo::exportProgram(init('name'), init('program'));
+        ajax::success();
+    }
+
+    if (init('action') == 'deleteProgramFile') {
+        $folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
+        $fileName = init('fileName');
+        log::add('qivivo', 'debug', 'ajax deleteProgramFile: '.$folderPath.$fileName);
+        @unlink($folderPath.$fileName);
+        ajax::success();
+    }
+
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
