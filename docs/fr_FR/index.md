@@ -91,6 +91,8 @@ Sur chaque module, y compris celui de la zone thermostat, vous trouverez un ongl
 
 > Sur chaque jour, vous pouvez bien sûr créer des périodes de chauffe, mais aussi copier un jour entier pour le coller ailleurs, y compris sur un autre programme.
 
+Une fois vos programmes crées et votre équipement sauvegardé, la liste de vos programmes apparaitra sur le widget de zone sur votre dashboard, et dans la liste proposée sur l'action *SetProgramme* dans vos scénarios.
+
 ## Equipements
 
 ### Thermostat
@@ -169,10 +171,11 @@ Toutefois, l'actualisation des données sur les serveurs Qivivo se faisant toute
 ### Eté / Hiver
 
 A l'arrêt du chauffage, vous pouvez basculer le plugin en cron15 (voir même désactiver les cron) par un scénario, avec un bloc code:
-'''
+
+```
 config::save('functionality::cron5::enable', 0, 'qivivo');
 config::save('functionality::cron15::enable', 1, 'qivivo');
-'''
+```
 
 Personnellement, j'ai un programme *Off* sur chaque zone, en Arrêt et Hors-Gel. Avec un *Mode* je passe la maison en *Travail*, *Vacances* ou *Absence*, qui ajuste le programme de chauffage en fonction. J'ai ensuite deux variables pour les dates de début et fin de chauffage, et en fonction, un scénario change le programme en *Off*, change le cron du plugin, et affiche ou masque les équipements sur le dashboard.
 
