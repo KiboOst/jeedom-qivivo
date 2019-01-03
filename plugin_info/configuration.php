@@ -27,25 +27,25 @@ if (!isConnect()) {
 <fieldset>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Login}}</label>
-        <div class="col-sm-3">
+        <div class="col-sm-10">
             <input type="text" class="configKey form-control" data-l1key="login" placeholder="Account login"/>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Password}}</label>
-        <div class="col-sm-3">
+        <div class="col-sm-10">
             <input type="text" class="configKey form-control" data-l1key="pass" placeholder="Account password"/>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Client ID}}</label>
-        <div class="col-sm-3">
+        <div class="col-sm-10">
             <input type="text" class="configKey form-control" data-l1key="client_id" placeholder="Client ID"/>
         </div>
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Client secret}}</label>
-        <div class="col-sm-3">
+        <div class="col-sm-10">
             <input type="text" class="configKey form-control" data-l1key="client_secret" placeholder="Client Secret"/>
         </div>
     </div>
