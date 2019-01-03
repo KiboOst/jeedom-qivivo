@@ -7,6 +7,9 @@
 
 Remarque : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
+### 03/01/2019 (beta)
+- Fonction d'import / export de programme
+
 ### 31/12/2018 (beta)
 - Gestion d'erreurs API
   - Configuration *Répéter l'action*
