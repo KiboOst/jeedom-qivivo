@@ -21,6 +21,10 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 function qivivo_install() {
 	config::save('functionality::cron5::enable', 0, 'qivivo');
 	config::save('functionality::cron15::enable', 1, 'qivivo');
+
+	//import-export:
+	$folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
+    if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 }
 
 function qivivo_update() {
@@ -69,6 +73,10 @@ function qivivo_update() {
 		updateLogicalId($eqLogic, 'SetTempPres3', 'set_presence_temperature_3');
 		updateLogicalId($eqLogic, 'SetTempPres4', 'set_presence_temperature_4');
 	}
+
+	//import-export:
+	$folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
+    if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 
 }
 
