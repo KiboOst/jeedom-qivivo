@@ -39,10 +39,10 @@ if (!isConnect('admin')) {
             $div .= '<div class="col-sm-2">';
                 $div .= '<label>Origine</label>';
             $div .= '</div>';
-            $div .= '<div class="col-sm-2">';
+            $div .= '<div class="col-sm-1">';
                 $div .= '<label>Programme</label>';
             $div .= '</div>';
-            $div .= '<div class="col-sm-2">';
+            $div .= '<div class="col-sm-3">';
                 $div .= '<label>Fonctions</label>';
             $div .= '</div>';
         $div .= '</div>';
@@ -63,6 +63,8 @@ if (!isConnect('admin')) {
         if (is_object($eqLogic)) $origin = $eqLogic->getName();
 
         $_name = $_json->name;
+        $downloadlink = str_replace('/var/www/html', '', $folderPath).$fileName;
+        $downloadlink = '../../plugins/qivivo/exportedPrograms/'.$fileName;
 
         $div = '<div class="mayImportProgram col-sm-12" style="display:;padding-top:5px">';
             $div .= '<div class="form-group">';
@@ -75,15 +77,17 @@ if (!isConnect('admin')) {
                 $div .= '<div class="col-sm-2">';
                     $div .= '<label>'.$origin.'</label>';
                 $div .= '</div>';
-                $div .= '<div class="col-sm-2">';
+                $div .= '<div class="col-sm-1">';
                     $div .= '<label>'.$_name.'</label>';
                 $div .= '</div>';
-                $div .= '<div class="col-sm-2">';
+                $div .= '<div class="col-sm-3">';
                 if (intval($_isImporterThermostat) == intval($isThermostat)) {
                     $div .= '<a class="btn btn-success bt_importProgram" filename="'.$fileName.'"><i class="fa fa-plus-circle"></i> {{Importer}}</a>';
                 }   else {
                     $div .= '<a disabled class="btn btn-success bt_importProgram" filename="'.$fileName.'"><i class="fa fa-plus-circle"></i> {{Importer}}</a>';
                 }
+                    $div .= '  ';
+                    $div .= '<a class="btn btn-success bt_downloadProgram" filename="'.$fileName.'"><i class="fa fa-download"></i></a>';
                     $div .= '  ';
                     $div .= '<a class="btn btn-success bt_deleteProgram" filename="'.$fileName.'"><i class="fa divers-slightly"></i></a>';
                 $div .= '</div>';
