@@ -248,11 +248,11 @@ class qivivo extends eqLogic {
                     $gatewayInfos = $_qivivo->getGatewayInfos();
                     log::add('qivivo', 'debug', 'getGatewayInfos: '.print_r($gatewayInfos, true));
                     $firmware_version = $gatewayInfos['softwareVersion'];
-                    $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                    if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
                     $last_communication = $gatewayInfos['lastCommunicationDate'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                    if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                 }
 
                 if ($_type == 'thermostat')
@@ -263,38 +263,38 @@ class qivivo extends eqLogic {
                     log::add('qivivo', 'debug', 'getThermostatInfos: '.print_r($thermostatInfos, true));
                     $last_communication = $thermostatInfos['lastCommunicationDate'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                    if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                     $firmware_version = $thermostatInfos['softwareVersion'];
-                    $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                    if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
                     $thermostatHumidity = $_qivivo->getThermostatHumidity($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatHumidity: '.print_r($thermostatHumidity, true));
                     $humidity = $thermostatHumidity['humidity'];
-                    $eqLogic->checkAndUpdateCmd('humidity', $humidity);
+                    if (!is_null($humidity)) $eqLogic->checkAndUpdateCmd('humidity', $humidity);
 
                     $thermostatPresence = $_qivivo->getThermostatPresence($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatPresence: '.print_r($thermostatPresence, true));
                     $Pres = $thermostatPresence['presence_detected'];
                     $presence = 0;
                     if ($Pres) $presence = 1;
-                    $eqLogic->checkAndUpdateCmd('presence', $presence);
+                    if (!is_null($presence)) $eqLogic->checkAndUpdateCmd('presence', $presence);
 
                     $lastPresence = $_qivivo->getLastPresence();
                     log::add('qivivo', 'debug', 'getLastPresence: '.print_r($lastPresence, true));
                     $lastP = $lastPresence['last_presence_recorded_time'];
                     $lastP = date("d-m-Y H:i", strtotime($lastP));
-                    $eqLogic->checkAndUpdateCmd('last_presence', $lastP);
+                    if (!is_null($lastP)) $eqLogic->checkAndUpdateCmd('last_presence', $lastP);
 
                     $thermostatTemperature = $_qivivo->getThermostatTemperature($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatTemperature: '.print_r($thermostatTemperature, true));
                     $order = $thermostatTemperature['current_temperature_order'];
                     $temp = $thermostatTemperature['temperature'];
-                    $eqLogic->checkAndUpdateCmd('temperature_order', (round($order * 2)/2));
-                    $eqLogic->checkAndUpdateCmd('temperature', $temp);
+                    if (!is_null($order)) $eqLogic->checkAndUpdateCmd('temperature_order', (round($order * 2)/2));
+                    if (!is_null($temp)) $eqLogic->checkAndUpdateCmd('temperature', $temp);
 
                     $heating = 0;
                     if ($temp < $order) $heating = $order;
-                    $eqLogic->checkAndUpdateCmd('heating', $heating);
+                    if (!is_null($heating)) $eqLogic->checkAndUpdateCmd('heating', $heating);
 
                     $settings = $_qivivo->getSettings();
                     log::add('qivivo', 'debug', 'getSettings: '.print_r($settings, true));
@@ -315,11 +315,11 @@ class qivivo extends eqLogic {
                     log::add('qivivo', 'debug', 'getModuleInfos: '.print_r($moduleInfos, true));
 
                     $firmware_version = $moduleInfos['softwareVersion'];
-                    $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                    if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
                     $last_communication = $moduleInfos['lastCommunicationDate'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                    if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
 
                     $order = $moduleOrder['current_pilot_wire_order'];
                     $order_num = 0;
@@ -356,8 +356,8 @@ class qivivo extends eqLogic {
                     if ($order == 'monozone') $eqLogic->setConfiguration('isModuleThermostat', 1);
                     else $eqLogic->setConfiguration('isModuleThermostat', 0);
 
-                    $eqLogic->checkAndUpdateCmd('module_order', $order);
-                    $eqLogic->checkAndUpdateCmd('order_num', $order_num);
+                    if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
+                    if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
                 }
                 $eqLogic->save();
                 $eqLogic->refreshWidget();
@@ -376,6 +376,8 @@ class qivivo extends eqLogic {
 
     public static function cron15($_eqlogic_id = null) {
         log::add('qivivo', 'debug', '___cron15()');
+
+        //no both cron5 and cron15 enabled:
         if (config::byKey('functionality::cron5::enable', 'qivivo', 0) == 1)
         {
             config::save('functionality::cron15::enable', 0, 'qivivo');
