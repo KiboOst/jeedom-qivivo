@@ -635,6 +635,8 @@ function printEqLogic(_eqLogic) {
 
     //possible modes if thermostat zone module:
     PROGRAM_MODE_LIST = []
+    $('#div_programs').removeClass('isThermostat')
+    $('#div_programs').removeClass('isNotThermostat')
     isModuleThermostat = _eqLogic.configuration.isModuleThermostat
     if (isModuleThermostat == 1) {
         $('#div_programs').addClass('isThermostat')
