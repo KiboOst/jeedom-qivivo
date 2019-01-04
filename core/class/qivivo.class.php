@@ -1185,7 +1185,8 @@ class qivivo extends eqLogic {
         $folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
         if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 
-        $fileName = $_name.'.json';
+        $now = date("dmY_His");
+        $fileName = $now.'_'.$_name.'.json';
         log::add('qivivo', 'debug', '____exportProgram: '.$fileNam);
         $file = fopen($folderPath.$fileName, 'w');
         $res = fwrite($file, json_encode($_program));
@@ -1350,8 +1351,8 @@ class qivivoCmd extends cmd {
                 if ($_qivivo == False) return;
 
                 $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
-                $eqLogic->checkAndUpdateCmd('temperature_order', $temp);
-                $eqLogic->refreshWidget();
+                //$eqLogic->checkAndUpdateCmd('temperature_order', $temp);
+                //$eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
@@ -1367,8 +1368,8 @@ class qivivoCmd extends cmd {
                 if ($_qivivo == False) return;
 
                 $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
-                $eqLogic->checkAndUpdateCmd('temperature_order', $temp);
-                $eqLogic->refreshWidget();
+                //$eqLogic->checkAndUpdateCmd('temperature_order', $temp);
+                //$eqLogic->refreshWidget();
                 log::add('qivivo', 'debug', print_r($result, true));
                 return;
             }
@@ -1384,17 +1385,18 @@ class qivivoCmd extends cmd {
                 if ($_qivivo == False) return;
 
                 $result = $_qivivo->setThermostatTemperature($order, $duree_temp, $_uuid);
-                $eqLogic->checkAndUpdateCmd('temperature_order', $order);
                 log::add('qivivo', 'debug', print_r($result, true));
 
+                /*
                 //update heating ?
+                $eqLogic->checkAndUpdateCmd('temperature_order', $order);
                 $temp = $eqLogic->getCmd(null, 'temperature')->execCmd();
                 $heating = $eqLogic->getCmd(null, 'heating')->execCmd();
                 $newHeating = 0;
                 if ($temp < $order) $newHeating = $order;
                 if ($newHeating != $heating) $eqLogic->checkAndUpdateCmd('heating', $newHeating);
-
                 $eqLogic->refreshWidget();
+                */
                 return;
             }
 
