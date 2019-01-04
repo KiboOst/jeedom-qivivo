@@ -1,3 +1,4 @@
+
 <img align="right" src="/plugin_info/qivivo_icon.png" width="150">
 
 # Qivivo - Plugin pour Jeedom
@@ -58,6 +59,9 @@ Vous pouvez ainsi visualiser:
 - L'ordre en cours par zone
 - Le programme en cours par zone
 - La date de dernière communication du module avec les serveurs Qivivo
+
+> Quand vous changez la consigne du thermostat, l'affichage change sur le dashboard. Toutefois, la commande info de consigne n'est volontairement pas mise à jour. En effet, les programmes temporaires ne sont pas pris en compte immédiatement par Qivivo, cela peu prendre entre 1 et 5mins. De cette façon, l'historique de la consigne enregistrera les vraies valeurs de consigne du thermostat et sera mise à jour lors de la prise en compte par celui-ci. 
+> Idéalement, il faudrait pouvoir savoir si un programme temporaire est en cours, mais l'API Qivivo ne remonte pas cette info. A voir dans le futur.
 
 Vous pouvez également:
 
