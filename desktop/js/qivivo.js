@@ -626,6 +626,21 @@ $('.bt_deleteProgram').on('click',function(){ //called from modal!
     })
 })
 
+$('.bt_downloadProgram').on('click',function(){ //called from modal!
+    _filename = $(this).attr("filename")
+    programFilePath = "/plugins/qivivo/exportedPrograms/" + _filename
+    $.getJSON(programFilePath, function(data)
+    {
+        dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data))
+        downloadAnchorNode = document.createElement('a')
+        downloadAnchorNode.setAttribute("href",     dataStr)
+        downloadAnchorNode.setAttribute("download", _filename)
+        document.body.appendChild(downloadAnchorNode)
+        downloadAnchorNode.click()
+        downloadAnchorNode.remove()
+    })
+})
+
 //Standard
 $("#div_programs").sortable({axis: "y", cursor: "move", items: ".program", handle: ".panel-heading", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true})
 
