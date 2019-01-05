@@ -7,6 +7,11 @@
 
 Remarque : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
+### 05/01/2019 Version Stable !
+- Amélioration des widgets
+- Widgets *flat-design* sur les design sous iOS
+- Ajout de la fonction *télécharger* dans la fenêtre d'import de programmes
+
 ### 04/01/2019 (beta)
 - Export programme: date en début de nom de fichier pour éviter les doublons
 - Les commandes du thermostat n'update plus l'info consigne (voir doc)
