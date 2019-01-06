@@ -154,6 +154,7 @@ Exemple:
 ### Fonctionnement
 - L'ensemble des fonctions du thermostat (changement de consigne, récupération des informations) repose sur l'API Qivivo.
 - L'API Qivivo ne gérant pas encore le multi-zone, toutes les fonctions de changement d'ordre et de programme par zone/module repose sur une [API développée début 2018](https://github.com/KiboOst/php-qivivoAPI).
+- Ce plugin n'utilise aucune dépendances et n'installe donc rien sur votre système en dehors de ses propres fichiers dans html/plugins/qivivo.
 
 *Le but à terme est de basculer entièrement sur l'API officielle, quand celle-ci proposera l'ensemble des fonctions dont le plugin a besoin.*
 
@@ -184,6 +185,13 @@ config::save('functionality::cron15::enable', 1, 'qivivo');
 ```
 
 Personnellement, j'ai un programme *Off* sur chaque zone, en Arrêt et Hors-Gel. Avec un *Mode* je passe la maison en *Travail*, *Vacances* ou *Absence*, qui ajuste le programme de chauffage en fonction. J'ai ensuite deux variables pour les dates de début et fin de chauffage, et en fonction, un scénario change le programme en *Off*, change le cron du plugin, et affiche ou masque les équipements sur le dashboard.
+
+### Debug
+
+Si vous rencontrez des problèmes, l'équipement *passerelle* possède une commande *debug*. Vous pouvez cliquer sur *Tester*, ce qui générera un log qivivo_debug. Vous pouvez envoyer à kiboost->free.fr (ou mp sur le forum Jeedom) avec:
+- La description du problème.
+- Une description de votre installation Qivivo avec si possible des screens du site Qivivo.
+- Si vous êtes familier du plugin outildev, pour pouvoir vous envoyer des correctifs de test.
 
 
 ## Changelog
