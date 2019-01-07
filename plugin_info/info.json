@@ -9,8 +9,8 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://github.com/KiboOst/jeedom-qivivo/blob/master/docs/fr_FR/changelog.md",
-	"documentation" : "https://github.com/KiboOst/jeedom-qivivo/blob/master/docs/fr_FR/index.md",
+	"changelog" : "https://kiboost.github.io/jeedom-qivivo/docs/fr_FR/changelog.html",
+	"documentation" : "https://kiboost.github.io/jeedom-qivivo/docs/fr_FR/",
 	"language" : ["fr_FR"],
 	"compatibility" : ["miniplus","smart","rpi","docker","diy"],
 	"link" : {
