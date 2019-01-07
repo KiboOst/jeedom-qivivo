@@ -3,7 +3,7 @@
 
 # Qivivo - Plugin pour Jeedom
 
-Intégration du Thermostat Qivivo.
+Intégration du Thermostat [Qivivo.](https://www.qivivo.com/fr/)
 
 [Pré-requis](#pré-requis)<br />
 [Configuration](#configuration)<br />
@@ -32,7 +32,7 @@ Après installation, activez le plugin. Il apparaitra alors dans le menu *Plugin
 </p>
 
 Ceci aura pour effet d'installer votre thermostat, la passerelle (qui n'a ici aucune fonction), et vos modules fil-pilote, nommés par zone.
-Il ne reste qu'à rafraichir la page du plugin (F5) !
+Il ne vous reste qu'à rafraichir la page du plugin (F5) !
 
 <p align="center">
   <img src="../images/plugin.jpg" width="550">
@@ -41,7 +41,7 @@ Il ne reste qu'à rafraichir la page du plugin (F5) !
 
 ## Utilisation
 
-Renseignez pour chaque module, son nom et son Objet parent si nécessaire. Ils apparaitrons ainsi au bon endroit sur votre dashboard.
+Renseignez pour chaque module, son nom et son Objet parent si nécessaire. Ils apparaitront ainsi au bon endroit sur votre dashboard.
 
 ### Dashboard
 Voici un exemple sur le dashboard:
@@ -95,9 +95,9 @@ Sur chaque module, y compris celui de la zone thermostat, vous trouverez un ongl
 
 > Sur chaque jour, vous pouvez bien sûr créer des périodes de chauffe, mais aussi copier un jour entier pour le coller ailleurs, y compris sur un autre programme.
 
-Une fois vos programmes crées et votre équipement sauvegardé, la liste de vos programmes apparaitra sur le widget de zone sur votre dashboard, et dans la liste proposée sur l'action *SetProgramme* dans vos scénarios.
+Une fois vos programmes créés et votre équipement sauvegardé, la liste de vos programmes apparaitra sur la tuile de cette zone sur votre dashboard, et dans la liste proposée sur l'action *SetProgramme* dans vos scénarios.
 
-Vous pouvez également exporter chaque programme (un fichier json correspondant sera crée dans plugins/qivivo/exportedPrograms), pour pouvoir ensuite l'importer dans un autre programme.
+Vous pouvez également exporter chaque programme (un fichier json correspondant sera créé dans plugins/qivivo/exportedPrograms), pour pouvoir ensuite l'importer dans un autre programme.
 
 ## Equipements
 
@@ -163,7 +163,7 @@ Il peux arriver que les serveurs de Qivivo ne répondent pas:
 
 Lors d'un rafraichissement des informations, si l'appel à l'API Qivivo échoue trois fois de suite, un log d'erreur sera créé.
 
-Lorsque vous passez une commande (une action), par un widget ou un scénario, un échec peut-être très embêtant. Si vous quittez la maison pendant une semaine et qu'un scénario passe votre Qivivo en programme absence, le risque est que le chauffage reste allumé toute la semaine.
+Lorsque vous passez une commande (une action), par le dashboard ou un scénario, un échec peut-être très embêtant. Si vous quittez la maison pendant une semaine et qu'un scénario passe votre Qivivo en programme absence, le risque est que le chauffage reste allumé toute la semaine.
 
 Dans ce cas, vous avez deux possibilités, dans la configuration du plugin:
 
@@ -188,10 +188,11 @@ Personnellement, j'ai un programme *Off* sur chaque zone, en Arrêt et Hors-Gel.
 
 ### Debug
 
-Si vous rencontrez des problèmes, l'équipement *passerelle* possède une commande *debug*. Vous pouvez cliquer sur *Tester*, ce qui générera un log qivivo_debug. Vous pouvez envoyer à kiboost->free.fr (ou mp sur le forum Jeedom) avec:
+Si vous rencontrez des problèmes, l'équipement *passerelle* possède une commande *debug*. Vous pouvez cliquer sur *Tester*, ce qui générera un log qivivo_debug. Vous pouvez l'envoyer à kiboost->free.fr (ou mp sur le forum Jeedom) avec:
 - La description du problème.
 - Une description de votre installation Qivivo avec si possible des screens du site Qivivo.
-- Si vous êtes familier du plugin outildev, pour pouvoir vous envoyer des correctifs de test.
+- Si vous êtes familier ou non du plugin outildev, pour pouvoir vous envoyer des correctifs de test plus facilement.
+- Si vous avez accès aux plugins beta.
 
 
 ## Changelog
