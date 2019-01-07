@@ -1,5 +1,5 @@
 
-<img align="right" src="/plugin_info/qivivo_icon.png" width="150">
+<img align="right" src="../../plugin_info/qivivo_icon.png" width="150">
 
 # Qivivo - Plugin pour Jeedom
 
