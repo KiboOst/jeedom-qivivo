@@ -1,3 +1,50 @@
+<style type="text/css">
+  .qivivo-dropdown {
+    position: relative;
+    display: inline-block;
+    font-size:1.1em;
+    font-weight: bold;
+    width: 100%;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.2);
+  }
+
+  .qivivo-dropdown select {
+    border: 0;
+    text-overflow: '';
+    border: none;
+    background-color: #background-color#;
+    color:#color#; width: 85%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent !important;
+  }
+
+  .qivivo-dropdown::before,
+  .qivivo-dropdown::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .qivivo-dropdown::after { /*  Custom dropdown arrow */
+    content: "\25BC";
+    height: 2em;
+    font-size: .9em;
+    line-height: 1em;
+    right: 0.5em;
+    top: 15%;
+  }
+
+  .qivivo-dropdown select option {
+    margin: 40px;
+    background-color: #f7f7f7 !important;;
+    color: #4b4b4b !important;
+    border: none !important;
+  }
+</style>
+
+
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
       style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
@@ -9,16 +56,19 @@
   <center>
     </br>
     <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_order_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:90%;" title="#order_collectDate#">
-        <i class="divers-thermometer31"></i>
-        <strong><select class="selectCmd cursor" style="border:none; background-color:#background-color#; color:#color#; width: 85%;" data-l2key="graphColor">#set_order_listValue#</select></strong>
-    </br>
+        <span class="qivivo-dropdown">
+          <i class="divers-thermometer31"></i>
+          <select class="qivivoselect cursor" data-l2key="graphColor">#set_order_listValue#</select>
+        </span>
     <hr style="height:7px; visibility:hidden; padding:0; margin:0">
     </div>
 
     <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:90%;" title="#program_collectDate#">
-        <i class="divers-today1"></i>
-        <strong><select class="selectCmd cursor" style="border:none; background-color:#background-color#; color:#color#; width: 85%;" data-l2key="graphColor">#set_program_listValue#</select></strong>
-    </br></br>
+        <span class="qivivo-dropdown">
+          <i class="divers-today1"></i>
+          <select class="qivivoselect cursor" data-l2key="graphColor">#set_program_listValue#</select>
+        </span>
+    <hr style="height:7px; visibility:hidden; padding:0; margin:0">
     </div>
 
     <div class="#last_communication_history#" data-cmd_id="#last_communication_id#">
@@ -33,11 +83,11 @@
         jeedom.cmd.execute({id: '#refresh_id#'});
       })
 
-    $(".cmd[data-cmd_id=#set_order_id#] .selectCmd").on('change', function () {
+    $(".cmd[data-cmd_id=#set_order_id#] .qivivoselect").on('change', function () {
       jeedom.cmd.execute({id: '#set_order_id#', value: {select: $(this).value()}});
     })
 
-    $(".cmd[data-cmd_id=#set_program_id#] .selectCmd").on('change', function () {
+    $(".cmd[data-cmd_id=#set_program_id#] .qivivoselect").on('change', function () {
       jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}});
     })
   </script>
