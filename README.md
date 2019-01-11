@@ -4,8 +4,8 @@
 
 Intégration du Thermostat Qivivo
 
-*[Documentation](/docs/fr_FR/index.md)*
+*[Documentation](https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/)*
 
-*[changelog](/docs/fr_FR/changelog.md)*
+*[changelog](https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/changelog.html)*
 
 
