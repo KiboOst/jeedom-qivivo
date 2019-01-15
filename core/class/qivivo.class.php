@@ -1031,6 +1031,8 @@ class qivivo extends eqLogic {
         $_thisType = $this->getConfiguration('type');
         //log::add('qivivo', 'debug', 'toHtml version: '.$_version.' alias: '.$version);
 
+        $replace['#category#'] = $this->getPrimaryCategory();
+
         if ($_thisType == 'Thermostat')
         {
             $refresh = $this->getCmd(null, 'refresh');
