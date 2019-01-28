@@ -1,40 +1,40 @@
 <div class="eqLogic eqLogic-widget"
-      style="min-height:150px !important; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
+      style="position: relative; min-height:150px !important; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
   <span class="statusCmd" style="position : absolute;left : 5px; width : 30px;z-index: 1030;"></span>
   <i class='fa fa-refresh pull-right cursor refresh' style="margin-top: 3px;margin-right: 3px;"></i>
   <span class="cmd cmd-widget" data-cmd_id="#refresh_id#" style="display:none;"></span>
-  <center class="widget-name" style="#hideEqLogicName#">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></center>
+  <center class="widget-name" style="#hideEqLogicName#">#name_display#</center>
 
   <center>
     <div>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
-      <a class="btn btn_temperature_order_down cursor" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="26px" style="vertical-align:middle;""></a>
-      <strong class="tooltips #temperature_order_history# cursor" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em">#temperature_order#</strong> °C
+      <a class="btn btn_temperature_order_down cursor" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="26px" style="vertical-align:middle;"></a>
+      <strong class="state #temperature_order_history#" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em">#temperature_order#</strong> °C
       <a class="btn btn_temperature_order_up cursor" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up.png" title="+1°C" width="26px" style="vertical-align:middle;""></a>
       <a class="btn btn_temperature_order_cancel cursor" data-cmd_id="#cancel_id#" style="margin-left:5px;"><img src="/plugins/qivivo/core/img/icon_cross.png" title="Cancel" width="26px" style="vertical-align:middle;"></a>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
     </div>
 
-    <div class="#temperature_history#" data-cmd_id="#temperature_id#">
-      <span style="font-size : 12px;">Température</span>  <strong class="tooltips" title="#temperature_collectDate#">#temperature#</strong> °C
+    <div data-cmd_id="#temperature_id#">
+      <span class="cmdName" style="font-size : 12px;">Température</span>  <strong class="state">#temperature#</strong> °C
     </div>
 
-    <div class="#humidity_history#" data-cmd_id="#humidity_id#">
-      <span style="font-size : 12px;">Humidité</span>  <strong class="tooltips" title="#humidity_collectDate#">#humidity#</strong> %
+    <div data-cmd_id="#humidity_id#">
+      <span class="cmdName" style="font-size : 12px;">Humidité</span>  <strong class="state">#humidity#</strong> %
     </div>
 
-    <div class="#presence_history#" data-cmd_id="#presence_id#">
-      <span style="font-size : 12px;">Presence</span>  <i class="#pres_class#" title="#presence_collectDate#"></i>
+    <div data-cmd_id="#presence_id#">
+      <span class="cmdName" style="font-size : 12px;">Presence</span>  <i class="state #pres_class#"></i>
     </div>
 
     <div>
       <img style="position:absolute; right:0px; bottom:0px;" src="#imgheating#" title="Chauffage" width="42px">
     </div>
 
-    <div class="#lastpres_history#" data-cmd_id="#lastpres_id#">
+    <div data-cmd_id="#lastpres_id#">
     </br>
-      <i class="fa fa-smile-o"></i> <strong class="tooltips" title="#lastpres_collectDate#" style="font-size:12px;">#lastpres#</strong>
+      <i class="fa fa-smile-o"></i> <strong style="font-size:12px;">#lastpres#</strong>
     </div>
   </center>
 
@@ -45,16 +45,16 @@
 
     $('.btn_temperature_order_up').on('click', function () {
       jeedom.cmd.execute({id: '#set_plus_one_id#'});
-      temp = $(".tooltips[data-cmd_id='#temperature_order_id#']").html()
+      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) + 1
-      $(".tooltips[data-cmd_id='#temperature_order_id#']").html(newTemp)
+      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
     $('.btn_temperature_order_down').on('click', function () {
       jeedom.cmd.execute({id: '#set_minus_one_id#'});
-      temp = $(".tooltips[data-cmd_id='#temperature_order_id#']").html()
+      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) - 1
-      $(".tooltips[data-cmd_id='#temperature_order_id#']").html(newTemp)
+      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
     $('.btn_temperature_order_cancel').on('click', function () {
