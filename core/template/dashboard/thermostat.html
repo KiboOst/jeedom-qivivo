@@ -1,5 +1,5 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
-      style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
+      style="position: relative; width:#width#; height:#height#; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
   <span class="statusCmd" style="position : absolute;left : 5px; width : 30px;z-index: 1030;"></span>
   <i class='fa fa-refresh pull-right cursor refresh' style="margin-top: 3px;margin-right: 3px;"></i>
@@ -8,22 +8,22 @@
 
   <center>
     <div>
-      <a class="btn btn_temperature_order_down" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="26px"></a>
-      <strong class="tooltips #temperature_order_history#"" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em">#temperature_order#</strong> °C
-      <a class="btn btn_temperature_order_up" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up.png" title="+1°C" width="26px"></a>
-      <a class="btn btn_temperature_order_cancel" data-cmd_id="#cancel_id#" style="margin-left:-20px;"><img src="/plugins/qivivo/core/img/icon_cross.png" title="Cancel" width="26px"></a>
+      <a class="btn btn_temperature_order_down" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="26px"></a>
+      <strong class="state #temperature_order_history#"" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em">#temperature_order#</strong> °C
+      <a class="btn btn_temperature_order_up" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up.png" title="+1°C" width="26px"></a>
+      <a class="btn btn_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#cancel_id#" style="margin-left:-20px;"><img src="/plugins/qivivo/core/img/icon_cross.png" title="Cancel" width="26px"></a>
     </div>
 
-    <div class="#temperature_history#" data-cmd_id="#temperature_id#">
-      Température  <strong class="tooltips" title="#temperature_collectDate#">#temperature#</strong> °C
+    <div class="#temperature_history#" data-cmd_id="#temperature_id#" title="#temperature_collectDate#">
+      Température  <strong class="state">#temperature#</strong> °C
     </div>
 
-    <div class="#humidity_history#" data-cmd_id="#humidity_id#">
-      Humidité  <strong class="tooltips" title="#humidity_collectDate#">#humidity#</strong> %
+    <div class="#humidity_history#" data-cmd_id="#humidity_id#" title="#humidity_collectDate#">
+      Humidité  <strong class="state">#humidity#</strong> %
     </div>
 
-    <div class="#presence_history#" data-cmd_id="#presence_id#">
-      Presence  <i class="#pres_class#" title="#presence_collectDate#"></i>
+    <div class="#presence_history#" data-cmd_id="#presence_id#" title="#presence_collectDate#">
+      Presence  <i class="state #pres_class#"></i>
     </div>
 
     <div>
@@ -31,7 +31,7 @@
     </div>
 
     <div data-cmd_id="#lastpres_id#">
-      <i class="fa fa-smile-o"></i> <strong class="tooltips" title="#lastpres_collectDate#" style="font-size:12px;">#lastpres#</strong>
+      <i class="fa fa-smile-o"></i> <strong title="#lastpres_collectDate#" style="font-size:12px;">#lastpres#</strong>
     </div>
   </center>
 
@@ -42,16 +42,16 @@
 
     $('.btn_temperature_order_up').on('click', function () {
       jeedom.cmd.execute({id: '#set_plus_one_id#'});
-      temp = $(".tooltips[data-cmd_id='#temperature_order_id#']").html()
+      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) + 1
-      $(".tooltips[data-cmd_id='#temperature_order_id#']").html(newTemp)
+      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
     $('.btn_temperature_order_down').on('click', function () {
       jeedom.cmd.execute({id: '#set_minus_one_id#'});
-      temp = $(".tooltips[data-cmd_id='#temperature_order_id#']").html()
+      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) - 1
-      $(".tooltips[data-cmd_id='#temperature_order_id#']").html(newTemp)
+      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
     $('.btn_temperature_order_cancel').on('click', function () {
