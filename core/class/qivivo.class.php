@@ -445,6 +445,7 @@ class qivivo extends eqLogic {
                 $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
+          	$qivivoCmd->setDisplay('generic_type', 'THERMOSTAT_SETPOINT');
             $qivivoCmd->setUnite('°C');
             $qivivoCmd->setLogicalId('temperature_order');
             $qivivoCmd->setType('info');
@@ -466,6 +467,7 @@ class qivivo extends eqLogic {
                 $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
+          	$qivivoCmd->setDisplay('generic_type', 'THERMOSTAT_TEMPERATURE');
             $qivivoCmd->setUnite('°C');
             $qivivoCmd->setLogicalId('temperature');
             $qivivoCmd->setType('info');
