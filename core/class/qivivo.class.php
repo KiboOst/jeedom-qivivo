@@ -489,6 +489,7 @@ class qivivo extends eqLogic {
                 $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setDisplay('generic_type', 'THERMOSTAT_STATE');
             $qivivoCmd->setLogicalId('heating');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
