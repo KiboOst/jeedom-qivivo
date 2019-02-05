@@ -10,28 +10,36 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 <style type="text/css">
   .select-mode-off {
-    background-color:#9df9fe !important;
+    background-color: rgb(157,249,254) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-frost {
-    background-color:#8dedfd !important;
+    background-color: rgb(141,237,253) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-abs {
-    background-color:#7edafd !important;
+    background-color: rgb(126,218,253) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-eco, .select-mode-nuit {
-    background-color:#91c3fc !important;
+    background-color: rgb(145,195,252) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-pres1, .select-mode-confort-2 {
-    background-color:#90affb !important;
+    background-color: rgb(144,175,251) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-pres2, .select-mode-confort-1 {
-    background-color:#fde972 !important;
+    background-color: rgb(253,233,114) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-pres3, .select-mode-confort {
-    background-color:#fdd45d !important;
+    background-color: rgb(253,212,93) !important;
+    color: rgb(60,60,60) !important;
   }
   .select-mode-pres4 {
-    background-color:#fcc64f !important;
+    background-color: rgb(252,198,79) !important;
+    color: rgb(60,60,60) !important;
   }
 </style>
 
@@ -151,7 +159,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
     <form class="form-horizontal col-sm-3">
       <fieldset>
         <div class="form-group">
-          <img src="' . $plugin->getPathImgIcon() . '" id="img_qivivoModel" style="height:221px; width:200px;" />
+          <img src="' . $plugin->getPathImgIcon() . '" id="img_qivivoModel" style="width:200px;" />
         </div>
       </fieldset>
     </form>
