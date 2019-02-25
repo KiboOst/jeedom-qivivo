@@ -1271,7 +1271,7 @@ class qivivoCmd extends cmd {
                 $program = $_options['select'];
                 if ($program == '') return;
 
-                $message = 'set_order '.$eqLogic->getName().' to '.$program;
+                $message = 'set_program '.$eqLogic->getName().' to '.$program;
                 log::add('qivivo', 'debug', $message);
 
                 $program_name = $eqLogic->getConfiguration('program_name');
@@ -1332,9 +1332,12 @@ class qivivoCmd extends cmd {
                         $result = $_fullQivivo->setProgram($program_name, $program_array);
                         log::add('qivivo', 'debug', print_r($result, true));
 
-                        $eqLogic->checkAndUpdateCmd('current_program', $program);
-                        $eqLogic->refreshWidget();
-                        return;
+                        if ($result['result']==True)
+                        {
+                            $eqLogic->checkAndUpdateCmd('current_program', $program);
+                            $eqLogic->refreshWidget();
+                            return;
+                        }
                     }
                 }
                 log::add('qivivo', 'warning', 'Unfound program!');

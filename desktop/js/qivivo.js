@@ -172,6 +172,7 @@ function addProgram(_program, _updateProgram) {
             div += '<a class="btn btn-sm bt_duplicateProgram btn-default"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>'
             div += '<a class="btn btn-sm bt_exportProgram btn-default"><i class="fa fa-sign-out"></i> {{Exporter}}</a>'
             div += '<a class="btn btn-sm bt_importProgram btn-default"><i class="fa fa-sign-in"></i> {{Importer}}</a>'
+            div += '<a class="btn btn-sm bt_applyProgram btn-danger"><i class="fa fa-check-circle"></i> {{Appliquer}}</a>'
             div += '</div>'
         div += '</div>'
         div += '</div>'
@@ -255,6 +256,30 @@ $('#div_programs').off('click','.bt_duplicateProgram').on('click','.bt_duplicate
         }
     })
 })
+
+$('#div_programs').off('click','.bt_applyProgram').on('click','.bt_applyProgram',  function () {
+    program = $(this).closest('.program')
+    programName = program.find('.programAttr[data-l1key=name]').html()
+    bootbox.confirm({
+        message: "Voulez vous vraiment appliquer le programme "+programName+" maintenant ?",
+        buttons: {
+            confirm: {
+                label: 'Yes',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'No',
+                className: 'btn-danger'
+            }
+        },
+        callback: function (result) {
+            if (result === true) {
+                jeedom.cmd.execute( {id: _setProgramId_, value: {select: programName} })
+            }
+        }
+    })
+})
+
 
 $('body').off('click','.rename').on('click','.rename',  function () {
     var el = $(this)
@@ -762,4 +787,5 @@ function addCmdToTable(_cmd) {
         if (isset(_cmd.type)) $('#table_actions tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type))
         jeedom.cmd.changeType($('#table_actions tbody tr:last'), init(_cmd.subType))
     }
+    if (_cmd.name == 'SetProgram') _setProgramId_ = _cmd.id
 }
