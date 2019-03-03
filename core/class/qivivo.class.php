@@ -266,6 +266,11 @@ class qivivo extends eqLogic {
                     if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                     $firmware_version = $thermostatInfos['softwareVersion'];
                     if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                    $battery_percent = $thermostatInfos['voltagePercentage'];
+                    if (!is_null($battery_percent)) {
+                        $eqLogic->checkAndUpdateCmd('battery', $battery_percent);
+                        $eqLogic->batteryStatus($battery_percent);
+                    }
 
                     $thermostatHumidity = $_qivivo->getThermostatHumidity($_uuid);
                     log::add('qivivo', 'debug', 'getThermostatHumidity: '.print_r($thermostatHumidity, true));
@@ -670,6 +675,24 @@ class qivivo extends eqLogic {
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setUnite('mins');
             $qivivoCmd->setLogicalId('duree_temp');
+            $qivivoCmd->setType('info');
+            $qivivoCmd->setSubType('numeric');
+            $qivivoCmd->save();
+
+            $qivivoCmd = $this->getCmd(null, 'battery');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('Batterie', __FILE__));
+                $qivivoCmd->setIsVisible(1);
+                $qivivoCmd->setIsHistorized(1);
+                $qivivoCmd->setConfiguration('minValue', 0);
+                $qivivoCmd->setConfiguration('maxValue', 35);
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setUnite('%');
+            $qivivoCmd->setLogicalId('battery');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
             $qivivoCmd->save();
