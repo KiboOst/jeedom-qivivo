@@ -252,6 +252,12 @@ $eqLogics = eqLogic::byType($plugin->getId());
            <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempPres4"></span>
           </div>
         </div>
+        <div class="form-group" style="display: none;" data-cmd_id="battery">
+          <label class="col-sm-3 control-label">{{Batterie}}</label>
+          <div class="col-sm-5">
+           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="battery"></span>
+          </div>
+        </div>
 
 
         <!--common infos but Passerelle-->
