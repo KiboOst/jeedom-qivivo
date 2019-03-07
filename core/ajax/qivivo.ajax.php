@@ -78,6 +78,8 @@ try {
                         $result['paramTempPres3'] = $paramTempPres3;
                         $paramTempPres4 = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
                         $result['paramTempPres4'] = $paramTempPres4;
+                        $battery = $eqLogic->getCmd(null, 'battery')->execCmd();
+                        $result['battery'] = $battery;
                     }
                     ajax::success($result);
                 }

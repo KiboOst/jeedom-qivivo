@@ -68,6 +68,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=uuid]').on('change',functio
     $("div[data-cmd_id='paramTempPres2']").hide()
     $("div[data-cmd_id='paramTempPres3']").hide()
     $("div[data-cmd_id='paramTempPres4']").hide()
+    $("div[data-cmd_id='battery']").hide()
 
     $.ajax({
         type: "POST",
@@ -124,6 +125,9 @@ function uuid_callback(data) {
 
         $("div[data-cmd_id='paramTempPres4']").show()
         $("span[data-cmd_id='paramTempPres4']").html(data.result.paramTempPres4 + ' °C')
+
+        $("div[data-cmd_id='battery']").show()
+        $("span[data-cmd_id='battery']").html(data.result.battery + ' %')
     }
 
     if (_type == 'Module Chauffage')
