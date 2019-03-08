@@ -77,6 +77,21 @@ function qivivo_update() {
 	//import-export:
 	$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
 	if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
+	
+	//resave eqs for new cmd:
+	try
+	{
+		$eqs = eqLogic::byType('qivivo');
+		foreach ($eqs as $eq)
+		{
+			$eq->save();
+		}
+	}
+	catch (Exception $e)
+	{
+		$e = print_r($e, 1);
+		log::add('qivivo', 'error', 'qivivo_update ERROR: '.$e);
+	}
 
 }
 
