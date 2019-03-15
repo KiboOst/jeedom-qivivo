@@ -423,6 +423,15 @@ class qivivo extends eqLogic {
         log::add('qivivo_debug', 'error', $data);
     }
 
+    public function preSave()
+    {
+        $_thisType = $this->getConfiguration('type');
+        if (in_array($_thisType, array('Thermostat')))
+        {
+            $this->setConfiguration('battery_type', '3x1.5V AAA');
+        }
+    }
+
     public function postSave()
     {
         log::add('qivivo', 'debug', 'postSave()');
