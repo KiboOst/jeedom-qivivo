@@ -425,8 +425,7 @@ class qivivo extends eqLogic {
 
     public function preSave()
     {
-        $_thisType = $this->getConfiguration('type');
-        if (in_array($_thisType, array('Thermostat')))
+        if ($this->getConfiguration('type') == 'Thermostat')
         {
             $this->setConfiguration('battery_type', '3x1.5V AAA');
         }
@@ -695,12 +694,14 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setIsVisible(1);
                 $qivivoCmd->setIsHistorized(1);
                 $qivivoCmd->setConfiguration('minValue', 0);
-                $qivivoCmd->setConfiguration('maxValue', 35);
+                $qivivoCmd->setConfiguration('maxValue', 100);
                 $qivivoCmd->setOrder($order);
                 $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
             $qivivoCmd->setUnite('%');
+            $qivivoCmd->setConfiguration('minValue', 0);
+            $qivivoCmd->setConfiguration('maxValue', 100);
             $qivivoCmd->setLogicalId('battery');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
