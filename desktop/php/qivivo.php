@@ -56,24 +56,25 @@ $eqLogics = eqLogic::byType($plugin->getId());
     </div>
 
     <legend><i class="fa fa-table"></i> {{Mes Modules}}</legend>
-      <div class="eqLogicThumbnailContainer">
-          <?php
-            foreach ($eqLogics as $eqLogic) {
-              $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
-              echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+    <input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
+    <div class="eqLogicThumbnailContainer">
+        <?php
+          foreach ($eqLogics as $eqLogic) {
+            $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+            echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 
-              $imgPath = $plugin->getPathImgIcon();
-              if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
-              if ($eqLogic->getConfiguration('type', '') == 'Module Chauffage') $imgPath = 'plugins/qivivo/core/img/module.png';
-              if ($eqLogic->getConfiguration('type', '') == 'Passerelle') $imgPath = 'plugins/qivivo/core/img/gateway.png';
-              echo '<img src="' . $imgPath . '"/>';
+            $imgPath = $plugin->getPathImgIcon();
+            if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
+            if ($eqLogic->getConfiguration('type', '') == 'Module Chauffage') $imgPath = 'plugins/qivivo/core/img/module.png';
+            if ($eqLogic->getConfiguration('type', '') == 'Passerelle') $imgPath = 'plugins/qivivo/core/img/gateway.png';
+            echo '<img src="' . $imgPath . '"/>';
 
-              echo '<br>';
-              echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-              echo '</div>';
-            }
-          ?>
-      </div>
+            echo '<br>';
+            echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+            echo '</div>';
+          }
+        ?>
+    </div>
   </div>
 
 <!--Equipement page-->
