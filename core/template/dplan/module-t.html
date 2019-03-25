@@ -1,24 +1,28 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
-      style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
+      style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; #style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
-  <span class="statusCmd" style="position : absolute;left : 5px; width : 30px;z-index: 1030;"></span>
-  <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#" style="margin-top: 3px;margin-right: 3px;">
+  <span class="statusCmd"></span>
+  <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
 		<i class="fas fa-sync"></i>
   </span>
-  <center class="widget-name"><a href="#eqLink#" style="font-size : 1.1em;#hideEqLogicName#">#name_display# <span style="font-size: 0.75em;position: relative;top:-2px;">#object_name#</span></a></center>
+  <center class="widget-name">
+    <a href="#eqLink#" style="#hideEqLogicName#">#name_display# <span>#object_name#</span></a>
+  </center>
 
   <div class="verticalAlign">
     <center>
-      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" title="#program_collectDate#" style="width: 100%;overflow:hidden">
+      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" title="#program_collectDate#">
           <span style="white-space:nowrap;padding-left:5px!important;line-height:2.5em;">
             <i class="divers-today1"></i>
             <select class="cursor" data-l2key="graphColor" style="width:calc(100% - 30px);background-color:#background-color#;border:0">#set_program_listValue#</select>
           </span>
       </div>
+
       <hr style="height:20px; visibility:hidden; padding:0; margin:0">
 
-      <div class="#last_communication_history#" data-cmd_id="#last_communication_id#">
-        <i class="nature-leaf37"></i> <strong style="font-size:12px;">#last_communication#</strong>
+      <div class="#last_communication_history# cmdName" data-cmd_id="#last_communication_id#">
+        <i class="nature-leaf37"></i>
+        #last_communication#
       </div>
     </center>
   </div>
