@@ -1,8 +1,8 @@
 <div class="eqLogic eqLogic-widget"
-      style="position: relative; min-height:150px !important; background-color:#background-color#; color:#color#; border:#border#; border-radius:#border-radius#;#style#"
+      style="position: relative; min-height:150px !important; background-color:#background-color#; color:#color#;#style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
-  <span class="statusCmd" style="position : absolute;left : 5px; width : 30px;z-index: 1030;"></span>
-  <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#" style="margin-top: 3px;margin-right: 3px;">
+  <span class="statusCmd"></span>
+  <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
 		<i class="fas fa-sync"></i>
   </span>
   <center class="widget-name" style="#hideEqLogicName#">#name_display#</center>
@@ -17,24 +17,25 @@
     </div>
 
     <div data-cmd_id="#temperature_id#">
-      <span class="cmdName" style="font-size : 12px;">Température</span>  <strong class="state">#temperature#</strong> °C
+      <span class="cmdName">Température</span>  <strong class="state">#temperature#</strong> °C
     </div>
 
     <div data-cmd_id="#humidity_id#">
-      <span class="cmdName" style="font-size : 12px;">Humidité</span>  <strong class="state">#humidity#</strong> %
+      <span class="cmdName">Humidité</span>  <strong class="state">#humidity#</strong> %
     </div>
 
     <div data-cmd_id="#presence_id#">
-      <span class="cmdName" style="font-size : 12px;">Presence</span>  <i class="state #pres_class#"></i>
+      <span class="cmdName">Presence</span>  <i class="state #pres_class#"></i>
     </div>
 
     <div>
-      <img style="position:absolute; right:0px; bottom:0px;" src="#imgheating#" title="Chauffage" width="42px">
+      <img style="position:absolute; right:0px; bottom:6px;" src="#imgheating#" title="Chauffage" width="42px">
     </div>
 
     <div data-cmd_id="#lastpres_id#">
     </br>
-      <i class="fa fa-smile-o"></i> <strong style="font-size:12px;">#lastpres#</strong>
+      <i class="fa fa-smile"></i>
+      #lastpres#
     </div>
   </center>
 
