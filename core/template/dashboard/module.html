@@ -35,7 +35,7 @@
   </div>
 
   <script>
-    $('select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
+    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
         jeedom.cmd.execute({id: '#refresh_id#'});
