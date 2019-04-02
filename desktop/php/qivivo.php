@@ -44,7 +44,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </style>
 
 <div class="row row-overflow">
-  <div class="col-xs-12 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
+  <div class="col-xs-12 eqLogicThumbnailDisplay">
     <legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
     <div class="eqLogicThumbnailContainer">
       <div class="cursor eqLogicAction" data-action="gotoPluginConf">
@@ -78,7 +78,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
   </div>
 
 <!--Equipement page-->
-<div class="col-xs-12 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
+<div class="col-xs-12 eqLogic" style="display: none;">
   <div class="input-group pull-right" style="display:inline-flex">
     <span class="input-group-btn">
       <a class="btn btn-sm btn-default eqLogicAction roundedLeft" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}
