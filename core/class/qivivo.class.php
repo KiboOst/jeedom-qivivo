@@ -129,11 +129,10 @@ class qivivo extends eqLogic {
                 {
                     $options['message'] = str_replace('#message#', $_msg , $options['message']);
                 }
-                $cmdName = $cmdAr['cmd'];
-                $cmd = cmd::byString($cmdName);
+                $cmdId = $cmdAr['cmd'];
+                $cmd = cmd::byId($cmdId);
                 $cmd->execCmd($options);
             }
-
         }
     }
 
@@ -1230,6 +1229,26 @@ class qivivo extends eqLogic {
         log::add('qivivo', 'debug', '____exportProgram: '.$fileNam);
         $file = fopen($folderPath.$fileName, 'w');
         $res = fwrite($file, json_encode($_program));
+    }
+
+    public static function deadCmd() {
+        //log::add('qivivo', 'debug', '____deadCmd');
+        $return = array();
+        $actionsOnError = config::byKey('actionsOnError', 'qivivo');
+        foreach ($actionsOnError as $cmdAr) {
+            $options = $cmdAr['options'];
+            if ($options['enable'] == 1)
+            {
+                $cmdId = $cmdAr['cmd'];
+                if ($cmdId != '') {
+                    if (!cmd::byId($cmdId)) {
+                        $return[] = array('detail' => 'Configuration Qivivo', 'help' => 'Action sur erreur', 'who' => $cmdId);
+                        log::add('qivivo', 'debug', 'deadCmd found: cmdId:'.$cmdId);
+                    }
+                }
+            }
+        }
+        return $return;
     }
 }
 
