@@ -269,7 +269,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
     <!--Programs Tab-->
     <div role="tabpanel" class="tab-pane" id="tab_programs">
       <a class="btn btn-success pull-right" id="bt_addProgram" style="margin-top: 5px;"><i class="fa fa-plus-circle"></i> {{Ajouter Programme}}</a><br/><br/>
-      <div id="div_programs"></div>
+      <div id="div_programs" class="panel-group"></div>
     </div>
 
     <!--Commands Tab-->
