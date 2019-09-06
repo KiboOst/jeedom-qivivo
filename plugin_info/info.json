@@ -4,7 +4,7 @@
 	"description" : "Intégration du Thermostat Qivivo",
 	"licence" : "AGPL",
 	"author" : "KiboOst",
-	"require" : "3.0",
+	"require" : "4.0",
 	"category" : "wellness",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
