@@ -93,12 +93,27 @@ try {
     if (init('action') == 'getActionsOnError') {
         $actionsOnError = config::byKey('actionsOnError', 'qivivo');
         //log::add('qivivo', 'debug', 'ajax getActionsOnError: '.print_r($actionsOnError, 1));
+        for ($i=0; $i<count($actionsOnError); $i++) {
+            $cmdId = $actionsOnError[$i]['cmd'];
+            $cmd = cmd::byId($cmdId);
+            $cmdName = '#'.$cmd->getHumanName().'#';
+            $actionsOnError[$i]['cmd'] = $cmdName;
+        }
         ajax::success($actionsOnError);
     }
 
     if (init('action') == 'saveActionsOnError') {
         $actionsOnError = init('actionsOnError');
         //log::add('qivivo', 'debug', 'ajax saveActionsOnError: '.print_r($actionsOnError, 1));
+
+        $actionsOnError = json_decode($actionsOnError, true);
+        for ($i=0; $i<count($actionsOnError); $i++) {
+            $cmdName = $actionsOnError[$i]['cmd'];
+            $cmd = cmd::byString($cmdName);
+            $cmdId = $cmd->getId();
+            $actionsOnError[$i]['cmd'] = $cmdId;
+        }
+        $actionsOnError = json_encode($actionsOnError);
         config::save('actionsOnError', $actionsOnError, 'qivivo');
         ajax::success();
     }

@@ -156,11 +156,11 @@ function addProgram(_program, _updateProgram) {
 
     var div = '<div class="program panel panel-default">'
     div += '<div class="panel-heading">'
-    div += '<h4 class="panel-title">'
-    div += '<a data-toggle="collapse" data-parent="#div_programs" href="#collapse' + random + '">'
+    div += '<h3 class="panel-title">'
+    div += '<a class="accordion-toggle" data-toggle="collapse" data-parent="#div_programs" href="#collapse' + random + '">'
     div += '<span class="name">' + _program.name + '</span>'
     div += '</a>'
-    div += '</h4>'
+    div += '</h3>'
     div += '</div>'
     div += '<div id="collapse' + random + '" class="panel-collapse collapse in">'
     div += '<div class="panel-body">'
@@ -171,12 +171,14 @@ function addProgram(_program, _updateProgram) {
             div += '<span class="programAttr label label-info rename cursor" data-l1key="name" style="font-size : 1em" ></span>'
             div += '</div>'
             div += '<div class="col-sm-10">'
-            div += '<div class="btn-group pull-right" role="group">'
-            div += '<a class="btn btn-sm bt_removeProgram btn-primary"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>'
-            div += '<a class="btn btn-sm bt_duplicateProgram btn-default"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>'
-            div += '<a class="btn btn-sm bt_exportProgram btn-default"><i class="fa fa-sign-out"></i> {{Exporter}}</a>'
-            div += '<a class="btn btn-sm bt_importProgram btn-default"><i class="fa fa-sign-in"></i> {{Importer}}</a>'
-            div += '<a class="btn btn-sm bt_applyProgram btn-danger"><i class="fa fa-check-circle"></i> {{Appliquer}}</a>'
+            div += '<div class="input-group pull-right" style="display:inline-flex">'
+                div += '<span class="input-group-btn">'
+                    div += '<a class="btn btn-sm bt_duplicateProgram btn-primary roundedLeft"><i class="fas fa-copy"></i> {{Dupliquer}}</a>'
+                    div += '<a class="btn btn-sm bt_exportProgram btn-default"><i class="fas fa-sign-out-alt"></i> {{Exporter}}</a>'
+                    div += '<a class="btn btn-sm bt_importProgram btn-default"><i class="fas fa-sign-in-alt"></i> {{Importer}}</a>'
+                    div += '<a class="btn btn-sm bt_applyProgram btn-danger" title="Appliquez le programme maintenant"><i class="fas fa-check-circle"></i> {{Appliquer}}</a>'
+                    div += '<a class="btn btn-sm bt_removeProgram btn-danger roundedRight"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>'
+                div += '</span>'
             div += '</div>'
         div += '</div>'
         div += '</div>'
@@ -328,11 +330,15 @@ function createDayDiv(dayName){
     dayDiv = '<div class="weekDay '+dayName+'" style="width:14%; float:left" onchange="updateGraphDay(this)">'
     dayDiv += '<center>'
     dayDiv += '<strong class="dayName">'+dayName+'</strong>'
-    dayDiv += '</br></br>'
+    dayDiv += '</br>'
 
-    dayDiv += '<i class="fa fa-plus-circle btn btn-default bt_addPeriod" style="position:relative; bottom:1em;" title="Ajouter une période"></i>'
-    dayDiv += '<i class="fa fa-sign-out btn btn-default bt_copyDay" style="position:relative; bottom:1em;" title="Copier le jour"></i>'
-    dayDiv += '<i class="fa fa-sign-in btn btn-default bt_pasteDay" style="position:relative; bottom:1em;" title="Coller le jour"></i>'
+    dayDiv += '<div class="input-group" style="display:inline-flex">'
+        dayDiv += '<span class="input-group-btn">'
+            dayDiv += '<span><i class="fa fa-plus-circle cursor bt_addPeriod" title="Ajouter une période"></i> </span>'
+            dayDiv += '<span><i class="fas fa-sign-out-alt cursor bt_copyDay" title="Copier le jour"></i> </span>'
+            dayDiv += '<span><i class="fas fa-sign-in-alt cursor bt_pasteDay" title="Coller le jour"></i> </span>'
+        dayDiv += '</span></br>'
+    dayDiv += '</div>'
 
     dayDiv += '</center></div>'
     return dayDiv
@@ -441,11 +447,8 @@ function addPeriod(dayDiv, time=null, periodMode=null){
     if (time == null) time = '00:00'
     div = '<div class="dayPeriod">'
         div += '<div class="input-group" style="width:100% !important; line-height:1.4px !important;">'
-
-            div += '<input class="timePicker form-control input-sm" type="text" value="'+time+'" style="width:50px; min-width:50px;" onchange="checkTimePicker(this)" title="Heure de début de période au format 00:00">'
-
-
-            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" data-l2key="graphColor" onchange="definePeriodMode(this)" style="width:calc(100% - 83px);display:inline-block" title="Mode de chauffage">'
+            div += '<input class="timePicker form-control input-sm" type="text" value="'+time+'" style="width:60px; min-width:60px;" onchange="checkTimePicker(this)" title="Heure de début de période au format 00:00">'
+            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" data-l2key="graphColor" onchange="definePeriodMode(this)" style="width:calc(100% - 93px);display:inline-block" title="Mode de chauffage">'
                 l = PROGRAM_MODE_LIST.length
                 for (var i = 0; i < l; i++) {
                     div += PROGRAM_MODE_LIST[i]
@@ -462,8 +465,6 @@ function addPeriod(dayDiv, time=null, periodMode=null){
         newdiv.find('.clock-timepicker').attr('style','display: inline');
     }
     else newdiv.find('.timePicker').prop('readonly', true)
-
-
 
     if (time != null && time != '00:00') newdiv.find('.timePicker').clockTimePicker('value', time)
     if (periodMode)
@@ -663,6 +664,7 @@ $('.bt_downloadProgram').on('click',function(){ //called from modal!
         dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data))
         downloadAnchorNode = document.createElement('a')
         downloadAnchorNode.setAttribute("href",     dataStr)
+        downloadAnchorNode.setAttribute("target", "_blank")
         downloadAnchorNode.setAttribute("download", _filename)
         document.body.appendChild(downloadAnchorNode)
         downloadAnchorNode.click()
