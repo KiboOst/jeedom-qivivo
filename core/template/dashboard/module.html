@@ -1,5 +1,5 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
-      style="width:#width#; height:#height#; background-color:#background-color#; color:#color#; #style#"
+      style="width:#width#; height:#height#; #style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
   <span class="statusCmd"></span>
   <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
@@ -11,23 +11,20 @@
 
   <div class="verticalAlign">
     <center>
-      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_order_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:100%;overflow:hidden" title="#order_collectDate#">
-          <span style="white-space:nowrap;padding-left:5px!important;font-size:16px;">
-            <i class="divers-thermometer31"></i>
-            <select class="cursor" data-l2key="graphColor">#set_order_listValue#</select>
-          </span>
+      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_order_id#" data-version="#version#" data-eqLogic_id="#id#" title="#order_collectDate#">
+        <div class="content-xs" style="display: flex;">
+          <i class="divers-thermometer31" style="font-size:16px;padding-top:4px;padding-left:5px;width: 20px;"></i>
+          <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important;">#set_order_listValue#</select>
+        </div>
       </div>
-  	  <br><br>
-
-      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:100%;overflow:hidden" title="#program_collectDate#">
-          <span style="white-space:nowrap;padding-left:5px!important;font-size:16px;">
-            <i class="divers-today1"></i>
-            <select class="cursor" data-l2key="graphColor">#set_program_listValue#</select>
-          </span>
+      <br><br>
+      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" title="#order_collectDate#">
+        <div class="content-xs" style="display: flex;">
+          <i class="divers-today1" style="font-size:20px;padding-top:1px;padding-left:5px;width: 20px;"></i>
+          <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important;">#set_program_listValue#</select>
+        </div>
       </div>
-
       <hr style="height:7px; visibility:hidden; padding:0; margin:0">
-
       <div class="#last_communication_history# cmdName" data-cmd_id="#last_communication_id#">
         <i class="nature-leaf37"></i>
         #last_communication#
