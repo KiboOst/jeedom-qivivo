@@ -1,5 +1,5 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
-      style="position: relative; width:#width#; height:#height#; background-color:#background-color#; color:#color#; #style#"
+      style="position: relative; width:#width#; height:#height#; #style#"
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
   <span class="statusCmd"></span>
   <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
@@ -12,12 +12,12 @@
   <div class="verticalAlign">
     <center>
       <div>
-        <a class="btn btn_temperature_order_down" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down.png" title="-1°C" width="24px"></a>
+        <a class="btn qivivo_temperature_order_down" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="24px"></a>
         <span style="position:relative; top:3px;">
           <strong class="state #temperature_order_history#" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em">#temperature_order# °C</strong>
         </span>
-        <a class="btn btn_temperature_order_up" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up.png" title="+1°C" width="24px"></a>
-        <a class="btn btn_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross.png" title="Cancel" width="24px"></a>
+        <a class="btn qivivo_temperature_order_up" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="24px"></a>
+        <a class="btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
 
       <div class="cmd #temperature_history#" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;">
@@ -44,25 +44,46 @@
   </div>
 
   <script type="text/javascript">
+    //change theme event handler for images:
+    $('body').on('changeThemeEvent', function (event, theme) {
+      if (theme == 'Light') {
+        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
+        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
+        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+      } else {
+        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_dark.png')
+        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_dark.png')
+        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_dark.png')
+      }
+    })
+    //set icons to light:
+    $(function() {
+      if ($('body').attr('data-theme').endsWith('Light')) {
+        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
+        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
+        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+      }
+    })
+
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
       jeedom.cmd.execute({id: '#refresh_id#'});
     });
 
-    $('.btn_temperature_order_up').on('click', function () {
+    $('.qivivo_temperature_order_up').on('click', function () {
       jeedom.cmd.execute({id: '#set_plus_one_id#'});
       temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) + 1
       $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
-    $('.btn_temperature_order_down').on('click', function () {
+    $('.qivivo_temperature_order_down').on('click', function () {
       jeedom.cmd.execute({id: '#set_minus_one_id#'});
       temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) - 1
       $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
-    $('.btn_temperature_order_cancel').on('click', function () {
+    $('.qivivo_temperature_order_cancel').on('click', function () {
       jeedom.cmd.execute({id: '#cancel_id#'});
     });
   </script>

@@ -1061,10 +1061,8 @@ class qivivo extends eqLogic {
 
         //only custom template for thermostat dashboard:
         $_thisType = $this->getConfiguration('type');
-        //log::add('qivivo', 'debug', 'toHtml version: '.$_version.' alias: '.$version);
-
         $replace['#category#'] = $this->getPrimaryCategory();
-
+      
         if ($_thisType == 'Thermostat')
         {
             $refresh = $this->getCmd(null, 'refresh');
@@ -1186,9 +1184,6 @@ class qivivo extends eqLogic {
                 else $options .= '<option value="'.$value.'">'.$display.'</option>';
             }
             $replace['#set_program_listValue#'] = $options;
-
-            //special iOS select for modules on designs:
-            if ($_version == 'dplan') $version = 'dplan';
 
             if ($order == 'monozone') $html = template_replace($replace, getTemplate('core', $version, 'module-t', 'qivivo'));
             else $html = template_replace($replace, getTemplate('core', $version, 'module', 'qivivo'));
@@ -1567,5 +1562,3 @@ class qivivoCmd extends cmd {
         }
     }
 }
-
-
