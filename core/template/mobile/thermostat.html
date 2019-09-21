@@ -42,22 +42,24 @@
   <script type="text/javascript">
     //change theme event handler for images:
     $('body').on('changeThemeEvent', function (event, theme) {
+      var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
       if (theme == 'Light') {
-        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
-        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
-        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+        eqlogic.find('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
+        eqlogic.find('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
+        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
       } else {
-        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_dark.png')
-        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_dark.png')
-        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_dark.png')
+        eqlogic.find('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_dark.png')
+        eqlogic.find('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_dark.png')
+        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_dark.png')
       }
     })
     //set icons to light:
     $(function() {
       if ($('body').attr('data-theme').endsWith('Light')) {
-        $('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
-        $('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
-        $('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+        var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
+        eqlogic.find('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
+        eqlogic.find('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
+        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
       }
     })
 
@@ -65,21 +67,21 @@
       jeedom.cmd.execute({id: '#refresh_id#'});
     });
 
-    $('.qivivo_temperature_order_up').on('click', function () {
+    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_up').on('click', function () {
       jeedom.cmd.execute({id: '#set_plus_one_id#'});
       temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) + 1
       $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
-    $('.qivivo_temperature_order_down').on('click', function () {
+    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_down').on('click', function () {
       jeedom.cmd.execute({id: '#set_minus_one_id#'});
       temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
       newTemp = parseFloat(temp) - 1
       $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
     });
 
-    $('.qivivo_temperature_order_cancel').on('click', function () {
+    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
       jeedom.cmd.execute({id: '#cancel_id#'});
     });
   </script>
