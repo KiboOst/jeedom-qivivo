@@ -8,50 +8,13 @@ sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
 
-<style type="text/css">
-  .select-mode-off {
-    background-color: rgb(157,249,254) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-frost {
-    background-color: rgb(141,237,253) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-abs {
-    background-color: rgb(126,218,253) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-eco, .select-mode-nuit {
-    background-color: rgb(145,195,252) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres1, .select-mode-confort-2 {
-    background-color: rgb(144,175,251) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres2, .select-mode-confort-1 {
-    background-color: rgb(253,233,114) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres3, .select-mode-confort {
-    background-color: rgb(253,212,93) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres4 {
-    background-color: rgb(252,198,79) !important;
-    color: rgb(60,60,60) !important;
-  }
-</style>
-
 <div class="row row-overflow">
   <div class="col-xs-12 eqLogicThumbnailDisplay">
     <legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
     <div class="eqLogicThumbnailContainer">
       <div class="cursor eqLogicAction" data-action="gotoPluginConf">
-        <center>
           <i class="fas fa-wrench"></i>
-        </center>
-      <span><center>{{Configuration}}</center></span>
+      <span>{{Configuration}}</span>
       </div>
     </div>
 
@@ -301,6 +264,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
   </div>
 </div>
 
-<?php include_file('3rdparty', 'jquery-clock-timepicker.min', 'js', 'qivivo');?>
-<?php include_file('desktop', 'qivivo', 'js', 'qivivo');?>
-<?php include_file('core', 'plugin.template', 'js');?>
+<?php
+  include_file('3rdparty', 'jquery-clock-timepicker.min', 'js', 'qivivo');
+  include_file('desktop', 'qivivo', 'js', 'qivivo');
+  include_file('desktop', 'qivivo', 'css', 'qivivo');
+  include_file('core', 'plugin.template', 'js');
+?>
