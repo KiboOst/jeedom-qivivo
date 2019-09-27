@@ -54,14 +54,14 @@
       }
     })
     //set icons to light:
-    $(function() {
+    if ($('body')[0].hasAttribute('data-theme')) {
       if ($('body').attr('data-theme').endsWith('Light')) {
         var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
         eqlogic.find('.qivivo_temperature_order_down > img').attr('src', '/plugins/qivivo/core/img/icon_down_light.png')
         eqlogic.find('.qivivo_temperature_order_up > img').attr('src', '/plugins/qivivo/core/img/icon_up_light.png')
         eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
       }
-    })
+    }
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
       jeedom.cmd.execute({id: '#refresh_id#'});
