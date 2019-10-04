@@ -11,15 +11,16 @@
 
   <div class="verticalAlign">
     <center>
-      <div class="cmd-widget" data-type="action" style="margin-bottom:5px">
+      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px">
         <a class="btn qivivo_temperature_order_down" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="24px"></a>
-        <span class="cmd-widget history" data-type="info">
-            <strong class="state #temperature_order_history#" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="position:relative; top:6px;vertical-align:middle;font-size:1.5em">#temperature_order# °C</strong>
-        </span>
+      </div>
+      <div class="cmd cmd-widget #temperature_order_history#" data-type="info" data-cmd_id="#temperature_order_id#" style="min-width: 20px;">
+          <strong class="state"  title="#temperature_order_collectDate#" style="position:relative; top:12px;vertical-align:middle;font-size:1.5em">#temperature_order# °C</strong>
+      </div>
+      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px">
         <a class="btn qivivo_temperature_order_up" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="24px"></a>
         <a class="btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
-
 
       <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;display:block;">
         <span>Température  <strong class="state">#temperature#</strong> °C</span>
