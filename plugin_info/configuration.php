@@ -162,7 +162,6 @@ if (!isConnect()) {
         div += '</span>'
         div += '<input class="expressionAttr form-control input-sm cmdAction" data-l1key="cmd" />'
         div += '<span class="input-group-btn">';
-        div += '<a class="btn btn-default btn-sm listAction" title="Sélectionner un mot-clé"><i class="fa fa-tasks"></i></a>'
         div += '<a class="btn btn-default btn-sm listCmdAction"><i class="fa fa-list-alt"></i></a>'
         div += '</span>'
         div += '</div>'

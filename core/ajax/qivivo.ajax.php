@@ -94,12 +94,13 @@ try {
         $actionsOnError = config::byKey('actionsOnError', 'qivivo');
         //log::add('qivivo', 'debug', 'ajax getActionsOnError: '.print_r($actionsOnError, 1));
         for ($i=0; $i<count($actionsOnError); $i++) {
-            $cmdId = $actionsOnError[$i]['cmd'];
-            $cmd = cmd::byId($cmdId);
-            $cmdName = '#'.$cmd->getHumanName().'#';
-            $actionsOnError[$i]['cmd'] = $cmdName;
+          $cmdId = $actionsOnError[$i]['cmd'];
+          $cmd = cmd::byId($cmdId);
+          if (!is_object($cmd)) continue;
+          $cmdName = '#'.$cmd->getHumanName().'#';
+          $actionsOnError[$i]['cmd'] = $cmdName;
         }
-        ajax::success($actionsOnError);
+      ajax::success($actionsOnError);
     }
 
     if (init('action') == 'saveActionsOnError') {
