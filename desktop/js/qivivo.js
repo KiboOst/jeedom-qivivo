@@ -762,9 +762,6 @@ function addCmdToTable(_cmd) {
         tr += '</td>'
 
         tr += '<td>'
-        if (_cmd.logicalId != 'refresh'){
-            tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible"/>{{Afficher}}</label></span> '
-        }
         if (_cmd.subType == "numeric" || _cmd.subType == "binary") {
             tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized"/>{{Historiser}}</label></span> '
         }
