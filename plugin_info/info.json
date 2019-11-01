@@ -12,7 +12,7 @@
 	"changelog" : "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/changelog.html",
 	"documentation" : "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/",
 	"language" : ["fr_FR"],
-	"compatibility" : ["miniplus","smart","rpi","docker","diy"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"],
 	"link" : {
 		"forum": "https://www.jeedom.com/forum/viewtopic.php?f=144&t=35997"
 	}
