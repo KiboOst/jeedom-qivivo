@@ -3,29 +3,29 @@
       data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
   <span class="statusCmd"></span>
   <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
-		<i class="fas fa-sync"></i>
+    <i class="fas fa-sync"></i>
   </span>
   <center class="widget-name" style="#hideEqLogicName#">#name_display# <span class="object_name">#object_name#</span></center>
   <center>
     <div>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
       <a class="btn qivivo_temperature_order_down cursor" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="26px" style="vertical-align:middle;"></a>
-      <strong class="state #temperature_order_history#" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em!important">#temperature_order#</strong> °C
+      <strong class="cmd state #temperature_order_history# #history#" data-type="info" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em!important">#temperature_order#</strong> °C
       <a class="btn qivivo_temperature_order_up cursor" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="26px" style="vertical-align:middle;"></a>
       <a class="btn qivivo_temperature_order_cancel cursor" data-cmd_id="#cancel_id#" style="margin-left:5px;"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="26px" style="vertical-align:middle;"></a>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
     </div>
 
-    <div data-cmd_id="#temperature_id#">
-      <span class="cmdName">Température</span>  <strong class="state">#temperature#</strong> °C
+    <div>
+      <span class="cmdName">Température</span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#temperature_id#">#temperature#</strong> °C
     </div>
 
-    <div data-cmd_id="#humidity_id#">
-      <span class="cmdName">Humidité</span>  <strong class="state">#humidity#</strong> %
+    <div>
+      <span class="cmdName">Humidité</span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#humidity_id#">#humidity#</strong> %
     </div>
 
-    <div data-cmd_id="#presence_id#">
-      <span class="cmdName">Presence</span>  <i class="state #pres_class#"></i>
+    <div>
+      <span class="cmdName">Presence</span>  <i class="cmd state #history# #pres_class#" data-type="info" data-cmd_id="#presence_id#"></i>
     </div>
 
     <div>
