@@ -27,7 +27,7 @@ if (!class_exists('qivivoAPI')) {
 
 class qivivo extends eqLogic {
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
-    
+
     public static function getAPI($_typeCmd='info', $_action=null, $_options=null, $_msg=null) {
         $client_id = config::byKey('client_id', 'qivivo');
         $client_secret = config::byKey('client_secret', 'qivivo');
@@ -405,7 +405,7 @@ class qivivo extends eqLogic {
         log::add('qivivo_debug', 'error', $data);
 
         //custom API:
-        $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+        $_fullQivivo = qivivo::getCustomAPI('action', null, $_options, $message);
         if ($_fullQivivo == False)
         {
             log::add('qivivo_debug', 'error', 'getCustomAPI() error!');
@@ -1064,7 +1064,7 @@ class qivivo extends eqLogic {
         //only custom template for thermostat dashboard:
         $_thisType = $this->getConfiguration('type');
         $replace['#category#'] = $this->getPrimaryCategory();
-      
+
         if ($_thisType == 'Thermostat')
         {
             $refresh = $this->getCmd(null, 'refresh');
@@ -1251,7 +1251,7 @@ class qivivo extends eqLogic {
 
 class qivivoCmd extends cmd {
     public static $_widgetPossibility = array('custom' => false);
-    
+
     public function dontRemoveCmd()
     {
         return true;
