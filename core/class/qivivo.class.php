@@ -149,7 +149,17 @@ class qivivo extends eqLogic {
         {
             return;
         }
-        $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
+
+        if ($_fullQivivo->_isMultizone) {
+            $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
+        } else {
+            $fullModules = array();
+            foreach ($devices as $device) {
+                if ($device['type'] == 'wireless-module') {
+                    array_push($fullModules, $device);
+                }
+            }
+        }
         $fullCurrentPrograms = $_fullQivivo->getCurrentProgram();
 
         foreach ($devices as $device)
@@ -179,14 +189,22 @@ class qivivo extends eqLogic {
                 $eqLogic->setConfiguration('zone_name', -1);
                 foreach ($fullModules as $fullModule)
                 {
-                    $mac_address = $fullModule['mac_address'];
-                    if ($serial == $mac_address)
-                    {
-                        $eqLogic->setConfiguration('zone_name', $fullModule['zone_name']);
-                        $eqLogic->setName('Zone '.$fullModule['zone_name']);
-                        $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
+                    if ($_fullQivivo->_isMultizone) {
+                        $mac_address = $fullModule['mac_address'];
+                        if ($serial == $mac_address)
+                        {
+                            $eqLogic->setConfiguration('zone_name', $fullModule['zone_name']);
+                            $eqLogic->setName('Zone '.$fullModule['zone_name']);
+                            $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
+                            $eqLogic->setConfiguration('program_name', $program_name);
+                            break;
+                        }
+                    } else {
+                        $zone_name = 'Zone Thermostat';
+                        $program_name = $fullCurrentPrograms['result']['Zone Thermostat'];
+                        $eqLogic->setConfiguration('zone_name', $zone_name);
+                        $eqLogic->setName($zone_name);
                         $eqLogic->setConfiguration('program_name', $program_name);
-                        break;
                     }
                 }
 
@@ -411,8 +429,22 @@ class qivivo extends eqLogic {
 
         $devices = $_qivivo->getDevices();
         log::add('qivivo_debug', 'error', 'API.getDevices: '.json_encode($devices));
-        $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
+        log::add('qivivo_debug', 'error', 'customAPI._isMultizone: '.$_fullQivivo->_isMultizone);
+
         $fullCurrentPrograms = $_fullQivivo->getCurrentProgram();
+        log::add('qivivo_debug', 'error', 'customAPI.getCurrentProgram: '.json_encode($fullCurrentPrograms));
+
+        if ($_fullQivivo->_isMultizone) {
+            $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
+        } else {
+            $fullModules = array();
+            foreach ($devices as $device) {
+                if ($device['type'] == 'wireless-module') {
+                    array_push($fullModules, $device);
+                }
+            }
+        }
+
         foreach ($devices as $device)
         {
             $type = $device['type'];
@@ -421,15 +453,21 @@ class qivivo extends eqLogic {
                 $moduleInfos = $_qivivo->getModuleInfos($device['uuid']);
                 $serial = $moduleInfos['serial'];
                 foreach ($fullModules as $fullModule)
-                {
-                    $mac_address = $fullModule['mac_address'];
-                    if ($serial == $mac_address)
                     {
-                        $zone_name = $fullModule['zone_name'];
-                        $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
-                        break;
+                        if ($_fullQivivo->_isMultizone) {
+                            $mac_address = $fullModule['mac_address'];
+                            if ($serial == $mac_address)
+                            {
+                                $zone_name = $fullModule['zone_name'];
+                                $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
+                                break;
+                            }
+                        } else {
+                            $zone_name = 'Zone Thermostat';
+                            $program_name = $fullCurrentPrograms['result']['Zone Thermostat'];
+                        }
+
                     }
-                }
                 log::add('qivivo_debug', 'error', 'Zone: '.$zone_name.' | program_name: '.$program_name);
             }
         }
