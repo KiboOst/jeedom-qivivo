@@ -137,6 +137,7 @@ class qivivo extends eqLogic {
     }
 
     public static function syncWithQivivo() { //ajax call from plugin configuration
+        qivivo::logger('starting...');
         $_qivivo = qivivo::getAPI();
         if ($_qivivo == False)
         {
@@ -233,6 +234,7 @@ class qivivo extends eqLogic {
             $eqLogic->setLogicalId($device['uuid']);
             $eqLogic->save();
         }
+        qivivo::logger('done!');
     }
 
     public static function refreshQivivoInfos() { //called from cron5 or cron15 to refresh infos
