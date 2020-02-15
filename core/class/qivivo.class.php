@@ -238,11 +238,13 @@ class qivivo extends eqLogic {
     }
 
     public static function refreshQivivoInfos() { //called from cron5 or cron15 to refresh infos
-        try
-        {
+        try {
             qivivo::logger('refresh');
             $_qivivo = qivivo::getAPI();
-            if ($_qivivo == False) return;
+            if ($_qivivo == False) {
+                qivivo::logger('could not get API, ending.');
+                return;
+            }
 
             $devices = $_qivivo->getDevices();
             qivivo::logger('devices: '.json_encode($devices));
