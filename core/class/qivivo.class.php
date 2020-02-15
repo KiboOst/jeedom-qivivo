@@ -1364,10 +1364,10 @@ class qivivoCmd extends cmd {
                 $program = $_options['select'];
                 if ($program == '') return;
 
-                $message = 'set_program '.$eqLogic->getName().' to '.$program;
+                $program_name = $eqLogic->getConfiguration('program_name');
+                $message = 'set_program '.$eqLogic->getName().' | '.$program_name.' to '.$program;
                 qivivo::logger($message);
 
-                $program_name = $eqLogic->getConfiguration('program_name');
                 if ($eqLogic->getConfiguration('isModuleThermostat') == 0)
                 {
                     $mode_refs_array = ['Confort'=>'mz_comfort',
@@ -1421,7 +1421,10 @@ class qivivoCmd extends cmd {
                         }
 
                         $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                        if ($_fullQivivo == False) return;
+                        if ($_fullQivivo == False) {
+                            qivivo::logger('set_program: could not get customAPI, ending.');
+                            return;
+                        }
                         $result = $_fullQivivo->setProgram($program_name, $program_array);
                         qivivo::logger(json_encode($result));
 
@@ -1429,8 +1432,8 @@ class qivivoCmd extends cmd {
                         {
                             $eqLogic->checkAndUpdateCmd('current_program', $program);
                             $eqLogic->refreshWidget();
-                            return;
                         }
+                        return;
                     }
                 }
                 qivivo::logger('Unfound program!', 'warning');
