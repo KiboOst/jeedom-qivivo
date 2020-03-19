@@ -10,7 +10,7 @@ if (!class_exists('qivivoAPI')) {
 class qivivo extends eqLogic {
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
-    public function logger($str = '', $level = 'debug') {
+    public static function logger($str = '', $level = 'debug') {
         if (is_array($str)) $str = json_encode($str);
         $function_name = debug_backtrace(false, 2)[1]['function'];
         $class_name = debug_backtrace(false, 2)[1]['class'];
