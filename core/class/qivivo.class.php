@@ -1119,11 +1119,15 @@ class qivivo extends eqLogic {
             $refresh = $this->getCmd(null, 'refresh');
             $replace['#refresh_id#'] = $refresh->getId();
 
+            $replace['#temperature_name#'] = __('Température', __FILE__);
+            $replace['#humidity_name#'] = __('Humidité', __FILE__);
+            $replace['#presence_name#'] = __('Presence', __FILE__);
+
             $cmd = $this->getCmd(null, 'temperature_order');
             $tmpConsigne = $cmd->execCmd();
             $replace['#temperature_order#'] = $tmpConsigne;
             $replace['#temperature_order_id#'] = $cmd->getId();
-            $replace['#temperature_order_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#temperature_order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#temperature_order_history#'] = 'history cursor';
             }
@@ -1138,7 +1142,7 @@ class qivivo extends eqLogic {
             $tmpRoom = $cmd->execCmd();
             $replace['#temperature#'] = $tmpRoom;
             $replace['#temperature_id#'] = $cmd->getId();
-            $replace['#temperature_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#temperature_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#temperature_history#'] = 'history cursor';
             }
@@ -1146,7 +1150,7 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'humidity');
             $replace['#humidity#'] = $cmd->execCmd();
             $replace['#humidity_id#'] = $cmd->getId();
-            $replace['#humidity_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#humidity_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#humidity_history#'] = 'history cursor';
             }
@@ -1154,7 +1158,7 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'presence');
             $pres = $cmd->execCmd();
             $replace['#presence_id#'] = $cmd->getId();
-            $replace['#presence_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#presence_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#presence_history#'] = 'history cursor';
             }
@@ -1166,12 +1170,12 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'last_presence');
             $replace['#lastpres#'] = $cmd->execCmd();
             $replace['#lastpres_id#'] = $cmd->getId();
-            $replace['#lastpres_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#lastpres_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
 
             $cmd = $this->getCmd(null, 'heating');
             $heating = $cmd->execCmd();
             $replace['#heating_id#'] = $cmd->getId();
-            $replace['#heating_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#heating_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#heating_history#'] = 'history cursor';
             }
@@ -1189,7 +1193,7 @@ class qivivo extends eqLogic {
             $order = $cmd->execCmd();
             $replace['#order#'] = $order;
             $replace['#order_id#'] = $cmd->getId();
-            $replace['#order_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#order_history#'] = 'history cursor';
             }
@@ -1220,7 +1224,7 @@ class qivivo extends eqLogic {
             }
             $cmd = $this->getCmd(null, 'current_program');
             $current_program = $cmd->execCmd();
-            $replace['#program_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#program_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
 
             $cmd = $this->getCmd(null, 'set_program');
             $replace['#set_program_id#'] = $cmd->getId();
@@ -1245,7 +1249,7 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'last_communication');
             $replace['#last_communication#'] = $cmd->execCmd();
             $replace['#last_communication_id#'] = $cmd->getId();
-            $replace['#last_communication_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#last_communication_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#last_communication_history#'] = 'history cursor';
             }
@@ -1254,7 +1258,7 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'firmware_version');
             $replace['#firmware_version#'] = $cmd->execCmd();
             $replace['#firmware_version_id#'] = $cmd->getId();
-            $replace['#firmware_version_collectDate#'] = 'Date de valeur : '.$cmd->getValueDate().'<br>Date de collecte : '.$cmd->getCollectDate();
+            $replace['#firmware_version_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1) {
                 $replace['#firmware_version_history#'] = 'history cursor';
             }

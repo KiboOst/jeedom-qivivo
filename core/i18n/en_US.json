@@ -39,7 +39,12 @@
         "LastMsg": "LastMsg",
         "Firmware": "Firmware",
         "debug": "debug",
-        "Rafraichir": "Refresh"
+        "Rafraichir": "Refresh",
+        "Date de valeur": "Value date",
+        "Date de collecte": "Collect date",
+        "Température": "Temperature",
+        "Humidité": "Humidity",
+        "Presence": "Presence"
     },
     "plugins\/qivivo\/desktop\/js\/qivivo.js": {
         "Nom du programme ?": "Program name ?",
