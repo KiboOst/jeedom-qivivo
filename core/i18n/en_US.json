@@ -62,11 +62,32 @@
         "Importation de programme": "Program import",
         "Nom": "Name",
         "Historiser": "Historize",
-        "Tester": "Test"
+        "Tester": "Test",
+        "Lundi": "Monday",
+        "Mardi": "Tuesday",
+        "Mercredi": "Wednesday",
+        "Jeudi": "Thursday",
+        "Vendredi": "Friday",
+        "Samedi": "Saturday",
+        "Dimanche": "Sunday",
+        "Ajouter une période": "Add period",
+        "Copier le jour": "Copy day",
+        "Coller le jour": "Paste day",
+        "Mode de chauffage": "Heating mode",
+        "Thermostat": "Thermostat",
+        "Module Chauffage": "Heating Module",
+        "Passerelle": "Bridge"
     },
     "plugins\/qivivo\/desktop\/modal\/importProgram.php": {
         "401 - Accès non autorisé": "401 - Unauthorized access",
-        "Importer": "Import"
+        "Importer": "Import",
+        "Oui": "Yes",
+        "Non": "No",
+        "Fichier": "File",
+        "Zone Thermostat": "Thermostat Zone",
+        "Origine": "Origin",
+        "Programme": "Program",
+        "Actions": "Actions"
     },
     "plugins\/qivivo\/desktop\/php\/qivivo.php": {
         "401 - Accès non autorisé": "401 - Unauthorized access",
