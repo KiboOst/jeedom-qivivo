@@ -33,7 +33,8 @@ PROGRAM_OPTIONS_ZONE = ['<option class="select-mode-off" value="Arrêt">Arrêt</
                                  '<option class="select-mode-confort-1" value="Confort-1">Confort-1</option>',
                                  '<option class="select-mode-confort" value="Confort">Confort</option>'
                                  ]
-//-->
+WEEKDAYSREF = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+WEEKDAYS = ['{{Lundi}}', '{{Mardi}}', '{{Mercredi}}', '{{Jeudi}}', '{{Vendredi}}', '{{Samedi}}', '{{Dimanche}}']
 
 //show module image:
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change',function(){
@@ -87,8 +88,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=uuid]').on('change',functio
 function uuid_callback(data) {
     _type = data.result.type
 
-    //console.log(data.result)
-
     //common infos:
     $("div[data-cmd_id='last_communication']").show()
     $("span[data-cmd_id='last_communication']").html(data.result.last_communication)
@@ -128,6 +127,8 @@ function uuid_callback(data) {
 
         $("div[data-cmd_id='battery']").show()
         $("span[data-cmd_id='battery']").html(data.result.battery + ' %')
+
+        $('#spanEqType').html("{{Thermostat}}")
     }
 
     if (_type == 'Module Chauffage')
@@ -138,6 +139,13 @@ function uuid_callback(data) {
         $("span[data-cmd_id='module_order']").html(value)
 
         $("div[data-cmd_id='moduleZone']").show()
+
+        $('#spanEqType').html("{{Module Chauffage}}")
+    }
+
+    if (_type == 'Passerelle')
+    {
+        $('#spanEqType').html("{{Passerelle}}")
     }
 }
 
@@ -152,17 +160,15 @@ $('#bt_addProgram').off('click').on('click', function () {
 function addProgram(_program, _updateProgram) {
     if (init(_program.name) == '') return
     var random = Math.floor((Math.random() * 1000000) + 1)
-    days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
-
     var div = '<div class="program panel panel-default">'
     div += '<div class="panel-heading">'
     div += '<h3 class="panel-title">'
-    div += '<a class="accordion-toggle" data-toggle="collapse" data-parent="#div_programs" href="#collapse' + random + '">'
+    div += '<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="" href="#collapse' + random + '">'
     div += '<span class="name">' + _program.name + '</span>'
     div += '</a>'
     div += '</h3>'
     div += '</div>'
-    div += '<div id="collapse' + random + '" class="panel-collapse collapse in">'
+    div += '<div id="collapse' + random + '" class="panel-collapse collapse" style="height: 0px;">'
     div += '<div class="panel-body">'
     div += '<div>'
         div += '<form class="form-horizontal" role="form">'
@@ -183,7 +189,7 @@ function addProgram(_program, _updateProgram) {
         div += '</div>'
         div += '</div>'
         div += '<div class="div_programDays">'
-            days.forEach(function(day) {
+            WEEKDAYS.forEach(function(day) {
                 div += createDayDiv(day)
             })
             //graphs:
@@ -197,7 +203,7 @@ function addProgram(_program, _updateProgram) {
                 div += '<div style="width: 25%; height:18px; display:inline-block; position:inherit;">12:00</div>'
                 div += '<div style="width: 25%; height:18px; display:inline-block;">18:00</div>'
             div += '</div>'
-                days.forEach(function(day) {
+                WEEKDAYS.forEach(function(day) {
                     div += '<div class="graphDayTitle" style="width:80px; display:inline-block;">'
                     div += day
                     div += '</div>'
@@ -215,7 +221,6 @@ function addProgram(_program, _updateProgram) {
 
     $('#div_programs').append(div)
     $('#div_programs .program:last').setValues(_program, '.programAttr')
-    if (_program.isNew == false) $('.collapse').collapse()
 
     //init days:
     if (_program.isNew) {
@@ -334,9 +339,9 @@ function createDayDiv(dayName){
 
     dayDiv += '<div class="input-group" style="display:inline-flex">'
         dayDiv += '<span class="input-group-btn">'
-            dayDiv += '<span><i class="fa fa-plus-circle cursor bt_addPeriod" title="Ajouter une période"></i> </span>'
-            dayDiv += '<span><i class="fas fa-sign-out-alt cursor bt_copyDay" title="Copier le jour"></i> </span>'
-            dayDiv += '<span><i class="fas fa-sign-in-alt cursor bt_pasteDay" title="Coller le jour"></i> </span>'
+            dayDiv += '<span><i class="fa fa-plus-circle cursor bt_addPeriod" title="{{Ajouter une période}}"></i> </span>'
+            dayDiv += '<span><i class="fas fa-sign-out-alt cursor bt_copyDay" title="{{Copier le jour}}"></i> </span>'
+            dayDiv += '<span><i class="fas fa-sign-in-alt cursor bt_pasteDay" title="{{Coller le jour}}"></i> </span>'
         dayDiv += '</span></br>'
     dayDiv += '</div>'
 
@@ -447,8 +452,8 @@ function addPeriod(dayDiv, time=null, periodMode=null){
     if (time == null) time = '00:00'
     div = '<div class="dayPeriod">'
         div += '<div class="input-group" style="width:100% !important; line-height:1.4px !important;">'
-            div += '<input class="timePicker form-control input-sm" type="text" value="'+time+'" style="width:60px; min-width:60px;" onchange="checkTimePicker(this)" title="Heure de début de période au format 00:00">'
-            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" data-l2key="graphColor" onchange="definePeriodMode(this)" style="width:calc(100% - 93px);display:inline-block" title="Mode de chauffage">'
+            div += '<input class="timePicker form-control input-sm cursor" type="text" value="'+time+'" style="width:60px; min-width:60px;" onchange="checkTimePicker(this)">'
+            div += '<select class="expressionAttr form-control input-sm selectPeriodMode select-mode-off" data-l2key="graphColor" onchange="definePeriodMode(this)" style="width:calc(100% - 93px);display:inline-block" title="{{Mode de chauffage}}">'
                 l = PROGRAM_MODE_LIST.length
                 for (var i = 0; i < l; i++) {
                     div += PROGRAM_MODE_LIST[i]
@@ -462,11 +467,16 @@ function addPeriod(dayDiv, time=null, periodMode=null){
     newdiv = $(div)
     if (time != '00:00'){
         newdiv.find('.timePicker').clockTimePicker()
-        newdiv.find('.clock-timepicker').attr('style','display: inline');
+        newdiv.find('.clock-timepicker').attr('style','display: inline')
     }
     else newdiv.find('.timePicker').prop('readonly', true)
 
-    if (time != null && time != '00:00') newdiv.find('.timePicker').clockTimePicker('value', time)
+    /*
+    if (time != null && time != '00:00') {
+        newdiv.find('.timePicker').clockTimePicker('value', time)
+        newdiv.find('.clock-timepicker').attr('style','display: inline')
+    }
+    */
     if (periodMode)
     {
         select = newdiv.find('.selectPeriodMode')
@@ -609,10 +619,12 @@ $('.bt_importProgram').on('click',function(){ //called from modal!
             divDays.find('.weekDay').each(function () {
                 clearDay($(this))
                 dayElName = $(this).find('.dayName').html()
+                dayElNameRef = WEEKDAYSREF[WEEKDAYS.indexOf(dayElName)]
                 for (j in jsonDatas.days) {
                     day = jsonDatas.days[j]
-                    dayName = day.name
-                    if (dayName == dayElName){
+                    dayNamefr = day.name
+                    dayName = WEEKDAYS[WEEKDAYSREF.indexOf(dayElName)]
+                    if (dayNamefr == dayElNameRef){
                         periods = day.periods
                         for (k in periods) {
                             period = periods[k]
@@ -699,10 +711,11 @@ function printEqLogic(_eqLogic) {
             addProgram({name: thisProgram.name, isNew: false})
             $('#div_programs .program:last .weekDay').each(function () {
                 dayElName = $(this).find('.dayName').html()
+                dayElNameRef = WEEKDAYSREF[WEEKDAYS.indexOf(dayElName)]
                 for (j in thisProgram.days) {
                     day = thisProgram.days[j]
                     dayName = day.name
-                    if (dayName == dayElName){
+                    if (dayName == dayElNameRef){
                         periods = day.periods
                         for (k in periods) {
                             period = periods[k]
@@ -729,7 +742,9 @@ function saveEqLogic(_eqLogic) {
         days = []
         $(this).find('.weekDay').each(function () {
             day = {}
-            day.name = $(this).find('.dayName').html()
+            dayName = $(this).find('.dayName').html()
+            idx = WEEKDAYS.indexOf(dayName)
+            day.name = WEEKDAYSREF[idx]
             //get each period:
             periods = []
             $(this).find('.dayPeriod').each(function () {

@@ -28,22 +28,22 @@ if (!isConnect('admin')) {
     $command = 'ls '.$folderPath;
     $res = exec($command, $output, $return_var);
 
-    $div = '<div class="col-sm-12" style="background-color:darkgrey;padding-top:5px;">';
+    $div = '<div class="col-sm-12" style="padding-top:5px;">';
         $div .= '<div class="form-group">';
             $div .= '<div class="col-sm-4">';
-                $div .= '<label>Fichier</label>';
+                $div .= '<label>{{Fichier}}</label>';
             $div .= '</div>';
             $div .= '<div class="col-sm-2">';
-                $div .= '<label>Zone Thermostat</label>';
+                $div .= '<label>{{Zone Thermostat}}</label>';
             $div .= '</div>';
             $div .= '<div class="col-sm-2">';
-                $div .= '<label>Origine</label>';
+                $div .= '<label>{{Origine}}</label>';
             $div .= '</div>';
             $div .= '<div class="col-sm-1">';
-                $div .= '<label>Programme</label>';
+                $div .= '<label>{{Programme}}</label>';
             $div .= '</div>';
             $div .= '<div class="col-sm-3">';
-                $div .= '<label>Fonctions</label>';
+                $div .= '<label>{{Actions}}</label>';
             $div .= '</div>';
         $div .= '</div>';
     $div .= '</div>';
@@ -54,8 +54,8 @@ if (!isConnect('admin')) {
         $file = file_get_contents($folderPath.$fileName);
         $_json = json_decode($file);
         $isThermostat = $_json->isThermostat;
-        if ($isThermostat == '0') $isThermostatString = 'Non';
-        else $isThermostatString = 'Oui';
+        if ($isThermostat == '0') $isThermostatString = '{{Non}}';
+        else $isThermostatString = '{{Oui}}';
 
         $_uuid = $_json->origin;
         $origin = 'Unknown';
