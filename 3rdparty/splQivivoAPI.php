@@ -7,7 +7,7 @@ https://github.com/KiboOst/php-simpleQivivoAPI
 
 class splQivivoAPI {
 
-    public $_version = '0.17';
+    public $_version = '0.18';
 
     //USER FUNCTIONS======================================================
 
@@ -241,6 +241,9 @@ class splQivivoAPI {
         $url = $this->_apiRoot.'/devices';
         $answer = $this->_request('GET', $url);
         $jsonAnswer = json_decode($answer, true);
+        if (!is_array($jsonAnswer)) {
+            return array('result'=>false);
+        }
 
         $this->_devices = $jsonAnswer['devices'];
         $this->_thermostatsUUID = array();
@@ -348,7 +351,9 @@ class splQivivoAPI {
 
         if ($this->connect() == true)
         {
-            $this->getDatas();
+            $data = $this->getDatas();
+            if ($data['result'] == false) $this->error = 'Could not get data from API!';
+
         }
         else
         {
