@@ -267,6 +267,7 @@ class splQivivoAPI {
             curl_setopt($this->_curlHdl, CURLOPT_CONNECTTIMEOUT, 5);
             curl_setopt($this->_curlHdl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($this->_curlHdl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($this->_curlHdl, CURLOPT_SSL_VERIFYPEER, 0);
         }
 
         curl_setopt($this->_curlHdl, CURLOPT_URL, $url);
