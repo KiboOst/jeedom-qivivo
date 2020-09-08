@@ -9,11 +9,10 @@
   </center>
 
   <center>
-    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" style="width:100%;">
-      <i class="divers-today1" style="font-size:20px;padding-top: 12px;padding-left: 5px;float: left;"></i>
-        <select>#set_program_listValue#</select>
-    </span>
-
+    </br>
+    <div class="#firmware_version_history#" data-cmd_id="#firmware_version_id#">
+      <i class="fa fa-cog"></i> <strong class="state" title="#firmware_version_collectDate#">#firmware_version#</strong>
+    </div>
     <div data-cmd_id="#last_communication_id#">
       <i class="nature-leaf37"></i>
       #last_communication#
@@ -21,14 +20,8 @@
   </center>
 
   <script>
-    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
-
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
         jeedom.cmd.execute({id: '#refresh_id#'});
       })
-
-    $(".cmd[data-cmd_id=#set_program_id#] .selectCmd").on('change', function () {
-      jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}});
-    })
   </script>
 </div>

@@ -35,13 +35,13 @@ try {
     if (init('action') == 'getTypeAndValues') {
         try
         {
-            $_uuid = init('_uuid');
+            $_serial = init('_serial');
             $plugin = plugin::byId('qivivo');
             $eqLogics = eqLogic::byType($plugin->getId());
             foreach ($eqLogics as $eqLogic)
             {
-                $uuid = $eqLogic->getConfiguration('uuid', '');
-                if ($uuid == $_uuid)
+                $serial = $eqLogic->getConfiguration('serial', '');
+                if ($serial == $_serial)
                 {
                     $type = $eqLogic->getConfiguration('type', '');
                     $result = array('type' => $type);
@@ -54,8 +54,10 @@ try {
                     }
                     if ($type == 'Module Chauffage')
                     {
-                        $module_order = $eqLogic->getCmd(null, 'module_order')->execCmd();
-                        $result['module_order'] = $module_order;
+                        if ($eqLogic->getConfiguration('isModuleThermostat') == 0) {
+                            $module_order = $eqLogic->getCmd(null, 'module_order')->execCmd();
+                            $result['module_order'] = $module_order;
+                        }
                     }
                     if ($type == 'Thermostat')
                     {
@@ -116,19 +118,6 @@ try {
         }
         $actionsOnError = json_encode($actionsOnError);
         config::save('actionsOnError', $actionsOnError, 'qivivo');
-        ajax::success();
-    }
-
-    if (init('action') == 'exportProgram') {
-        qivivo::exportProgram(init('name'), init('program'));
-        ajax::success();
-    }
-
-    if (init('action') == 'deleteProgramFile') {
-        $folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
-        $fileName = init('fileName');
-        log::add('qivivo', 'debug', 'ajax deleteProgramFile: '.$folderPath.$fileName);
-        @unlink($folderPath.$fileName);
         ajax::success();
     }
 

@@ -16,16 +16,17 @@
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
     </div>
 
+    <span class="cmd cmd-widget" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#">
+        <i class="divers-today1" style="font-size:20px;padding-top: 12px;padding-left: 5px;float: left;"></i>
+        <select>#set_program_listValue#</select>
+    </span>
+
     <div>
       <span class="cmdName">#temperature_name#  </span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#temperature_id#">#temperature#</strong> °C
     </div>
 
     <div>
       <span class="cmdName">#humidity_name#  </span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#humidity_id#">#humidity#</strong> %
-    </div>
-
-    <div>
-      <span class="cmdName">#presence_name#  </span>  <i class="cmd state #history# #pres_class#" data-type="info" data-cmd_id="#presence_id#"></i>
     </div>
 
     <div>
@@ -84,5 +85,9 @@
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
       jeedom.cmd.execute({id: '#cancel_id#'});
     });
+
+    $(".cmd[data-cmd_id=#set_program_id#] select").on('change', function () {
+      jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}});
+    })
   </script>
 </div>

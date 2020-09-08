@@ -221,19 +221,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
         </div>
         <!--common info-->
         <div class="form-group">
-          <label class="col-sm-3 control-label">{{uuid}}</label>
+          <label class="col-sm-3 control-label">{{serial}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="uuid"></span>
+           <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="serial"></span>
           </div>
         </div>
       </fieldset>
     </form>
-    </div>
-
-    <!--Programs Tab-->
-    <div role="tabpanel" class="tab-pane" id="tab_programs">
-      <a class="btn btn-success pull-right" id="bt_addProgram" style="margin-top: 5px;"><i class="fa fa-plus-circle"></i> {{Ajouter Programme}}</a><br/><br/>
-      <div id="div_programs" class="panel-group"></div>
     </div>
 
     <!--Commands Tab-->
@@ -266,7 +260,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div>
 
 <?php
-  include_file('3rdparty', 'jquery-clock-timepicker.min', 'js', 'qivivo');
   include_file('desktop', 'qivivo', 'js', 'qivivo');
   include_file('desktop', 'qivivo', 'css', 'qivivo');
   include_file('core', 'plugin.template', 'js');

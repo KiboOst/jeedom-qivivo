@@ -21,10 +21,21 @@ if (!isConnect()) {
 	include_file('desktop', '404', 'php');
 	die();
 }
+$pluginVersion = config::byKey('pluginversion', 'qivivo');
+if ($pluginVersion == '') {
+    $pluginVersion = 1.9;
+}
 ?>
 
 <form class="form-horizontal">
 <fieldset>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{Plugin Version}}</label>
+        <div class="col-sm-10">
+            <span class="label label-info"><?php echo $pluginVersion; ?></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Login}}</label>
         <div class="col-sm-10">
@@ -34,9 +45,10 @@ if (!isConnect()) {
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Password}}</label>
         <div class="col-sm-10">
-            <input type="text" class="configKey form-control" data-l1key="pass" placeholder="Account password"/>
+            <input type="text" class="inputPassword configKey form-control" data-l1key="pass" placeholder="Account password"/>
         </div>
     </div>
+    <!--
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Client ID}}</label>
         <div class="col-sm-10">
@@ -46,15 +58,18 @@ if (!isConnect()) {
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Client secret}}</label>
         <div class="col-sm-10">
-            <input type="text" class="configKey form-control" data-l1key="client_secret" placeholder="Client Secret"/>
+            <input type="text" class="inputPassword configKey form-control" data-l1key="client_secret" placeholder="Client Secret"/>
         </div>
     </div>
+    -->
+
     <div class="form-group">
         <label class="col-lg-2 control-label">{{Synchroniser}}</label>
         <div class="col-lg-2">
         <a class="btn btn-warning" id="bt_syncWithQivivo"><i class='fa fa-refresh'></i> {{Synchroniser mes équipements}}</a>
         </div>
     </div>
+
 
     <hr>
 

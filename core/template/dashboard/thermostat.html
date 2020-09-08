@@ -22,16 +22,20 @@
         <a class="btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
 
+      <hr style="height:7px; visibility:hidden; padding:0; margin:0">
+      <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" title="#order_collectDate#" style="width:100%!important;">
+        <div class="content-xs" style="display: flex;">
+          <i class="divers-today1" style="font-size:20px;padding-top:1px;padding-left:5px;width: 20px;"></i>
+          <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important;">#set_program_listValue#</select>
+        </div>
+      </div>
+
       <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;display:block;">
         <span>#temperature_name#  <strong class="state">#temperature#</strong> °C</span>
       </div>
 
       <div class="cmd cmd-widget #humidity_history#" data-type="info" data-cmd_id="#humidity_id#" title="#humidity_collectDate#" style="line-height:16px;display:block;">
         <span>#humidity_name#  <strong class="state">#humidity#</strong> %</span>
-      </div>
-
-      <div class="cmd cmd-widget #presence_history#" data-type="info" data-cmd_id="#presence_id#" title="#presence_collectDate#" style="line-height:16px;display:block;">
-        <span>#presence_name#  <i class="state #pres_class#"></i></span>
       </div>
 
       <div class="cmd cmd-widget #heating_history#" data-type="info" data-cmd_id="#heating_id#" style="position:absolute; right:0px; bottom:0px;">
@@ -42,11 +46,12 @@
         <i class="far fa-smile"></i>
         <span title="#lastpres_collectDate#">#lastpres#</span>
       </div>
-
     </center>
   </div>
 
   <script type="text/javascript">
+    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
+
     //change theme event handler for images:
     $('body').on('changeThemeEvent', function (event, theme) {
       var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
@@ -91,5 +96,9 @@
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
       jeedom.cmd.execute({id: '#cancel_id#'});
     });
+
+    $(".cmd[data-cmd_id=#set_program_id#] select").on('change', function () {
+      jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}});
+    })
   </script>
 </div>
