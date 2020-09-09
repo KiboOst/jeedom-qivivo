@@ -136,8 +136,8 @@
         "Password": "Password",
         "Client ID": "Client ID",
         "Client secret": "Client secret",
-        "Synchroniser": "Synchroniser",
-        "Synchroniser mes équipements": "Synchroniser mes équipements",
-        "Synchronisation réussie": "Synchronisation réussie"
+        "Synchroniser": "Synchronizer",
+        "Synchroniser mes équipements": "Synchronize my equipments",
+        "Synchronisation réussie : Veuillez rafraîchir cette page (F5).": "Synchronization successful: Please refresh this page (F5)."
     }
 }

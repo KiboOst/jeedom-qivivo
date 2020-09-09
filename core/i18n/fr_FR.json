@@ -138,6 +138,6 @@
         "Client secret": "Client secret",
         "Synchroniser": "Synchroniser",
         "Synchroniser mes équipements": "Synchroniser mes équipements",
-        "Synchronisation réussie": "Synchronisation réussie"
+        "Synchronisation réussie : Veuillez rafraîchir cette page (F5).": "Synchronisation réussie : Veuillez rafraîchir cette page (F5)."
     }
 }

@@ -111,7 +111,7 @@ if ($pluginVersion == '') {
                     $('#div_alert').showAlert({message: data.result, level: 'danger'});
                     return;
                 }
-                $('#div_alert').showAlert({message: '{{Synchronisation réussie}}', level: 'success'});
+                $('#div_alert').showAlert({message: '{{Synchronisation réussie : Veuillez rafraîchir cette page (F5).}}', level: 'success'});
             }
         })
     })
