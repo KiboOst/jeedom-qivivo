@@ -291,32 +291,32 @@ class qivivo extends eqLogic {
                     $order_num = 0;
                     if ($order == 'stop')
                     {
-                        $order_num = 1;
+                        $order_num = 0;
                         $order = 'Arrêt';
                     }
                     if ($order == 'frost_protection')
                     {
-                        $order_num = 2;
+                        $order_num = 1;
                         $order = 'Hors-Gel';
                     }
                     if ($order == 'eco')
                     {
-                        $order_num = 3;
+                        $order_num = 2;
                         $order = 'Eco';
                     }
                     if ($order == 'comfort_minus2')
                     {
-                        $order_num = 4;
+                        $order_num = 3;
                         $order = 'Confort -2';
                     }
                     if ($order == 'comfort_minus1')
                     {
-                        $order_num = 5;
+                        $order_num = 4;
                         $order = 'Confort -1';
                     }
                     if ($order == 'comfort')
                     {
-                        $order_num = 6;
+                        $order_num = 5;
                         $order = 'Confort';
                     }
                     if ($device['main_heating_module']) $eqLogic->setConfiguration('isModuleThermostat', 1);
@@ -895,7 +895,7 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setLogicalId('set_order');
                 $qivivoCmd->setType('action');
                 $qivivoCmd->setSubType('select');
-                $qivivoCmd->setConfiguration('listValue','5|Arrêt;6|Hors-Gel;4|Eco;8|Confort -2;7|Confort -1;3|Confort');
+                $qivivoCmd->setConfiguration('listValue','0|Arrêt;1|Hors-Gel;2|Eco;3|Confort -2;4|Confort -1;5|Confort');
                 $qivivoCmd->save();
             }
         }
@@ -1172,40 +1172,34 @@ class qivivoCmd extends cmd {
         if ($_type == 'Module Chauffage') {
             if ($_action == 'set_order') {
                 $orderNum = $_options['select'];
-                if ($orderNum == '' || $orderNum == 0) return;
-
-                if (isset($_options['utid'])) {
-                    $orderNum -= 1;
-                } else {
-                    $orderNum -= 4;
-                }
+                if ($orderNum == '') return;
 
                 $zone_name = $eqLogic->getConfiguration('zone_name');
                 $orderString = '';
                 $infoString = '';
                 switch($orderNum)
                 {
-                    case 1:
+                    case 0:
                         $orderString = 'stop';
                         $infoString = 'Arrêt';
                         break;
-                    case 2:
+                    case 1:
                         $orderString = 'frost_protection';
                         $infoString = 'Hors-Gel';
                         break;
-                    case 3:
+                    case 2:
                         $orderString = 'eco';
                         $infoString = 'Eco';
                         break;
-                    case 4:
+                    case 3:
                         $orderString = 'comfort_minus2';
                         $infoString = 'Confort -2';
                         break;
-                    case 5:
+                    case 4:
                         $orderString = 'comfort_minus1';
                         $infoString = 'Confort -1';
                         break;
-                    case 6:
+                    case 5:
                         $orderString = 'comfort';
                         $infoString = 'Confort';
                         break;
@@ -1231,6 +1225,7 @@ class qivivoCmd extends cmd {
                 {
                     qivivo::logger('set_order: success');
                     $eqLogic->checkAndUpdateCmd('module_order', $infoString);
+                    $eqLogic->checkAndUpdateCmd('order_num', $orderNum);
                     $eqLogic->refreshWidget();
                 } else {
                     qivivo::logger('set_order: error: '.json_encode($result['error']), 'warning');
