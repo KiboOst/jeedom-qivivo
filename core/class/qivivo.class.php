@@ -194,7 +194,6 @@ class qivivo extends eqLogic {
                     if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                 }
 
-
                 if ($_type == 'thermostat')
                 {
                     //default:
@@ -234,6 +233,9 @@ class qivivo extends eqLogic {
                             $status = $zone['heating_status'];
                             if ($status != 'cooling') $heating = 1;
                             $eqLogic->checkAndUpdateCmd('heating', $heating);
+
+                            $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
+                            $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
                             break;
                         }
                     }
@@ -319,11 +321,17 @@ class qivivo extends eqLogic {
                         $order_num = 5;
                         $order = 'Confort';
                     }
-                    if ($device['main_heating_module']) $eqLogic->setConfiguration('isModuleThermostat', 1);
-                    else $eqLogic->setConfiguration('isModuleThermostat', 0);
+                    if ($device['main_heating_module']) {
+                        $eqLogic->setConfiguration('isModuleThermostat', 1);
+                    } else {
+                        $eqLogic->setConfiguration('isModuleThermostat', 0);
+                        if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
+                        if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
 
-                    if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
-                    if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
+                        $zoneName = $device['zone'];
+                        $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
+                    }
                 }
 
                 $eqLogic->save();
@@ -425,6 +433,21 @@ class qivivo extends eqLogic {
             $qivivoCmd->setLogicalId('temperature_order');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
+            $qivivoCmd->save();
+
+            $qivivoCmd = $this->getCmd(null, 'hasTimeOrder');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('Temporaire', __FILE__));
+                $qivivoCmd->setIsVisible(0);
+                $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setLogicalId('hasTimeOrder');
+            $qivivoCmd->setType('info');
+            $qivivoCmd->setSubType('binary');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'temperature');
@@ -878,6 +901,21 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setType('info');
                 $qivivoCmd->setSubType('numeric');
                 $qivivoCmd->save();
+
+                $qivivoCmd = $this->getCmd(null, 'hasTimeOrder');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Temporaire', __FILE__));
+                    $qivivoCmd->setIsVisible(0);
+                    $qivivoCmd->setIsHistorized(0);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('hasTimeOrder');
+                $qivivoCmd->setType('info');
+                $qivivoCmd->setSubType('binary');
+                $qivivoCmd->save();
             }
 
             //actions:
@@ -896,6 +934,20 @@ class qivivo extends eqLogic {
                 $qivivoCmd->setType('action');
                 $qivivoCmd->setSubType('select');
                 $qivivoCmd->setConfiguration('listValue','0|Arrêt;1|Hors-Gel;2|Eco;3|Confort -2;4|Confort -1;5|Confort');
+                $qivivoCmd->save();
+
+                $qivivoCmd = $this->getCmd(null, 'cancel_time_order');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Annule_Ordre_Temp', __FILE__));
+                    $qivivoCmd->setIsVisible(0);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('cancel_time_order');
+                $qivivoCmd->setType('action');
+                $qivivoCmd->setSubType('other');
                 $qivivoCmd->save();
             }
         }
@@ -1003,6 +1055,15 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'cancel_time_order');
             $replace['#cancel_id#'] = $cmd->getId();
 
+            $zone_name = $this->getConfiguration('zone_name');
+            $hasTimeOrder = $this->getCmd(null, 'hasTimeOrder')->execCmd();
+            if ($hasTimeOrder) {
+                $opacity = 1;
+            } else {
+                $opacity = 0.25;
+            }
+            $replace['#cancel_opacity#'] = $opacity;
+
             $cmd = $this->getCmd(null, 'temperature');
             $tmpRoom = $cmd->execCmd();
             $replace['#temperature#'] = $tmpRoom;
@@ -1099,6 +1160,18 @@ class qivivo extends eqLogic {
                     else $options .= '<option value="'.$value.'">'.$display.'</option>';
                 }
                 $replace['#set_order_listValue#'] = $options;
+
+                $cmd = $this->getCmd(null, 'cancel_time_order');
+                $replace['#cancel_id#'] = $cmd->getId();
+
+                $zone_name = $this->getConfiguration('zone_name');
+                $hasTimeOrder = $this->getCmd(null, 'hasTimeOrder')->execCmd();
+                if ($hasTimeOrder) {
+                    $opacity = 1;
+                } else {
+                    $opacity = 0.25;
+                }
+                $replace['#cancel_opacity#'] = $opacity;
             }
 
             if ($isModuleThermostat) $html = template_replace($replace, getTemplate('core', $version, 'module-t', 'qivivo'));
@@ -1213,8 +1286,7 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
-                if (isset($zoneEvents['result']['temporary_instruction']['set_point'])) {
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $_fullQivivo->cancelZoneOrder($zone_name);
                 }
@@ -1229,6 +1301,30 @@ class qivivoCmd extends cmd {
                     $eqLogic->refreshWidget();
                 } else {
                     qivivo::logger('set_order: error: '.json_encode($result['error']), 'warning');
+                }
+                return;
+            }
+
+            if ($_action == 'cancel_time_order') {
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                $message = 'cancel_time_order in '.$zone_name;
+                qivivo::logger($message);
+
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger('cancel_time_order: could not get customAPI, ending.');
+                    return;
+                }
+
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $result = $_fullQivivo->cancelZoneOrder($zone_name);
+                    if ($result['result']==True)
+                    {
+                        qivivo::logger('cancel_time_order: success');
+                    } else {
+                        qivivo::logger('cancel_time_order: error: '.json_encode($result['error']), 'warning');
+                    }
                 }
                 return;
             }
@@ -1282,8 +1378,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
-                if (isset($zoneEvents['result']['temporary_instruction']['set_point'])) {
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $_fullQivivo->cancelZoneOrder($zone_name);
                 }
@@ -1312,8 +1407,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
-                if (isset($zoneEvents['result']['temporary_instruction']['set_point'])) {
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $_fullQivivo->cancelZoneOrder($zone_name);
                 }
@@ -1339,8 +1433,7 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
-                if (isset($zoneEvents['result']['temporary_instruction']['set_point'])) {
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $result = $_fullQivivo->cancelZoneOrder($zone_name);
                     if ($result['result']==True)

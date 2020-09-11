@@ -44,7 +44,8 @@
         "Date de collecte": "Date de collecte",
         "Température": "Température",
         "Humidité": "Humidité",
-        "Presence": "Presence"
+        "Presence": "Presence",
+        "Temporaire": "Temporaire"
     },
     "plugins\/qivivo\/desktop\/js\/qivivo.js": {
         "Nom du programme ?": "Nom du programme ?",
