@@ -1277,12 +1277,12 @@ class qivivoCmd extends cmd {
                         $infoString = 'Confort';
                         break;
                 }
-                $message = 'set_order '.$eqLogic->getName().' to '.$orderString;
+                $message = $_action.' '.$eqLogic->getName().' to '.$orderString;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_order: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1295,24 +1295,25 @@ class qivivoCmd extends cmd {
 
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_order: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->checkAndUpdateCmd('module_order', $infoString);
                     $eqLogic->checkAndUpdateCmd('order_num', $orderNum);
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
                     $eqLogic->refreshWidget();
                 } else {
-                    qivivo::logger('set_order: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'cancel_time_order') {
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                $message = 'cancel_time_order in '.$zone_name;
+                $message = $_action.' in '.$zone_name;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('cancel_time_order: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1321,9 +1322,11 @@ class qivivoCmd extends cmd {
                     $result = $_fullQivivo->cancelZoneOrder($zone_name);
                     if ($result['result']==True)
                     {
-                        qivivo::logger('cancel_time_order: success');
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
+                        $eqLogic->refreshWidget();
+                        qivivo::logger($_action.': success');
                     } else {
-                        qivivo::logger('cancel_time_order: error: '.json_encode($result['error']), 'warning');
+                        qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                     }
                 }
                 return;
@@ -1340,7 +1343,7 @@ class qivivoCmd extends cmd {
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_program: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
                 $result = $_fullQivivo->setProgram($program);
@@ -1351,7 +1354,7 @@ class qivivoCmd extends cmd {
                     $eqLogic->checkAndUpdateCmd('current_program', $program);
                     $eqLogic->refreshWidget();
                 } else {
-                    qivivo::logger('set_program: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 qivivo::refreshQivivoInfos();
                 return;
@@ -1368,12 +1371,12 @@ class qivivoCmd extends cmd {
                 $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
                 $temp += 1;
                 $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
-                $message = 'set_plus_one to '.$temp.' during '.$duree_temp.' mins';
+                $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_plus_one: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1386,9 +1389,11 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_plus_one: success');
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
+                    $eqLogic->refreshWidget();
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_plus_one: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
@@ -1397,12 +1402,12 @@ class qivivoCmd extends cmd {
                 $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
                 $temp -= 1;
                 $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
-                $message = 'set_minus_one to '.$temp.' during '.$duree_temp.' mins';
+                $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_minus_one: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1415,16 +1420,18 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_minus_one: success');
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
+                    $eqLogic->refreshWidget();
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_minus_one: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'cancel_time_order') {
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                $message = 'cancel_time_order in '.$zone_name;
+                $message = $_action.' in '.$zone_name;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
@@ -1438,9 +1445,11 @@ class qivivoCmd extends cmd {
                     $result = $_fullQivivo->cancelZoneOrder($zone_name);
                     if ($result['result']==True)
                     {
-                        qivivo::logger('cancel_time_order: success');
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
+                        $eqLogic->refreshWidget();
+                        qivivo::logger($_action.': success');
                     } else {
-                        qivivo::logger('cancel_time_order: error: '.json_encode($result['error']), 'warning');
+                        qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                     }
                 }
                 return;
@@ -1450,12 +1459,12 @@ class qivivoCmd extends cmd {
                 $temp = $_options['slider'];
                 $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                $message = 'set_temperature_order to '.$temp.' duree_temp: '.$duree_temp.' in '.$zone_name;
+                $message = $_action.' to '.$temp.' duree_temp: '.$duree_temp.' in '.$zone_name;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_temperature_order: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1468,9 +1477,9 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_plus_one: success');
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_plus_one: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
@@ -1478,12 +1487,12 @@ class qivivoCmd extends cmd {
             //temperatures settings:
             if ($_action == 'set_absence_temperature') {
                 $tempValue = $_options['slider'];
-                $message = 'set_absence_temperature to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_absence_temperature: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1502,22 +1511,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_absence_temperature: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'absence_temperature')->event($tempValue);
                 } else {
-                    qivivo::logger('set_absence_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_frost_temperature') {
                 $tempValue = $_options['slider'];
-                $message = 'set_frost_temperature to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_frost_temperature: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1536,22 +1545,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_frost_temperature: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'frost_protection_temperature')->event($tempValue);
                 } else {
-                    qivivo::logger('set_frost_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_night_temperature') {
                 $tempValue = $_options['slider'];
-                $message = 'set_night_temperature to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_night_temperature: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1570,22 +1579,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_night_temperature: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'night_temperature')->event($tempValue);
                 } else {
-                    qivivo::logger('set_night_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_1') {
                 $tempValue = $_options['slider'];
-                $message = 'set_presence_temperature_1 to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_presence_temperature_1: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1604,22 +1613,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_1: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'presence_temperature_1')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_1: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_2') {
                 $tempValue = $_options['slider'];
-                $message = 'set_presence_temperature_2 to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_presence_temperature_2: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1638,22 +1647,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_2: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'presence_temperature_2')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_2: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_3') {
                 $tempValue = $_options['slider'];
-                $message = 'set_presence_temperature_3 to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_presence_temperature_3: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1672,22 +1681,22 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_3: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'presence_temperature_3')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_3: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_4') {
                 $tempValue = $_options['slider'];
-                $message = 'set_presence_temperature_4 to '.$tempValue;
+                $message = $_action.' to '.$tempValue;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_presence_temperature_4: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
@@ -1706,10 +1715,10 @@ class qivivoCmd extends cmd {
                 $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_4: success');
+                    qivivo::logger($_action.': success');
                     $eqLogic->getCmd(null, 'presence_temperature_4')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_4: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }

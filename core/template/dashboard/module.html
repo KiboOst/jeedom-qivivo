@@ -19,7 +19,7 @@
       </div>
 
       <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px">
-        <a class="btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;opacity: #cancel_opacity#;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
+        <a class="cmd btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;opacity: #cancel_opacity#;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
 
       <br>
@@ -55,15 +55,15 @@
     }
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
-        jeedom.cmd.execute({id: '#refresh_id#'});
+        jeedom.cmd.execute({id: '#refresh_id#'})
     })
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
-      jeedom.cmd.execute({id: '#cancel_id#'});
+      jeedom.cmd.execute({id: '#cancel_id#'})
     });
 
     $(".cmd[data-cmd_id=#set_order_id#] select").on('change', function () {
-      jeedom.cmd.execute({id: '#set_order_id#', value: {select: $(this).value()}});
+      jeedom.cmd.execute({id: '#set_order_id#', value: {select: $(this).value()}})
     })
   </script>
 </div>
