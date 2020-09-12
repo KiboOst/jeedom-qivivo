@@ -1468,7 +1468,33 @@ class qivivoCmd extends cmd {
                     $result = $_fullQivivo->cancelZoneOrder($zone_name);
                     if (isset($result['result']))
                     {
-                        //$newOrder = $result['result'];
+                        $newOrder = $result['result'];
+                        $orderValue = null;
+                        switch($newOrder)
+                        {
+                            case 'away':
+                                $orderValue = $eqLogic->getCmd(null, 'absence_temperature')->execCmd();
+                                break;
+                            case 'frost_protection':
+                                $orderValue = $eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd();
+                                break;
+                            case 'night':
+                                $orderValue = $eqLogic->getCmd(null, 'night_temperature')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_1')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_2')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_3')->execCmd();
+                                break;
+                            case 'presence_2':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
+                                break;
+                        }
+                        if ($orderValue) $eqLogic->checkAndUpdateCmd('temperature_order', $orderValue);
                         $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
                         $eqLogic->refreshWidget();
                         qivivo::logger($_action.': success');
@@ -1555,7 +1581,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$tempValue,
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
                     "connected"=>array(
@@ -1589,7 +1615,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$tempValue,
                     "connected"=>array(
@@ -1623,7 +1649,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
                     "connected"=>array(
@@ -1657,7 +1683,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
                     "connected"=>array(
@@ -1691,7 +1717,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
                     "connected"=>array(
@@ -1725,7 +1751,7 @@ class qivivoCmd extends cmd {
                 }
 
                 $settingsAr = array(
-                    "away"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
                     "connected"=>array(
