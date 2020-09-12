@@ -1320,8 +1320,31 @@ class qivivoCmd extends cmd {
                 if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $result = $_fullQivivo->cancelZoneOrder($zone_name);
-                    if ($result['result']==True)
+                    if (isset($result['result']))
                     {
+                        $newOrder = $result['result'];
+                        switch($newOrder)
+                        {
+                            case 'stop':
+                                $orderString = 'Arrêt';
+                                break;
+                            case 'frost_protection':
+                                $orderString = 'Hors-Gel';
+                                break;
+                            case 'eco':
+                                $orderString = 'Eco';
+                                break;
+                            case 'comfort_minus2':
+                                $orderString = 'Confort -2';
+                                break;
+                            case 'comfort_minus1':
+                                $orderString = 'Confort -1';
+                                break;
+                            case 'comfort':
+                                $orderString = 'Confort';
+                                break;
+                        }
+                        $eqLogic->checkAndUpdateCmd('module_order', $orderString);
                         $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
                         $eqLogic->refreshWidget();
                         qivivo::logger($_action.': success');
