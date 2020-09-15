@@ -1,6 +1,6 @@
 <div class="eqLogic eqLogic-widget allowResize allowReorderCmd allowLayout "
       style="width:#width#; height:#height#; #style#"
-      data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#">
+      data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-category="#category#" data-translate-category="#translate_category#">
   <span class="statusCmd"></span>
   <span class="cmd refresh pull-right cursor" data-cmd_id="#refresh_id#">
 		<i class="fas fa-sync"></i>
@@ -11,10 +11,10 @@
 
   <div class="verticalAlign">
     <center>
-      <div class="state #firmware_version_history#" data-cmd_id="#firmware_version_id#">
-        <i class="fa fa-cog"></i> <strong class="state" title="#firmware_version_collectDate#">#firmware_version#</strong>
+      <div class="state #firmware_version_history# cmdName" data-cmd_id="#firmware_version_id#">
+        <i class="fa fa-cog"></i> <span class="state" title="#firmware_version_collectDate#">#firmware_version#</span>
       </div>
-
+      <hr style="height:5px; visibility:hidden; padding:0; margin:0">
       <div class="#last_communication_history# cmdName" data-cmd_id="#last_communication_id#">
         <i class="nature-leaf37"></i>
         #last_communication#

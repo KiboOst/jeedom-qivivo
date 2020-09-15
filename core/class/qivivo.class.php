@@ -1,10 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
-if (!class_exists('splQivivoAPI')) {
-    require_once dirname(__FILE__) . '/../../3rdparty/splQivivoAPI.php';
-}
 if (!class_exists('qivivoAPI')) {
-    require_once dirname(__FILE__) . '/../../3rdparty/qivivoAPI.php';
+    require_once dirname(__FILE__) . '/../../3rdparty/qivivoAPIv2.php';
 }
 
 class qivivo extends eqLogic {
@@ -16,42 +13,6 @@ class qivivo extends eqLogic {
         $class_name = debug_backtrace(false, 2)[1]['class'];
         $msg = '['.$class_name.'] <'. $function_name .'> '.$str;
         log::add('qivivo', $level, $msg);
-    }
-
-    public static function getAPI($_typeCmd='info', $_action=null, $_options=null, $_msg=null) {
-        $client_id = config::byKey('client_id', 'qivivo');
-        $client_secret = config::byKey('client_secret', 'qivivo');
-        $_qivivo = new splQivivoAPI($client_id, $client_secret);
-
-        if (isset($_qivivo->error))
-        {
-            $_apiError = $_qivivo->error;
-            qivivo::logger('Qivivo API error: '.$_apiError, 'warning');
-            if ($_typeCmd == 'action')
-            {
-                if ($_msg) $_options['error'] = $_msg;
-                if ($_action) qivivo::checkAndRetryAction($_action, $_options);
-            }
-            else
-            {
-                qivivo::logger('Erreur sur Info, tentatives: '.config::byKey('refreshFailed', 'qivivo', 0));
-                if (config::byKey('refreshFailed', 'qivivo', 0) > 3)
-                {
-                    qivivo::logger('Erreur: la synchro Qivivo a échouée lors des 3 dernières tentatives.', 'error');
-                    config::save('refreshFailed', 0, 'qivivo');
-                }
-                else
-                {
-                    config::save('refreshFailed', config::byKey('refreshFailed', 'qivivo', 0) + 1, 'qivivo');
-                }
-            }
-            return False;
-        }
-        else
-        {
-            if (config::byKey('refreshFailed', 'qivivo', 0) > 0) config::save('refreshFailed', 0, 'qivivo');
-        }
-        return $_qivivo;
     }
 
     public static function getCustomAPI($_typeCmd='info', $_action=null, $_options=null, $_msg=null) {
@@ -138,34 +99,16 @@ class qivivo extends eqLogic {
 
     public static function syncWithQivivo() { //ajax call from plugin configuration
         qivivo::logger('starting...');
-        $_qivivo = qivivo::getAPI();
-        if ($_qivivo == False)
-        {
-            return;
-        }
-        $devices = $_qivivo->getDevices();
-
         $_fullQivivo = qivivo::getCustomAPI();
         if ($_fullQivivo == False)
         {
+            qivivo::logger('could not get customAPI, ending.');
             return;
         }
 
-        if ($_fullQivivo->_isMultizone) {
-            $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
-        } else {
-            $fullModules = array();
-            foreach ($devices as $device) {
-                if ($device['type'] == 'wireless-module') {
-                    array_push($fullModules, $device);
-                }
-            }
-        }
-        $fullCurrentPrograms = $_fullQivivo->getCurrentProgram();
-
-        foreach ($devices as $device)
-        {
-            $eqLogic = eqLogic::byLogicalId($device['uuid'], 'qivivo');
+        $devices = $_fullQivivo->getFullDevices()['result'];
+        foreach ($devices as $serial => $device) {
+            $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
             if (!is_object($eqLogic))
             {
                 $eqLogic = new qivivo();
@@ -174,51 +117,23 @@ class qivivo extends eqLogic {
                 $eqLogic->setIsEnable(1);
             }
 
-            $type = $device['type'];
+            $type = $device['model'];
             if ($type == 'thermostat')
             {
                 $type = 'Thermostat';
                 $eqLogic->setName($type);
             }
-            if ($type == 'wireless-module')
+            if ($type == 'heating_module')
             {
                 $type = 'Module Chauffage';
-
-                //need to correlate API serial which is same as customAPI mac_address:
-                $moduleInfos = $_qivivo->getModuleInfos($device['uuid']);
-                $serial = $moduleInfos['serial'];
-                $eqLogic->setConfiguration('zone_name', -1);
-                foreach ($fullModules as $fullModule)
-                {
-                    if ($_fullQivivo->_isMultizone) {
-                        $mac_address = $fullModule['mac_address'];
-                        if ($serial == $mac_address)
-                        {
-                            $eqLogic->setConfiguration('zone_name', $fullModule['zone_name']);
-                            $eqLogic->setName('Zone '.$fullModule['zone_name']);
-                            $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
-                            $eqLogic->setConfiguration('program_name', $program_name);
-                            break;
-                        }
-                    } else {
-                        $zone_name = 'Zone Thermostat';
-                        $program_name = $fullCurrentPrograms['result']['Zone Thermostat'];
-                        $eqLogic->setConfiguration('zone_name', $zone_name);
-                        $eqLogic->setName($zone_name);
-                        $eqLogic->setConfiguration('program_name', $program_name);
-                    }
-                }
-
-                $moduleOrder = $_qivivo->getModuleLastOrder($device['uuid']);
-                $order = $moduleOrder['current_pilot_wire_order'];
-                if ($order == 'monozone')
-                {
+                if ($device['main_heating_module']) {
+                    $eqLogic->setConfiguration('zone_name', 'Thermostat');
                     $eqLogic->setConfiguration('isModuleThermostat', 1);
                     $eqLogic->setName('Zone Thermostat');
-                }
-                else
-                {
+                } else {
+                    $eqLogic->setConfiguration('zone_name', $device['zone']);
                     $eqLogic->setConfiguration('isModuleThermostat', 0);
+                    $eqLogic->setName('Zone '.$device['zone']);
                 }
             }
             if ($type == 'gateway')
@@ -228,10 +143,10 @@ class qivivo extends eqLogic {
                 $eqLogic->setName($type);
             }
 
-            $eqLogic->setConfiguration('uuid', $device['uuid']);
+            $eqLogic->setConfiguration('serial', $serial);
             $eqLogic->setConfiguration('type', $type);
             $eqLogic->setCategory('heating', 1);
-            $eqLogic->setLogicalId($device['uuid']);
+            $eqLogic->setLogicalId($serial);
             $eqLogic->save();
         }
         qivivo::logger('done!');
@@ -240,143 +155,185 @@ class qivivo extends eqLogic {
     public static function refreshQivivoInfos() { //called from cron5 or cron15 to refresh infos
         try {
             qivivo::logger('refresh');
-            $_qivivo = qivivo::getAPI();
-            if ($_qivivo == False) {
-                qivivo::logger('could not get API, ending.');
+            $_fullQivivo = qivivo::getCustomAPI();
+            if ($_fullQivivo == False)
+            {
+                qivivo::logger('could not get customAPI, ending.');
                 return;
             }
 
-            $devices = $_qivivo->getDevices();
+            //get program list:
+            $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
+            $programs = $_fullQivivo->getPrograms()['result'];
+            $ProgramsList = [];
+            foreach ($programs as $program) {
+                array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+            }
+            config::save('programList', $ProgramsList, 'qivivo');
+            qivivo::logger('ProgramsList: '.json_encode($ProgramsList));
+
+            $devices = $_fullQivivo->getFullDevices()['result'];
             qivivo::logger('devices: '.json_encode($devices));
-            foreach ($devices as $device)
+            foreach ($devices as $serial => $device)
             {
-                $_type = $device['type'];
-                $_uuid = $device['uuid'];
-                qivivo::logger('type: '.$_type.' uuid: '.$_uuid);
-                $eqLogic = eqLogic::byLogicalId($_uuid, 'qivivo');
+                $_type = $device['model'];
+                $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
                 if (!is_object($eqLogic)) continue;
+
+                qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: '.$device['zone']);
+
+                $eqLogic->setConfiguration('zone_name', $device['zone']);
 
                 if ($_type == 'gateway')
                 {
-                    $gatewayInfos = $_qivivo->getGatewayInfos();
-                    qivivo::logger('getGatewayInfos: '.json_encode($gatewayInfos));
-                    $firmware_version = $gatewayInfos['softwareVersion'];
+                    $firmware_version = $device['firmware_version'];
                     if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
-                    $last_communication = $gatewayInfos['lastCommunicationDate'];
+                    $last_communication = $device['last_communication_time'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
                     if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                 }
 
                 if ($_type == 'thermostat')
                 {
+                    //default:
                     $eqLogic->getCmd(null, 'duree_temp')->event(120);
 
-                    $thermostatInfos = $_qivivo->getThermostatInfos($_uuid);
-                    qivivo::logger('getThermostatInfos: '.json_encode($thermostatInfos));
-                    $last_communication = $thermostatInfos['lastCommunicationDate'];
+                    $last_communication = $device['last_communication_time'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
                     if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
-                    $firmware_version = $thermostatInfos['softwareVersion'];
+                    $firmware_version = $device['firmware_version'];
                     if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
-                    $battery_percent = $thermostatInfos['voltagePercentage'];
+                    $battery_percent = $device['voltage_percent'];
                     if (!is_null($battery_percent)) {
                         $eqLogic->checkAndUpdateCmd('battery', $battery_percent);
                         $eqLogic->batteryStatus($battery_percent);
                     }
 
-                    $thermostatHumidity = $_qivivo->getThermostatHumidity($_uuid);
-                    qivivo::logger('getThermostatHumidity: '.json_encode($thermostatHumidity));
-                    $humidity = $thermostatHumidity['humidity'];
-                    if (!is_null($humidity)) $eqLogic->checkAndUpdateCmd('humidity', $humidity);
+                    $eqLogic->checkAndUpdateCmd('current_program', $currentProgram);
 
-                    $thermostatPresence = $_qivivo->getThermostatPresence($_uuid);
-                    qivivo::logger('getThermostatPresence: '.json_encode($thermostatPresence));
-                    $Pres = $thermostatPresence['presence_detected'];
-                    $presence = 0;
-                    if ($Pres) $presence = 1;
-                    if (!is_null($presence)) $eqLogic->checkAndUpdateCmd('presence', $presence);
+                    $zoneName = $device['zone'];
+                    $zones = $_fullQivivo->getZones();
+                    foreach ($_fullQivivo->_houseData['heating']['zones'] as $zone) {
+                        if ($zone['title'] == $zoneName) {
+                            qivivo::logger('zone: '.json_encode($zone));
+                            $temperature = $zone['temperature'];
+                            qivivo::logger('temperature: '.$temperature);
+                            if (!is_null($temperature)) $eqLogic->checkAndUpdateCmd('temperature', round($temperature, 1));
 
-                    $lastPresence = $_qivivo->getLastPresence();
-                    qivivo::logger('getLastPresence: '.json_encode($lastPresence));
-                    $lastP = $lastPresence['last_presence_recorded_time'];
-                    $lastP = date("d-m-Y H:i", strtotime($lastP));
-                    if (!is_null($lastP)) $eqLogic->checkAndUpdateCmd('last_presence', $lastP);
+                            $humidity = $zone['humidity'];
+                            qivivo::logger('humidity: '.$humidity);
+                            if (!is_null($humidity)) $eqLogic->checkAndUpdateCmd('humidity', $humidity);
 
-                    $thermostatTemperature = $_qivivo->getThermostatTemperature($_uuid);
-                    qivivo::logger('getThermostatTemperature: '.json_encode($thermostatTemperature));
-                    $order = $thermostatTemperature['current_temperature_order'];
-                    $temp = $thermostatTemperature['temperature'];
-                    if (!is_null($order)) $eqLogic->checkAndUpdateCmd('temperature_order', (round($order * 2)/2));
-                    if (!is_null($temp)) $eqLogic->checkAndUpdateCmd('temperature', $temp);
+                            $lastPresence = date("d-m-Y H:i", strtotime($zone['last_presence_detected']));
+                            qivivo::logger('lastPresence: '.$lastPresence);
+                            $eqLogic->checkAndUpdateCmd('last_presence', $lastPresence);
 
-                    $heating = 0;
-                    if ($temp < $order) $heating = $order;
-                    if (!is_null($heating)) $eqLogic->checkAndUpdateCmd('heating', $heating);
+                            $heating = 0;
+                            $status = $zone['heating_status'];
+                            if ($status != 'cooling') $heating = 1;
+                            $eqLogic->checkAndUpdateCmd('heating', $heating);
 
-                    $settings = $_qivivo->getSettings();
+                            $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
+                            $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
+                            break;
+                        }
+                    }
+
+                    $settings = $_fullQivivo->getTempSettings()['result'];
                     qivivo::logger('settings: '.json_encode($settings));
-                    $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['settings']['frost_protection_temperature']);
-                    $eqLogic->getCmd(null, 'absence_temperature')->event($settings['settings']['absence_temperature']);
-                    $eqLogic->getCmd(null, 'night_temperature')->event($settings['settings']['night_temperature']);
-                    $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['settings']['presence_temperature_1']);
-                    $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['settings']['presence_temperature_2']);
-                    $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['settings']['presence_temperature_3']);
-                    $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['settings']['presence_temperature_4']);
+                    $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['custom_temperatures']['frost_protection']);
+                    $eqLogic->getCmd(null, 'absence_temperature')->event($settings['custom_temperatures']['away']);
+                    $eqLogic->getCmd(null, 'night_temperature')->event($settings['custom_temperatures']['night']);
+                    $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['custom_temperatures']['presence_1']);
+                    $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['custom_temperatures']['presence_2']);
+                    $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['custom_temperatures']['presence_3']);
+                    $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['custom_temperatures']['presence_4']);
+
+                    $order = $device['order'];
+                    if ($order == 'frost_protection') $order = $settings['custom_temperatures']['frost_protection'];
+                    if ($order == 'away') $order = $settings['custom_temperatures']['away'];
+                    if ($order == 'night') $order = $settings['custom_temperatures']['night'];
+                    if ($order == 'presence_1') $order = $settings['custom_temperatures']['presence_1'];
+                    if ($order == 'presence_2') $order = $settings['custom_temperatures']['presence_2'];
+                    if ($order == 'presence_3') $order = $settings['custom_temperatures']['presence_3'];
+                    if ($order == 'presence_4') $order = $settings['custom_temperatures']['presence_4'];
+                    $eqLogic->checkAndUpdateCmd('temperature_order', $order);
+
+                    $qivivoCmd = $eqLogic->getCmd(null, 'set_program');
+                    if (count($ProgramsList) == 0)
+                    {
+                        $listValue = 'Aucun|Aucun programme;';
+                    }
+                    else
+                    {
+                        $listValue = '';
+                        foreach ($ProgramsList as $program)
+                        {
+                            $pName = $program['title'];
+                            $listValue .= $pName.'|'.$pName.';';
+                        }
+                    }
+                    $qivivoCmd->setConfiguration('listValue', $listValue);
+                    $qivivoCmd->save();
                 }
 
-                if ($_type == 'wireless-module')
+                if ($_type == 'heating_module')
                 {
-                    $moduleOrder = $_qivivo->getModuleLastOrder($_uuid);
-                    qivivo::logger('getModuleLastOrder: '.json_encode($moduleOrder));
-                    $moduleInfos = $_qivivo->getModuleInfos($_uuid);
-                    qivivo::logger('getModuleInfos: '.json_encode($moduleInfos));
+                    $order = $device['order'];
+                    qivivo::logger('order: '.json_encode($order));
 
-                    $firmware_version = $moduleInfos['softwareVersion'];
+                    $firmware_version = $device['firmware_version'];
                     if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
 
-                    $last_communication = $moduleInfos['lastCommunicationDate'];
+                    $last_communication = $device['last_communication_time'];
                     $last_communication = date("d-m-Y H:i", strtotime($last_communication));
                     if (!is_null($last_communication)) $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
 
-                    $order = $moduleOrder['current_pilot_wire_order'];
                     $order_num = 0;
-                    if ($order == 'off')
+                    if ($order == 'stop')
                     {
-                        $order_num = 1;
+                        $order_num = 0;
                         $order = 'Arrêt';
                     }
-                    if ($order == 'frost')
+                    if ($order == 'frost_protection')
                     {
-                        $order_num = 2;
+                        $order_num = 1;
                         $order = 'Hors-Gel';
                     }
                     if ($order == 'eco')
                     {
-                        $order_num = 3;
+                        $order_num = 2;
                         $order = 'Eco';
                     }
-                    if ($order == 'comfort_minus_two')
+                    if ($order == 'comfort_minus2')
                     {
-                        $order_num = 4;
+                        $order_num = 3;
                         $order = 'Confort -2';
                     }
-                    if ($order == 'comfort_minus_one')
+                    if ($order == 'comfort_minus1')
                     {
-                        $order_num = 5;
+                        $order_num = 4;
                         $order = 'Confort -1';
                     }
                     if ($order == 'comfort')
                     {
-                        $order_num = 6;
+                        $order_num = 5;
                         $order = 'Confort';
                     }
-                    if ($order == 'monozone') $eqLogic->setConfiguration('isModuleThermostat', 1);
-                    else $eqLogic->setConfiguration('isModuleThermostat', 0);
+                    if ($device['main_heating_module']) {
+                        $eqLogic->setConfiguration('isModuleThermostat', 1);
+                    } else {
+                        $eqLogic->setConfiguration('isModuleThermostat', 0);
+                        if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
+                        if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
 
-                    if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
-                    if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
+                        $zoneName = $device['zone'];
+                        $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
+                    }
                 }
+
                 $eqLogic->save();
                 $eqLogic->refreshWidget();
             }
@@ -405,17 +362,6 @@ class qivivo extends eqLogic {
     }
 
     public static function getDebugInfos() { //log both APIs data to debug user configuration
-        //official API:
-        $_qivivo = qivivo::getAPI();
-        if ($_qivivo == False)
-        {
-            log::add('qivivo_debug', 'error', 'getAPI() error!');
-            return;
-        }
-
-        $data = json_encode($_qivivo, JSON_PRETTY_PRINT);
-        log::add('qivivo_debug', 'error', 'getAPI: '.$data);
-
         //custom API:
         $_fullQivivo = qivivo::getCustomAPI('action', null, $_options, $message);
         if ($_fullQivivo == False)
@@ -427,54 +373,12 @@ class qivivo extends eqLogic {
         $data = json_encode($_fullQivivo, JSON_PRETTY_PRINT);
         log::add('qivivo_debug', 'error', 'getCustomAPI: '.$data);
 
-        $getProducts = $_fullQivivo->getProducts();
-        $data = json_encode($getProducts, JSON_PRETTY_PRINT);
-        log::add('qivivo_debug', 'error', 'customAPI.getProducts: '.$data);
+        $getFullDevices = $_fullQivivo->getFullDevices();
+        $data = json_encode($getFullDevices, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', 'customAPI.getFullDevices: '.$data);
 
-        $devices = $_qivivo->getDevices();
-        log::add('qivivo_debug', 'error', 'API.getDevices: '.json_encode($devices));
-        log::add('qivivo_debug', 'error', 'customAPI._isMultizone: '.$_fullQivivo->_isMultizone);
-
-        $fullCurrentPrograms = $_fullQivivo->getCurrentProgram();
-        log::add('qivivo_debug', 'error', 'customAPI.getCurrentProgram: '.json_encode($fullCurrentPrograms));
-
-        if ($_fullQivivo->_isMultizone) {
-            $fullModules = $_fullQivivo->_fullDatas['multizone']['wirelessModules'];
-        } else {
-            $fullModules = array();
-            foreach ($devices as $device) {
-                if ($device['type'] == 'wireless-module') {
-                    array_push($fullModules, $device);
-                }
-            }
-        }
-
-        foreach ($devices as $device)
-        {
-            $type = $device['type'];
-            if ($type == 'wireless-module')
-            {
-                $moduleInfos = $_qivivo->getModuleInfos($device['uuid']);
-                $serial = $moduleInfos['serial'];
-                foreach ($fullModules as $fullModule)
-                    {
-                        if ($_fullQivivo->_isMultizone) {
-                            $mac_address = $fullModule['mac_address'];
-                            if ($serial == $mac_address)
-                            {
-                                $zone_name = $fullModule['zone_name'];
-                                $program_name = $fullCurrentPrograms['result'][$fullModule['zone_name']];
-                                break;
-                            }
-                        } else {
-                            $zone_name = 'Zone Thermostat';
-                            $program_name = $fullCurrentPrograms['result']['Zone Thermostat'];
-                        }
-
-                    }
-                log::add('qivivo_debug', 'error', 'Zone: '.$zone_name.' | program_name: '.$program_name);
-            }
-        }
+        $getPrograms = $_fullQivivo->getPrograms();
+        log::add('qivivo_debug', 'error', 'customAPI.getPrograms: '.json_encode($getPrograms));
     }
 
     public function preSave() {
@@ -487,13 +391,29 @@ class qivivo extends eqLogic {
     public function postSave() {
         $order = 1;
         $_thisType = $this->getConfiguration('type');
-        $_uuid = $this->getConfiguration('uuid');
-        $eqLogic = eqLogic::byLogicalId($_uuid, 'qivivo');
-        qivivo::logger($_thisType.' | '.$_uuid);
+        $_serial = $this->getConfiguration('serial');
+        $eqLogic = eqLogic::byLogicalId($_serial, 'qivivo');
+        qivivo::logger($_thisType.' | '.$_serial);
 
         if (in_array($_thisType, array('Thermostat')))
         {
             //infos:
+            $qivivoCmd = $this->getCmd(null, 'current_program');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('Programme', __FILE__));
+                $qivivoCmd->setIsVisible(1);
+                $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setUnite('°C');
+            $qivivoCmd->setLogicalId('current_program');
+            $qivivoCmd->setType('info');
+            $qivivoCmd->setSubType('string');
+            $qivivoCmd->save();
+
             $qivivoCmd = $this->getCmd(null, 'temperature_order');
             if (!is_object($qivivoCmd)) {
                 $qivivoCmd = new qivivoCmd();
@@ -513,6 +433,21 @@ class qivivo extends eqLogic {
             $qivivoCmd->setLogicalId('temperature_order');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
+            $qivivoCmd->save();
+
+            $qivivoCmd = $this->getCmd(null, 'hasTimeOrder');
+            if (!is_object($qivivoCmd)) {
+                $qivivoCmd = new qivivoCmd();
+                $qivivoCmd->setName(__('Temporaire', __FILE__));
+                $qivivoCmd->setIsVisible(0);
+                $qivivoCmd->setIsHistorized(0);
+                $qivivoCmd->setOrder($order);
+                $order ++;
+            }
+            $qivivoCmd->setEqLogic_id($this->getId());
+            $qivivoCmd->setLogicalId('hasTimeOrder');
+            $qivivoCmd->setType('info');
+            $qivivoCmd->setSubType('binary');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'temperature');
@@ -575,23 +510,6 @@ class qivivo extends eqLogic {
             $qivivoCmd->setLogicalId('humidity');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('numeric');
-            $qivivoCmd->save();
-
-            $qivivoCmd = $this->getCmd(null, 'presence');
-            if (!is_object($qivivoCmd)) {
-                $qivivoCmd = new qivivoCmd();
-                $qivivoCmd->setName(__('Presence', __FILE__));
-                $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setIsHistorized(1);
-                $qivivoCmd->setConfiguration('historizeMode', 'none');
-                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
-                $qivivoCmd->setOrder($order);
-                $order ++;
-            }
-            $qivivoCmd->setEqLogic_id($this->getId());
-            $qivivoCmd->setLogicalId('presence');
-            $qivivoCmd->setType('info');
-            $qivivoCmd->setSubType('binary');
             $qivivoCmd->save();
 
             $qivivoCmd = $this->getCmd(null, 'last_presence');
@@ -928,80 +846,6 @@ class qivivo extends eqLogic {
             $qivivoCmd->setType('action');
             $qivivoCmd->setSubType('other');
             $qivivoCmd->save();
-        }
-
-        if (in_array($_thisType, array('Module Chauffage')))
-        {
-            //infos:
-            $qivivoCmd = $this->getCmd(null, 'module_order');
-            if (!is_object($qivivoCmd)) {
-                $qivivoCmd = new qivivoCmd();
-                $qivivoCmd->setName(__('Ordre', __FILE__));
-                $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setIsHistorized(0);
-                $qivivoCmd->setDisplay('icon', '<i class="divers-thermometer31"></i>');
-                $qivivoCmd->setDisplay('forceReturnLineBefore', True);
-                $qivivoCmd->setOrder($order);
-                $order ++;
-            }
-            $qivivoCmd->setEqLogic_id($this->getId());
-            $qivivoCmd->setLogicalId('module_order');
-            $qivivoCmd->setType('info');
-            $qivivoCmd->setSubType('string');
-            $qivivoCmd->save();
-
-            $qivivoCmd = $this->getCmd(null, 'order_num');
-            if (!is_object($qivivoCmd)) {
-                $qivivoCmd = new qivivoCmd();
-                $qivivoCmd->setName(__('OrdreNum', __FILE__));
-                $qivivoCmd->setIsVisible(0);
-                $qivivoCmd->setIsHistorized(1);
-                $qivivoCmd->setConfiguration('historizeMode', 'none');
-                $qivivoCmd->setConfiguration('historyPurge', '-1 year');
-                $qivivoCmd->setOrder($order);
-                $order ++;
-
-            }
-            $qivivoCmd->setEqLogic_id($this->getId());
-            $qivivoCmd->setLogicalId('order_num');
-            $qivivoCmd->setType('info');
-            $qivivoCmd->setSubType('numeric');
-            $qivivoCmd->save();
-
-            $qivivoCmd = $this->getCmd(null, 'current_program');
-            if (!is_object($qivivoCmd)) {
-                $qivivoCmd = new qivivoCmd();
-                $qivivoCmd->setName(__('Programme', __FILE__));
-                $qivivoCmd->setIsVisible(1);
-                $qivivoCmd->setIsHistorized(0);
-                $qivivoCmd->setOrder($order);
-                $order ++;
-
-            }
-            $qivivoCmd->setEqLogic_id($this->getId());
-            $qivivoCmd->setLogicalId('current_program');
-            $qivivoCmd->setType('info');
-            $qivivoCmd->setSubType('string');
-            $qivivoCmd->save();
-
-            //actions:
-            if ($this->getConfiguration('isModuleThermostat') == 0)
-            {
-                $qivivoCmd = $this->getCmd(null, 'set_order');
-                if (!is_object($qivivoCmd)) {
-                    $qivivoCmd = new qivivoCmd();
-                    $qivivoCmd->setName(__('SetMode', __FILE__));
-                    $qivivoCmd->setIsVisible(1);
-                    $qivivoCmd->setOrder($order);
-                    $order ++;
-                }
-                $qivivoCmd->setEqLogic_id($this->getId());
-                $qivivoCmd->setLogicalId('set_order');
-                $qivivoCmd->setType('action');
-                $qivivoCmd->setSubType('select');
-                $qivivoCmd->setConfiguration('listValue','5|Arrêt;6|Hors-Gel;4|Eco;8|Confort -2;7|Confort -1;3|Confort');
-                $qivivoCmd->save();
-            }
 
             $qivivoCmd = $this->getCmd(null, 'set_program');
             if (!is_object($qivivoCmd)) {
@@ -1015,23 +859,97 @@ class qivivo extends eqLogic {
             $qivivoCmd->setLogicalId('set_program');
             $qivivoCmd->setType('action');
             $qivivoCmd->setSubType('select');
-
-            $programs = $this->getConfiguration('programs');
-            if (count($programs) == 0)
-            {
-                $listValue = '0|Aucun programme;';
-            }
-            else
-            {
-                $listValue = '';
-                foreach ($programs as $program)
-                {
-                    $pName = $program['name'];
-                    $listValue .= $pName.'|'.$pName.';';
-                }
-            }
-            $qivivoCmd->setConfiguration('listValue', $listValue);
             $qivivoCmd->save();
+        }
+
+        if (in_array($_thisType, array('Module Chauffage')))
+        {
+            //infos:
+            if ($this->getConfiguration('isModuleThermostat') == 0)
+            {
+                $qivivoCmd = $this->getCmd(null, 'module_order');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Ordre', __FILE__));
+                    $qivivoCmd->setIsVisible(1);
+                    $qivivoCmd->setIsHistorized(0);
+                    $qivivoCmd->setDisplay('icon', '<i class="divers-thermometer31"></i>');
+                    $qivivoCmd->setDisplay('forceReturnLineBefore', True);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('module_order');
+                $qivivoCmd->setType('info');
+                $qivivoCmd->setSubType('string');
+                $qivivoCmd->save();
+
+                $qivivoCmd = $this->getCmd(null, 'order_num');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('OrdreNum', __FILE__));
+                    $qivivoCmd->setIsVisible(0);
+                    $qivivoCmd->setIsHistorized(1);
+                    $qivivoCmd->setConfiguration('historizeMode', 'none');
+                    $qivivoCmd->setConfiguration('historyPurge', '-1 year');
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('order_num');
+                $qivivoCmd->setType('info');
+                $qivivoCmd->setSubType('numeric');
+                $qivivoCmd->save();
+
+                $qivivoCmd = $this->getCmd(null, 'hasTimeOrder');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Temporaire', __FILE__));
+                    $qivivoCmd->setIsVisible(0);
+                    $qivivoCmd->setIsHistorized(0);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('hasTimeOrder');
+                $qivivoCmd->setType('info');
+                $qivivoCmd->setSubType('binary');
+                $qivivoCmd->save();
+            }
+
+            //actions:
+            if ($this->getConfiguration('isModuleThermostat') == 0)
+            {
+                $qivivoCmd = $this->getCmd(null, 'set_order');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Set Ordre', __FILE__));
+                    $qivivoCmd->setIsVisible(1);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('set_order');
+                $qivivoCmd->setType('action');
+                $qivivoCmd->setSubType('select');
+                $qivivoCmd->setConfiguration('listValue','0|Arrêt;1|Hors-Gel;2|Eco;3|Confort -2;4|Confort -1;5|Confort');
+                $qivivoCmd->save();
+
+                $qivivoCmd = $this->getCmd(null, 'cancel_time_order');
+                if (!is_object($qivivoCmd)) {
+                    $qivivoCmd = new qivivoCmd();
+                    $qivivoCmd->setName(__('Annule_Ordre_Temp', __FILE__));
+                    $qivivoCmd->setIsVisible(0);
+                    $qivivoCmd->setOrder($order);
+                    $order ++;
+                }
+                $qivivoCmd->setEqLogic_id($this->getId());
+                $qivivoCmd->setLogicalId('cancel_time_order');
+                $qivivoCmd->setType('action');
+                $qivivoCmd->setSubType('other');
+                $qivivoCmd->save();
+            }
         }
 
         if (in_array($_thisType, array('Module Chauffage', 'Thermostat', 'Passerelle')))
@@ -1121,7 +1039,6 @@ class qivivo extends eqLogic {
 
             $replace['#temperature_name#'] = __('Température', __FILE__);
             $replace['#humidity_name#'] = __('Humidité', __FILE__);
-            $replace['#presence_name#'] = __('Presence', __FILE__);
 
             $cmd = $this->getCmd(null, 'temperature_order');
             $tmpConsigne = $cmd->execCmd();
@@ -1137,6 +1054,15 @@ class qivivo extends eqLogic {
             $replace['#set_minus_one_id#'] = $cmd->getId();
             $cmd = $this->getCmd(null, 'cancel_time_order');
             $replace['#cancel_id#'] = $cmd->getId();
+
+            $zone_name = $this->getConfiguration('zone_name');
+            $hasTimeOrder = $this->getCmd(null, 'hasTimeOrder')->execCmd();
+            if ($hasTimeOrder) {
+                $opacity = 1;
+            } else {
+                $opacity = 0.25;
+            }
+            $replace['#cancel_opacity#'] = $opacity;
 
             $cmd = $this->getCmd(null, 'temperature');
             $tmpRoom = $cmd->execCmd();
@@ -1155,18 +1081,6 @@ class qivivo extends eqLogic {
                 $replace['#humidity_history#'] = 'history cursor';
             }
 
-            $cmd = $this->getCmd(null, 'presence');
-            $pres = $cmd->execCmd();
-            $replace['#presence_id#'] = $cmd->getId();
-            $replace['#presence_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
-            if ($cmd->getIsHistorized() == 1) {
-                $replace['#presence_history#'] = 'history cursor';
-            }
-            $replace['#pres_class#'] = 'fa fa-check';
-            if ($pres == 0) {
-                $replace['#pres_class#'] = 'fa fa-times';
-            }
-
             $cmd = $this->getCmd(null, 'last_presence');
             $replace['#lastpres#'] = $cmd->execCmd();
             $replace['#lastpres_id#'] = $cmd->getId();
@@ -1180,6 +1094,22 @@ class qivivo extends eqLogic {
                 $replace['#heating_history#'] = 'history cursor';
             }
 
+            $cmd = $this->getCmd(null, 'current_program');
+            $current_program = $cmd->execCmd();
+            $replace['#program_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
+            $ProgramsList = config::byKey('programList', 'qivivo');
+            $cmd = $this->getCmd(null, 'set_program');
+            $replace['#set_program_id#'] = $cmd->getId();
+            $programs = $cmd->getConfiguration('listValue');
+            foreach ($ProgramsList as $program)
+            {
+                $display = $program['title'];
+                if ($current_program == $display) $options .= '<option value="'.$display.'" selected>'.$display.'</option>';
+                else $options .= '<option value="'.$display.'">'.$display.'</option>';
+            }
+            $replace['#set_program_listValue#'] = $options;
+
+
             if ($heating > 0) $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_on.png';
             else $replace['#imgheating#'] = '/plugins/qivivo/core/img/heating_off.png';
 
@@ -1188,14 +1118,18 @@ class qivivo extends eqLogic {
 
         if ($_thisType == 'Module Chauffage')
         {
+            $isModuleThermostat = $this->getConfiguration('isModuleThermostat');
             //infos
-            $cmd = $this->getCmd(null, 'module_order');
-            $order = $cmd->execCmd();
-            $replace['#order#'] = $order;
-            $replace['#order_id#'] = $cmd->getId();
-            $replace['#order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
-            if ($cmd->getIsHistorized() == 1) {
-                $replace['#order_history#'] = 'history cursor';
+            if ($isModuleThermostat == 0)
+            {
+                $cmd = $this->getCmd(null, 'module_order');
+                $order = $cmd->execCmd();
+                $replace['#order#'] = $order;
+                $replace['#order_id#'] = $cmd->getId();
+                $replace['#order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
+                if ($cmd->getIsHistorized() == 1) {
+                    $replace['#order_history#'] = 'history cursor';
+                }
             }
 
             $cmd = $this->getCmd(null, 'last_communication');
@@ -1205,8 +1139,13 @@ class qivivo extends eqLogic {
                 $replace['#last_communication_history#'] = 'history cursor';
             }
 
+            $cmd = $this->getCmd(null, 'firmware_version');
+            $replace['#firmware_version#'] = $cmd->execCmd();
+            $replace['#firmware_version_id#'] = $cmd->getId();
+            $replace['#firmware_version_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
+
             //actions:
-            if ($order != 'monozone')
+            if ($isModuleThermostat == 0)
             {
                 $cmd = $this->getCmd(null, 'set_order');
                 $replace['#set_order_id#'] = $cmd->getId();
@@ -1221,26 +1160,21 @@ class qivivo extends eqLogic {
                     else $options .= '<option value="'.$value.'">'.$display.'</option>';
                 }
                 $replace['#set_order_listValue#'] = $options;
-            }
-            $cmd = $this->getCmd(null, 'current_program');
-            $current_program = $cmd->execCmd();
-            $replace['#program_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
 
-            $cmd = $this->getCmd(null, 'set_program');
-            $replace['#set_program_id#'] = $cmd->getId();
-            $programs = $cmd->getConfiguration('listValue');
-            $programs = explode(';', $programs);
-            $options = '';
-            foreach ($programs as $program)
-            {
-                $value = explode('|', $program)[0];
-                $display = explode('|', $program)[1];
-                if ($current_program == $display) $options .= '<option value="'.$value.'" selected>'.$display.'</option>';
-                else $options .= '<option value="'.$value.'">'.$display.'</option>';
-            }
-            $replace['#set_program_listValue#'] = $options;
+                $cmd = $this->getCmd(null, 'cancel_time_order');
+                $replace['#cancel_id#'] = $cmd->getId();
 
-            if ($order == 'monozone') $html = template_replace($replace, getTemplate('core', $version, 'module-t', 'qivivo'));
+                $zone_name = $this->getConfiguration('zone_name');
+                $hasTimeOrder = $this->getCmd(null, 'hasTimeOrder')->execCmd();
+                if ($hasTimeOrder) {
+                    $opacity = 1;
+                } else {
+                    $opacity = 0.25;
+                }
+                $replace['#cancel_opacity#'] = $opacity;
+            }
+
+            if ($isModuleThermostat) $html = template_replace($replace, getTemplate('core', $version, 'module-t', 'qivivo'));
             else $html = template_replace($replace, getTemplate('core', $version, 'module', 'qivivo'));
         }
 
@@ -1267,17 +1201,6 @@ class qivivo extends eqLogic {
         }
 
         return $html;
-    }
-
-    public static function exportProgram($_name, $_program) {
-        $folderPath = dirname(__FILE__) . '/../../exportedPrograms/';
-        if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
-
-        $now = date("dmY_His");
-        $fileName = $now.'_'.$_name.'.json';
-        qivivo::logger($fileName);
-        $file = fopen($folderPath.$fileName, 'w');
-        $res = fwrite($file, json_encode($_program));
     }
 
     public static function deadCmd() {
@@ -1317,148 +1240,149 @@ class qivivoCmd extends cmd {
         $eqLogic = $this->getEqlogic();
         $_action = $this->getLogicalId();
         $_type = $eqLogic->getConfiguration('type');
-        $_uuid = $eqLogic->getConfiguration('uuid');
         qivivo::logger('action: '.$_action.' options: '.json_encode($_options));
 
         if ($_type == 'Module Chauffage') {
             if ($_action == 'set_order') {
-                $modeNum = $_options['select'];
-                if ($modeNum == '') return;
+                $orderNum = $_options['select'];
+                if ($orderNum == '') return;
 
-                $zone_name = $_type = $eqLogic->getConfiguration('zone_name');
-                $modeString = '';
-                switch($modeNum)
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                $orderString = '';
+                $infoString = '';
+                switch($orderNum)
                 {
-                    case 8:
-                        $modeString = 'Confort -2';
+                    case 0:
+                        $orderString = 'stop';
+                        $infoString = 'Arrêt';
                         break;
-
-                    case 7:
-                        $modeString = 'Confort -1';
+                    case 1:
+                        $orderString = 'frost_protection';
+                        $infoString = 'Hors-Gel';
                         break;
-
-                    case 6:
-                        $modeString = 'Hors-Gel';
+                    case 2:
+                        $orderString = 'eco';
+                        $infoString = 'Eco';
                         break;
-
-                    case 5:
-                        $modeString = 'Arrêt';
-                        break;
-
-                    case 4:
-                        $modeString = 'Eco';
-                        break;
-
                     case 3:
-                        $modeString = 'Confort';
+                        $orderString = 'comfort_minus2';
+                        $infoString = 'Confort -2';
+                        break;
+                    case 4:
+                        $orderString = 'comfort_minus1';
+                        $infoString = 'Confort -1';
+                        break;
+                    case 5:
+                        $orderString = 'comfort';
+                        $infoString = 'Confort';
                         break;
                 }
-                $message = 'set_order '.$eqLogic->getName().' to '.$modeString;
+                $message = $_action.' '.$eqLogic->getName().' to '.$orderString;
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
                 if ($_fullQivivo == False) {
-                    qivivo::logger('set_order: could not get customAPI, ending.');
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_fullQivivo->setZoneMode($zone_name, $modeNum);
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $_fullQivivo->cancelZoneOrder($zone_name);
+                }
+
+                $result = $_fullQivivo->setZoneMode($orderString, 120, $zone_name);
 
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_order: success');
-                    $eqLogic->checkAndUpdateCmd('module_order', $modeString);
+                    qivivo::logger($_action.': success');
+                    $eqLogic->checkAndUpdateCmd('module_order', $infoString);
+                    $eqLogic->checkAndUpdateCmd('order_num', $orderNum);
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
                     $eqLogic->refreshWidget();
                 } else {
-                    qivivo::logger('set_order: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
-            if ($_action == 'set_program') {
-                $program = $_options['select'];
-                if ($program == '') return;
-
-                $program_name = $eqLogic->getConfiguration('program_name');
-                $message = 'set_program '.$eqLogic->getName().' | '.$program_name.' to '.$program;
+            if ($_action == 'cancel_time_order') {
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                $message = $_action.' in '.$zone_name;
                 qivivo::logger($message);
 
-                if ($eqLogic->getConfiguration('isModuleThermostat') == 0)
-                {
-                    $mode_refs_array = ['Confort'=>'mz_comfort',
-                                        'Confort-1'=>'mz_comfort_minus_one',
-                                        'Confort-2'=>'mz_comfort_minus_two',
-                                        'Eco'=>'mz_eco',
-                                        'Hors-Gel'=>'mz_frost',
-                                        'Arrêt'=>'mz_off'
-                                        ];
-                } else {
-                    $mode_refs_array = ['Pres 4'=>'pres_4',
-                                        'Pres 3'=>'pres_3',
-                                        'Pres 2'=>'pres_2',
-                                        'Pres 1'=>'pres_1',
-                                        'Nuit'=>'nuit',
-                                        'Hors-Gel'=>'hg',
-                                        'Absence'=>'absence'
-                                        ];
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
+                    return;
                 }
-                $eqlogic_Programs = $eqLogic->getConfiguration('programs');
-                foreach ($eqlogic_Programs as $eqlogic_program)
-                {
-                    $progName = $eqlogic_program['name'];
-                    if ($eqlogic_program['name'] == $program)
+
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $result = $_fullQivivo->cancelZoneOrder($zone_name);
+                    if (isset($result['result']))
                     {
-                        $program_array = array();
-                        $days = $eqlogic_program['days'];
-                        foreach ($days as $day)
+                        $newOrder = $result['result'];
+                        switch($newOrder)
                         {
-                            $day_array = array();
-                            $periods = $day['periods'];
-                            $c = count($periods);
-                            for ($i = 0 ; $i < $c ; $i++)
-                            {
-                                $period = $periods[$i];
-                                $periodStart = $period['period_start'];
-                                $periodMode = $period['temperature_setting'];
-                                if ($i == $c-1)
-                                {
-                                    $periodEnd = '23:59';
-                                }
-                                else
-                                {
-                                    $time = strtotime($periods[$i+1]['period_start'])  - 60;
-                                    $periodEnd = date("H:i", $time);
-                                }
-                                $periodMode = $mode_refs_array[$periodMode];
-                                array_push($day_array, array($periodStart, $periodEnd, $periodMode));
-                            }
-                            array_push($program_array, $day_array);
+                            case 'stop':
+                                $orderString = 'Arrêt';
+                                break;
+                            case 'frost_protection':
+                                $orderString = 'Hors-Gel';
+                                break;
+                            case 'eco':
+                                $orderString = 'Eco';
+                                break;
+                            case 'comfort_minus2':
+                                $orderString = 'Confort -2';
+                                break;
+                            case 'comfort_minus1':
+                                $orderString = 'Confort -1';
+                                break;
+                            case 'comfort':
+                                $orderString = 'Confort';
+                                break;
                         }
-
-                        $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                        if ($_fullQivivo == False) {
-                            qivivo::logger('set_program: could not get customAPI, ending.');
-                            return;
-                        }
-                        $result = $_fullQivivo->setProgram($program_name, $program_array);
-
-                        if ($result['result']==True)
-                        {
-                            qivivo::logger('set_program: success');
-                            $eqLogic->checkAndUpdateCmd('current_program', $program);
-                            $eqLogic->refreshWidget();
-                        } else {
-                            qivivo::logger('set_program: error: '.json_encode($result['error']), 'warning');
-                        }
-                        return;
+                        $eqLogic->checkAndUpdateCmd('module_order', $orderString);
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
+                        $eqLogic->refreshWidget();
+                        qivivo::logger($_action.': success');
+                    } else {
+                        qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                     }
                 }
-                qivivo::logger('Unfound program!', 'warning');
                 return;
             }
         }
 
         if ($_type == 'Thermostat') {
+            if ($_action == 'set_program') {
+                $program = $_options['select'];
+                if ($program == '') return;
+
+                $message = 'set_program '.$eqLogic->getName().' | '.$program;
+                qivivo::logger($message);
+
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
+                    return;
+                }
+                $result = $_fullQivivo->setProgram($program);
+
+                if ($result['result']==True)
+                {
+                    qivivo::logger('set_program: success');
+                    $eqLogic->checkAndUpdateCmd('current_program', $program);
+                    $eqLogic->refreshWidget();
+                } else {
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
+                }
+                qivivo::refreshQivivoInfos();
+                return;
+            }
+
             if ($_action == 'set_time_order') {
                 qivivo::logger('set_time_order: '.$_options['slider']);
                 $duree_temp = $eqLogic->getCmd(null, 'duree_temp');
@@ -1467,241 +1391,384 @@ class qivivoCmd extends cmd {
             }
 
             if ($_action == 'set_plus_one') {
-                $info = $eqLogic->getCmd(null, 'temperature_order');
-                $temp = $info->execCmd();
+                $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
                 $temp += 1;
-                $message = 'set_plus_one to '.$temp.' Temp: '.$Temp;
-                qivivo::logger('set_plus_one: '.$message);
+                $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_plus_one: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $_fullQivivo->cancelZoneOrder($zone_name);
+                }
 
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_plus_one: success');
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
+                    $eqLogic->refreshWidget();
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_plus_one: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_minus_one') {
-                $info = $eqLogic->getCmd(null, 'temperature_order');
-                $temp = $info->execCmd();
+                $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
                 $temp -= 1;
-                $message = 'set_minus_one to '.$temp.' Temp: '.$Temp;
-                qivivo::logger('set_minus_one: '.$message);
+                $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_minus_one: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setThermostatTemperature($temp + 0.001, 120, $_uuid);
-
-                if ($result['result']==True)
-                {
-                    qivivo::logger('set_minus_one: success');
-                } else {
-                    qivivo::logger('set_minus_one: error: '.json_encode($result['error']), 'warning');
-                }
-                return;
-            }
-
-            if ($_action == 'set_temperature_order') {
-                $order = $_options['slider'];
-                $info = $eqLogic->getCmd(null, 'duree_temp');
-                $duree_temp = intval($info->execCmd());
-                $message = 'set_temperature_order to '.$order.' duree_temp: '.$duree_temp;
-                qivivo::logger('set_temperature_order: '.$message);
-
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_temperature_order: could not get API, ending.');
-                    return;
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $_fullQivivo->cancelZoneOrder($zone_name);
                 }
 
-                $result = $_qivivo->setThermostatTemperature($order, $duree_temp, $_uuid);
-
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_temperature_order: success');
+                    $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
+                    $eqLogic->refreshWidget();
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_temperature_order: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'cancel_time_order') {
-                $message = 'cancel_time_order';
-                qivivo::logger('cancel_time_order: '.$message);
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                $message = $_action.' in '.$zone_name;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('cancel_time_order: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger('cancel_time_order: could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->cancelThermostatTemperature($_uuid);
-
-                if ($result['result']==True)
-                {
-                    qivivo::logger('cancel_time_order: success');
-                } else {
-                    qivivo::logger('cancel_time_order: error: '.json_encode($result['error']), 'warning');
+                if ($_fullQivivo->hasTimeOrder($zone_name)['result']) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $result = $_fullQivivo->cancelZoneOrder($zone_name);
+                    if (isset($result['result']))
+                    {
+                        $newOrder = $result['result'];
+                        $orderValue = null;
+                        switch($newOrder)
+                        {
+                            case 'away':
+                                $orderValue = $eqLogic->getCmd(null, 'absence_temperature')->execCmd();
+                                break;
+                            case 'frost_protection':
+                                $orderValue = $eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd();
+                                break;
+                            case 'night':
+                                $orderValue = $eqLogic->getCmd(null, 'night_temperature')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_1')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_2')->execCmd();
+                                break;
+                            case 'presence_1':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_3')->execCmd();
+                                break;
+                            case 'presence_2':
+                                $orderValue = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
+                                break;
+                        }
+                        if ($orderValue) $eqLogic->checkAndUpdateCmd('temperature_order', $orderValue);
+                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', 0);
+                        $eqLogic->refreshWidget();
+                        qivivo::logger($_action.': success');
+                    } else {
+                        qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
+                    }
                 }
                 return;
             }
 
-            if ($_action == 'set_absence_temperature') {
-                $message = 'set_absence_temperature to '.$_options['slider'];
-                qivivo::logger('set_absence_temperature: '.$message);
+            if ($_action == 'set_temperature_order') {
+                $temp = $_options['slider'];
+                $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                $zone_name = $eqLogic->getConfiguration('zone_name');
+                $message = $_action.' to '.$temp.' duree_temp: '.$duree_temp.' in '.$zone_name;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_absence_temperature: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('absence_temperature', $_options['slider']);
+                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
+                if (isset($zoneEvents['result']['temporary_instruction']['set_point'])) {
+                    qivivo::logger('Zone with temporary_instruction, canceling it.');
+                    $_fullQivivo->cancelZoneOrder($zone_name);
+                }
 
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_absence_temperature: success');
+                    qivivo::logger($_action.': success');
                 } else {
-                    qivivo::logger('set_absence_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
+                }
+                return;
+            }
+
+            //temperatures settings:
+            if ($_action == 'set_absence_temperature') {
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
+
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
+                    return;
+                }
+
+                $settingsAr = array(
+                    "away"=>$tempValue,
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
+
+                $result = $_fullQivivo->setTempSettings($settingsAr);
+                if ($result['result']==True)
+                {
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'absence_temperature')->event($tempValue);
+                } else {
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_frost_temperature') {
-                $message = 'set_frost_temperature to '.$_options['slider'];
-                qivivo::logger('set_frost_temperature: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_frost_temperature: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('frost_protection_temperature', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$tempValue,
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_frost_temperature: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'frost_protection_temperature')->event($tempValue);
                 } else {
-                    qivivo::logger('set_frost_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_night_temperature') {
-                $message = 'set_night_temperature to '.$_options['slider'];
-                qivivo::logger('set_night_temperature: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_night_temperature: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('night_temperature', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$tempValue,
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_night_temperature: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'night_temperature')->event($tempValue);
                 } else {
-                    qivivo::logger('set_night_temperature: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_1') {
-                $message = 'set_presence_temperature_1 to '.$_options['slider'];
-                qivivo::logger('set_presence_temperature_1: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_presence_temperature_1: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('presence_temperature_1', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$tempValue,
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_1: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'presence_temperature_1')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_1: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_2') {
-                $message = 'set_presence_temperature_2 to '.$_options['slider'];
-                qivivo::logger('set_presence_temperature_2: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_presence_temperature_2: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('presence_temperature_2', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$tempValue,
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_2: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'presence_temperature_2')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_2: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_3') {
-                $message = 'set_presence_temperature_3 to '.$_options['slider'];
-                qivivo::logger('set_presence_temperature_3: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_presence_temperature_3: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('presence_temperature_3', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$tempValue,
+                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_3: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'presence_temperature_3')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_3: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
 
             if ($_action == 'set_presence_temperature_4') {
-                $message = 'set_presence_temperature_4 to '.$_options['slider'];
-                qivivo::logger('set_presence_temperature_4: '.$message);
+                $tempValue = $_options['slider'];
+                $message = $_action.' to '.$tempValue;
+                qivivo::logger($message);
 
-                $_qivivo = qivivo::getAPI('action', $this, $_options, $message);
-                if ($_qivivo == False) {
-                    qivivo::logger('set_presence_temperature_4: could not get API, ending.');
+                $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
+                if ($_fullQivivo == False) {
+                    qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
 
-                $result = $_qivivo->setSetting('presence_temperature_4', $_options['slider']);
+                $settingsAr = array(
+                    "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
+                    "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
+                    "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
+                    "connected"=>array(
+                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                                    "presence_4"=>$tempValue
+                                )
+                );
 
+                $result = $_fullQivivo->setTempSettings($settingsAr);
                 if ($result['result']==True)
                 {
-                    qivivo::logger('set_presence_temperature_4: success');
+                    qivivo::logger($_action.': success');
+                    $eqLogic->getCmd(null, 'presence_temperature_4')->event($tempValue);
                 } else {
-                    qivivo::logger('set_presence_temperature_4: error: '.json_encode($result['error']), 'warning');
+                    qivivo::logger($_action.': error: '.json_encode($result['error']), 'warning');
                 }
                 return;
             }
