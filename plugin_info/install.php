@@ -21,63 +21,26 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 function qivivo_install() {
 	config::save('functionality::cron5::enable', 0, 'qivivo');
 	config::save('functionality::cron15::enable', 1, 'qivivo');
-
-	//import-export:
-	$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
-	if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
 }
 
 function qivivo_update() {
-	$cron = cron::byClassAndFunction('qivivo', 'pull');
-	if (is_object($cron)) {
-		$cron->remove();
+	//New v2 version:
+	$pluginVersion = config::byKey('pluginversion', 'qivivo');
+	if ($pluginVersion == '') {
+		$pluginVersion = 1.9;
 	}
 
-	if (config::byKey('client_id', 'qivivo') == '') {
-		config::save('client_id', $eqLogic->getConfiguration('client_id'), 'qivivo');
-		config::save('client_secret', $eqLogic->getConfiguration('client_secret'), 'qivivo');
-		config::save('username', $eqLogic->getConfiguration('username'), 'qivivo');
-		config::save('password', $eqLogic->getConfiguration('password'), 'qivivo');
+	if ($pluginVersion < 2.0) {
+		//new custom API for new Comap interface:
+		$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
+		if (is_dir($folderPath)) unlink($folderPath);
+		$eqs = eqLogic::byType('qivivo');
+		foreach ($eqs as $eq) {
+			$eq->remove();
+		}
+
 	}
 
-	$plugin = plugin::byId('qivivo');
-	$eqLogics = eqLogic::byType($plugin->getId());
-	foreach ($eqLogics as $eqLogic)
-	{
-		updateLogicalId($eqLogic, 'LastMsg', 'last_communication');
-		updateLogicalId($eqLogic, 'Firmware', 'firmware_version');
-
-		//module:
-		updateLogicalId($eqLogic, 'Ordre', 'module_order');
-		updateLogicalId($eqLogic, 'OrdreNum', 'order_num');
-		updateLogicalId($eqLogic, 'SetMode', 'set_order');
-		updateLogicalId($eqLogic, 'SetProgram', 'set_program');
-
-		//thermostat:
-		updateLogicalId($eqLogic, 'Consigne', 'temperature_order');
-		updateLogicalId($eqLogic, 'Chauffe', 'heating');
-		updateLogicalId($eqLogic, 'Temperature', 'temperature');
-		updateLogicalId($eqLogic, 'Humidité', 'humidity');
-		updateLogicalId($eqLogic, 'Presence', 'presence');
-		updateLogicalId($eqLogic, 'DernierePresence', 'last_presence');
-		updateLogicalId($eqLogic, 'IncOne', 'set_plus_one');
-		updateLogicalId($eqLogic, 'DecOne', 'set_minus_one');
-		updateLogicalId($eqLogic, 'SetDuréeOrdre ', 'set_time_order');
-		updateLogicalId($eqLogic, 'SetTemperature', 'set_temperature_order');
-		updateLogicalId($eqLogic, 'Annule_Ordre_Temp', 'cancel_time_order');
-		updateLogicalId($eqLogic, 'SetTempAbsence', 'set_absence_temperature');
-		updateLogicalId($eqLogic, 'SetTempNuit', 'set_night_temperature');
-		updateLogicalId($eqLogic, 'SetTempHorsGel', 'set_frost_temperature');
-		updateLogicalId($eqLogic, 'SetTempPres1', 'set_presence_temperature_1');
-		updateLogicalId($eqLogic, 'SetTempPres2', 'set_presence_temperature_2');
-		updateLogicalId($eqLogic, 'SetTempPres3', 'set_presence_temperature_3');
-		updateLogicalId($eqLogic, 'SetTempPres4', 'set_presence_temperature_4');
-	}
-
-	//import-export:
-	$folderPath = dirname(__FILE__) . '/../../qivivo/exportedPrograms/';
-	if (!is_dir($folderPath)) mkdir($folderPath, 0755, true);
-	
 	//resave eqs for new cmd:
 	try
 	{
@@ -93,16 +56,8 @@ function qivivo_update() {
 		log::add('qivivo', 'error', 'qivivo_update ERROR: '.$e);
 	}
 
+	config::save('pluginversion', 2.0, 'qivivo');
 }
-
-function updateLogicalId($eqLogic, $from, $to) {
-	$qivivoCmd = $eqLogic->getCmd(null, $from);
-	if (is_object($qivivoCmd)) {
-		$qivivoCmd->setLogicalId($to);
-		$qivivoCmd->save();
-	}
-}
-
 
 function qivivo_remove() {
 

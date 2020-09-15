@@ -8,97 +8,48 @@ sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
 
-<style type="text/css">
-  .select-mode-off {
-    background-color: rgb(157,249,254) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-frost {
-    background-color: rgb(141,237,253) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-abs {
-    background-color: rgb(126,218,253) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-eco, .select-mode-nuit {
-    background-color: rgb(145,195,252) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres1, .select-mode-confort-2 {
-    background-color: rgb(144,175,251) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres2, .select-mode-confort-1 {
-    background-color: rgb(253,233,114) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres3, .select-mode-confort {
-    background-color: rgb(253,212,93) !important;
-    color: rgb(60,60,60) !important;
-  }
-  .select-mode-pres4 {
-    background-color: rgb(252,198,79) !important;
-    color: rgb(60,60,60) !important;
-  }
-</style>
-
 <div class="row row-overflow">
-  <div class="col-sm-2">
-    <div class="bs-sidebar">
-      <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
-        <li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
-        <?php
-          foreach ($eqLogics as $eqLogic) {
-            $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-            echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '" style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
-          }
-        ?>
-     </ul>
-   </div>
-  </div>
-  <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
+  <div class="col-xs-12 eqLogicThumbnailDisplay">
     <legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
     <div class="eqLogicThumbnailContainer">
-      <div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
-        <center>
-          <i class="fa fa-wrench" style="font-size : 5em;color:#767676;"></i>
-        </center>
-      <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Configuration}}</center></span>
+      <div class="cursor eqLogicAction" data-action="gotoPluginConf">
+          <i class="fas fa-wrench"></i>
+      <span>{{Configuration}}</span>
       </div>
     </div>
 
     <legend><i class="fa fa-table"></i> {{Mes Modules}}</legend>
-      <div class="eqLogicThumbnailContainer">
-          <?php
-            if (count($eqLogics) == 0)
-            {
-              echo "<br/><br/><br/><center><br/><span style='color:#767676; font-size:1.2em; font-weight: bold;'>{{Vous n'avez pas encore de Module, allez sur Configuration et cliquez sur synchroniser pour commencer}}</span></center>";
-            }
-            foreach ($eqLogics as $eqLogic)
-            {
-              $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-              echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="text-align: center; background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
+    <input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
+    <div class="eqLogicThumbnailContainer">
+        <?php
+          foreach ($eqLogics as $eqLogic) {
+            $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+            echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 
-              $imgPath = $plugin->getPathImgIcon();
-              if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
-              if ($eqLogic->getConfiguration('type', '') == 'Module Chauffage') $imgPath = 'plugins/qivivo/core/img/module.png';
-              if ($eqLogic->getConfiguration('type', '') == 'Passerelle') $imgPath = 'plugins/qivivo/core/img/gateway.png';
-              echo '<img src="' . $imgPath . '" height="105" width="95" />';
-              echo "<br>";
-              echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;">' . $eqLogic->getHumanName(true, true) . '</span>';
-              echo '</div>';
-            }
-          ?>
-      </div>
+            $imgPath = $plugin->getPathImgIcon();
+            if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
+            if ($eqLogic->getConfiguration('type', '') == 'Module Chauffage') $imgPath = 'plugins/qivivo/core/img/module.png';
+            if ($eqLogic->getConfiguration('type', '') == 'Passerelle') $imgPath = 'plugins/qivivo/core/img/gateway.png';
+            echo '<img src="' . $imgPath . '"/>';
+
+            echo '<br>';
+            echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+            echo '</div>';
+          }
+        ?>
+    </div>
   </div>
 
-
 <!--Equipement page-->
-<div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-  <a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-  <a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-  <a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
+<div class="col-xs-12 eqLogic" style="display: none;">
+  <div class="input-group pull-right" style="display:inline-flex">
+    <span class="input-group-btn">
+      <a class="btn btn-sm btn-default eqLogicAction roundedLeft" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}
+      </a><a class="btn btn-sm btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}
+      </a><a class="btn btn-sm btn-danger eqLogicAction roundedRight" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+    </span>
+  </div>
+
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
     <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
@@ -125,7 +76,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                   <select id="sel_object" class="eqLogicAttr form-control" data-l1key="object_id">
                       <option value="">{{Aucun}}</option>
                       <?php
-                        foreach (object::all() as $object) {
+                        foreach (jeeObject::all() as $object) {
                          echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
                         }
                       ?>
@@ -171,14 +122,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
         <div class="form-group">
           <label class="col-sm-3 control-label">{{Type}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-l1key="configuration" data-l2key="type"></span>
+           <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="type" style="display:none;"></span>
+           <span id="spanEqType" class="label label-info"></span>
           </div>
         </div>
 
         <div class="form-group" style="display: none;" data-cmd_id="moduleZone">
           <label class="col-sm-3 control-label">{{Zone}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-l1key="configuration" data-l2key="zone_name"></span>
+           <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="zone_name"></span>
           </div>
         </div>
 
@@ -186,13 +138,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
         <div class="form-group" style="display: none;" data-cmd_id="module_order">
           <label class="col-sm-3 control-label">{{Ordre}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="module_order"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="module_order"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="last_communication">
           <label class="col-sm-3 control-label">{{Dernière communication}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="last_communication"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="last_communication"></span>
           </div>
         </div>
 
@@ -200,62 +152,62 @@ $eqLogics = eqLogic::byType($plugin->getId());
         <div class="form-group" style="display: none;" data-cmd_id="temperature_order">
           <label class="col-sm-3 control-label">{{Consigne}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="temperature_order"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="temperature_order"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="dureeordre">
           <label class="col-sm-3 control-label">{{Durée Ordre}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="dureeordre"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="dureeordre"></span>
           </div>
         </div>
 
         <div class="form-group" style="display: none;" data-cmd_id="paramTempAbsence">
           <label class="col-sm-3 control-label">{{Paramètre Température Absence}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempAbsence"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempAbsence"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempHG">
           <label class="col-sm-3 control-label">{{Paramètre Température Hors-gel}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempHG"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempHG"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempNuit">
           <label class="col-sm-3 control-label">{{Paramètre Température Nuit}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempNuit"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempNuit"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempPres1">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 1}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempPres1"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres1"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempPres2">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 2}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempPres2"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres2"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempPres3">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 3}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempPres3"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres3"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="paramTempPres4">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 4}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="paramTempPres4"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres4"></span>
           </div>
         </div>
         <div class="form-group" style="display: none;" data-cmd_id="battery">
           <label class="col-sm-3 control-label">{{Batterie}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="battery"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="battery"></span>
           </div>
         </div>
 
@@ -264,24 +216,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
         <div class="form-group" style="display: none;" data-cmd_id="firmware_version">
           <label class="col-sm-3 control-label">{{Firmware}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-cmd_id="firmware_version"></span>
+           <span class="eqLogicAttr label label-info" data-cmd_id="firmware_version"></span>
           </div>
         </div>
         <!--common info-->
         <div class="form-group">
-          <label class="col-sm-3 control-label">{{uuid}}</label>
+          <label class="col-sm-3 control-label">{{serial}}</label>
           <div class="col-sm-5">
-           <span class="eqLogicAttr label label-info" style="font-size:1em;" data-l1key="configuration" data-l2key="uuid"></span>
+           <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="serial"></span>
           </div>
         </div>
       </fieldset>
     </form>
-    </div>
-
-    <!--Programs Tab-->
-    <div role="tabpanel" class="tab-pane" id="tab_programs">
-      <a class="btn btn-success pull-right" id="bt_addProgram" style="margin-top: 5px;"><i class="fa fa-plus-circle"></i> {{Ajouter Programme}}</a><br/><br/>
-      <div id="div_programs"></div>
     </div>
 
     <!--Commands Tab-->
@@ -313,6 +259,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
   </div>
 </div>
 
-<?php include_file('3rdparty', 'jquery-clock-timepicker.min', 'js', 'qivivo');?>
-<?php include_file('desktop', 'qivivo', 'js', 'qivivo');?>
-<?php include_file('core', 'plugin.template', 'js');?>
+<?php
+  include_file('desktop', 'qivivo', 'js', 'qivivo');
+  include_file('desktop', 'qivivo', 'css', 'qivivo');
+  include_file('core', 'plugin.template', 'js');
+?>
