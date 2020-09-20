@@ -46,7 +46,6 @@ class qivivo extends eqLogic {
             return;
         }
 
-        $_retried = 0;
         if (!isset($_options['retried']))
         {
             $_options['retried'] = 1;
@@ -78,7 +77,7 @@ class qivivo extends eqLogic {
             $options = $cmdAr['options'];
             if ($options['enable'] == 1)
             {
-                if (isset($options['message']) AND isset($_msg))
+                if (isset($options['message']) && isset($_msg))
                 {
                     $options['message'] = str_replace('#message#', $_msg , $options['message']);
                 }
@@ -100,7 +99,7 @@ class qivivo extends eqLogic {
     public static function syncWithQivivo() { //ajax call from plugin configuration
         qivivo::logger('starting...');
         $_fullQivivo = qivivo::getCustomAPI();
-        if ($_fullQivivo == False)
+        if ($_fullQivivo === false)
         {
             qivivo::logger('could not get customAPI, ending.');
             return;
@@ -156,7 +155,7 @@ class qivivo extends eqLogic {
         try {
             qivivo::logger('refresh');
             $_fullQivivo = qivivo::getCustomAPI();
-            if ($_fullQivivo == False)
+            if ($_fullQivivo === false)
             {
                 qivivo::logger('could not get customAPI, ending.');
                 return;
@@ -364,7 +363,7 @@ class qivivo extends eqLogic {
     public static function getDebugInfos() { //log both APIs data to debug user configuration
         //custom API:
         $_fullQivivo = qivivo::getCustomAPI('action', null, $_options, $message);
-        if ($_fullQivivo == False)
+        if ($_fullQivivo === false)
         {
             log::add('qivivo_debug', 'error', 'getCustomAPI() error!');
             return;
@@ -1281,7 +1280,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1312,7 +1311,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1365,7 +1364,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1398,7 +1397,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1429,7 +1428,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1458,7 +1457,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger('cancel_time_order: could not get customAPI, ending.');
                     return;
                 }
@@ -1490,7 +1489,7 @@ class qivivoCmd extends cmd {
                             case 'presence_3':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_3')->execCmd();
                                 break;
-                            case 'presence_4':
+                            case 'presence_4 ':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
                                 break;
                         }
@@ -1513,7 +1512,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1541,7 +1540,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1575,7 +1574,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1609,7 +1608,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1643,7 +1642,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1677,7 +1676,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1711,7 +1710,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1745,7 +1744,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
