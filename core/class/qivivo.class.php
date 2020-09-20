@@ -1484,13 +1484,13 @@ class qivivoCmd extends cmd {
                             case 'presence_1':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_1')->execCmd();
                                 break;
-                            case 'presence_1':
+                            case 'presence_2':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_2')->execCmd();
                                 break;
-                            case 'presence_1':
+                            case 'presence_3':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_3')->execCmd();
                                 break;
-                            case 'presence_2':
+                            case 'presence_4':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
                                 break;
                         }
