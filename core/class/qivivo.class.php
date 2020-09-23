@@ -105,8 +105,18 @@ class qivivo extends eqLogic {
             return;
         }
 
+        //store multizone or not:
+        $result = $_fullQivivo->isMultizone()['result'];
+        $isMultizone = $result ? 1 : 0;
+        config::save('isMultizone', $isMultizone, 'qivivo');
+        qivivo::logger('isMultizone: '.config::byKey('isMultizone', 'qivivo', -1));
+
+        //store devices:
         $devices = $_fullQivivo->getFullDevices()['result'];
         foreach ($devices as $serial => $device) {
+            //do not support radiator_valve yet:
+            if (!in_array($device['model'], array('thermostat', 'heating_module', 'gateway'))) continue;
+
             $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
             if (!is_object($eqLogic))
             {
@@ -119,11 +129,13 @@ class qivivo extends eqLogic {
             $type = $device['model'];
             if ($type == 'thermostat')
             {
+                if (!isset($device['zone'])) continue;
                 $type = 'Thermostat';
                 $eqLogic->setName($type);
             }
             if ($type == 'heating_module')
             {
+                if (!isset($device['zone']) && $device['main_heating_module'] === false) continue;
                 $type = 'Module Chauffage';
                 if ($device['main_heating_module']) {
                     $eqLogic->setConfiguration('zone_name', 'Thermostat');
@@ -161,15 +173,31 @@ class qivivo extends eqLogic {
                 return;
             }
 
+            //store multizone or not. In monozone config, only one zone, get and change schedules!
+            $result = $_fullQivivo->isMultizone()['result'];
+            $isMultizone = $result ? 1 : 0;
+            config::save('isMultizone', $isMultizone, 'qivivo');
+            qivivo::logger('isMultizone: '.$isMultizone);
+
             //get program list:
-            $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
-            $programs = $_fullQivivo->getPrograms()['result'];
-            $ProgramsList = [];
-            foreach ($programs as $program) {
-                array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+            if ($isMultizone) {
+                $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
+                $programs = $_fullQivivo->getPrograms()['result'];
+                $ProgramsList = [];
+                foreach ($programs as $program) {
+                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+                }
+            } else {
+                $currentProgram = $_fullQivivo->getCurrentSchedule()['result']['title'];
+                $programs = $_fullQivivo->getSchedules()['result'];
+                $ProgramsList = [];
+                foreach ($programs as $program) {
+                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+                }
             }
             config::save('programList', $ProgramsList, 'qivivo');
             qivivo::logger('ProgramsList: '.json_encode($ProgramsList));
+
 
             $devices = $_fullQivivo->getFullDevices()['result'];
             qivivo::logger('devices: '.json_encode($devices));
@@ -1368,7 +1396,14 @@ class qivivoCmd extends cmd {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
-                $result = $_fullQivivo->setProgram($program);
+
+                $isMultizone = config::byKey('isMultizone', 'qivivo', -1);
+                if ($isMultizone) {
+                    $result = $_fullQivivo->setProgram($program);
+                } else {
+                    $result = $_fullQivivo->setSchedule($program);
+                }
+
 
                 if ($result['result']==True)
                 {
