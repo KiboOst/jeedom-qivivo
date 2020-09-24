@@ -56,7 +56,7 @@ function qivivo_update() {
 		log::add('qivivo', 'error', 'qivivo_update ERROR: '.$e);
 	}
 
-	config::save('pluginversion', 2.0, 'qivivo');
+	config::save('pluginversion', 2.1, 'qivivo');
 }
 
 function qivivo_remove() {
