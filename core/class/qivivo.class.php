@@ -46,7 +46,6 @@ class qivivo extends eqLogic {
             return;
         }
 
-        $_retried = 0;
         if (!isset($_options['retried']))
         {
             $_options['retried'] = 1;
@@ -78,7 +77,7 @@ class qivivo extends eqLogic {
             $options = $cmdAr['options'];
             if ($options['enable'] == 1)
             {
-                if (isset($options['message']) AND isset($_msg))
+                if (isset($options['message']) && isset($_msg))
                 {
                     $options['message'] = str_replace('#message#', $_msg , $options['message']);
                 }
@@ -100,14 +99,24 @@ class qivivo extends eqLogic {
     public static function syncWithQivivo() { //ajax call from plugin configuration
         qivivo::logger('starting...');
         $_fullQivivo = qivivo::getCustomAPI();
-        if ($_fullQivivo == False)
+        if ($_fullQivivo === false)
         {
             qivivo::logger('could not get customAPI, ending.');
             return;
         }
 
+        //store multizone or not:
+        $result = $_fullQivivo->isMultizone()['result'];
+        $isMultizone = $result ? 1 : 0;
+        config::save('isMultizone', $isMultizone, 'qivivo');
+        qivivo::logger('isMultizone: '.config::byKey('isMultizone', 'qivivo', -1));
+
+        //store devices:
         $devices = $_fullQivivo->getFullDevices()['result'];
         foreach ($devices as $serial => $device) {
+            //do not support radiator_valve yet:
+            if (!in_array($device['model'], array('thermostat', 'heating_module', 'gateway'))) continue;
+
             $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
             if (!is_object($eqLogic))
             {
@@ -120,11 +129,13 @@ class qivivo extends eqLogic {
             $type = $device['model'];
             if ($type == 'thermostat')
             {
+                if (!isset($device['zone'])) continue;
                 $type = 'Thermostat';
                 $eqLogic->setName($type);
             }
             if ($type == 'heating_module')
             {
+                if (!isset($device['zone']) && $device['main_heating_module'] === false) continue;
                 $type = 'Module Chauffage';
                 if ($device['main_heating_module']) {
                     $eqLogic->setConfiguration('zone_name', 'Thermostat');
@@ -156,21 +167,37 @@ class qivivo extends eqLogic {
         try {
             qivivo::logger('refresh');
             $_fullQivivo = qivivo::getCustomAPI();
-            if ($_fullQivivo == False)
+            if ($_fullQivivo === false)
             {
                 qivivo::logger('could not get customAPI, ending.');
                 return;
             }
 
+            //store multizone or not. In monozone config, only one zone, get and change schedules!
+            $result = $_fullQivivo->isMultizone()['result'];
+            $isMultizone = $result ? 1 : 0;
+            config::save('isMultizone', $isMultizone, 'qivivo');
+            qivivo::logger('isMultizone: '.$isMultizone);
+
             //get program list:
-            $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
-            $programs = $_fullQivivo->getPrograms()['result'];
-            $ProgramsList = [];
-            foreach ($programs as $program) {
-                array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+            if ($isMultizone) {
+                $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
+                $programs = $_fullQivivo->getPrograms()['result'];
+                $ProgramsList = [];
+                foreach ($programs as $program) {
+                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+                }
+            } else {
+                $currentProgram = $_fullQivivo->getCurrentSchedule()['result']['title'];
+                $programs = $_fullQivivo->getSchedules()['result'];
+                $ProgramsList = [];
+                foreach ($programs as $program) {
+                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
+                }
             }
             config::save('programList', $ProgramsList, 'qivivo');
             qivivo::logger('ProgramsList: '.json_encode($ProgramsList));
+
 
             $devices = $_fullQivivo->getFullDevices()['result'];
             qivivo::logger('devices: '.json_encode($devices));
@@ -364,7 +391,7 @@ class qivivo extends eqLogic {
     public static function getDebugInfos() { //log both APIs data to debug user configuration
         //custom API:
         $_fullQivivo = qivivo::getCustomAPI('action', null, $_options, $message);
-        if ($_fullQivivo == False)
+        if ($_fullQivivo === false)
         {
             log::add('qivivo_debug', 'error', 'getCustomAPI() error!');
             return;
@@ -1281,7 +1308,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1312,7 +1339,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1365,11 +1392,18 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
-                $result = $_fullQivivo->setProgram($program);
+
+                $isMultizone = config::byKey('isMultizone', 'qivivo', -1);
+                if ($isMultizone) {
+                    $result = $_fullQivivo->setProgram($program);
+                } else {
+                    $result = $_fullQivivo->setSchedule($program);
+                }
+
 
                 if ($result['result']==True)
                 {
@@ -1398,7 +1432,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1429,7 +1463,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1458,7 +1492,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger('cancel_time_order: could not get customAPI, ending.');
                     return;
                 }
@@ -1484,13 +1518,13 @@ class qivivoCmd extends cmd {
                             case 'presence_1':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_1')->execCmd();
                                 break;
-                            case 'presence_1':
+                            case 'presence_2':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_2')->execCmd();
                                 break;
-                            case 'presence_1':
+                            case 'presence_3':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_3')->execCmd();
                                 break;
-                            case 'presence_2':
+                            case 'presence_4 ':
                                 $orderValue = $eqLogic->getCmd(null, 'presence_temperature_4')->execCmd();
                                 break;
                         }
@@ -1513,7 +1547,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1541,7 +1575,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1575,7 +1609,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1609,7 +1643,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1643,7 +1677,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1677,7 +1711,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1711,7 +1745,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
@@ -1745,7 +1779,7 @@ class qivivoCmd extends cmd {
                 qivivo::logger($message);
 
                 $_fullQivivo = qivivo::getCustomAPI('action', $this, $_options, $message);
-                if ($_fullQivivo == False) {
+                if ($_fullQivivo === false) {
                     qivivo::logger($_action.': could not get customAPI, ending.');
                     return;
                 }
