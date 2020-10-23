@@ -21,6 +21,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 function qivivo_install() {
 	config::save('functionality::cron5::enable', 0, 'qivivo');
 	config::save('functionality::cron15::enable', 1, 'qivivo');
+	config::save('pluginversion', 2.1, 'qivivo');
 }
 
 function qivivo_update() {
