@@ -207,9 +207,13 @@ class qivivo extends eqLogic {
                 $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
                 if (!is_object($eqLogic)) continue;
 
-                qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: '.$device['zone']);
-
-                $eqLogic->setConfiguration('zone_name', $device['zone']);
+                if (isset($device['zone'])) {
+                    qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: '.$device['zone']);
+                    $eqLogic->setConfiguration('zone_name', $device['zone']);
+                } else {
+                    qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: Thermostat');
+                    //$eqLogic->setConfiguration('zone_name', 'Thermostat');
+                }
 
                 if ($_type == 'gateway')
                 {
@@ -307,8 +311,12 @@ class qivivo extends eqLogic {
 
                 if ($_type == 'heating_module')
                 {
-                    $order = $device['order'];
-                    qivivo::logger('order: '.json_encode($order));
+                    $order = false;
+                    $isMainModule = isset($device['order']) ? false : true;
+                    if (!$isMainModule) {
+                        $order = $device['order'];
+                        qivivo::logger('order: '.json_encode($order));
+                    }
 
                     $firmware_version = $device['firmware_version'];
                     if (!is_null($firmware_version)) $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
@@ -348,7 +356,7 @@ class qivivo extends eqLogic {
                         $order_num = 5;
                         $order = 'Confort';
                     }
-                    if ($device['main_heating_module']) {
+                    if ($isMainModule) {
                         $eqLogic->setConfiguration('isModuleThermostat', 1);
                     } else {
                         $eqLogic->setConfiguration('isModuleThermostat', 0);
@@ -1128,6 +1136,8 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'set_program');
             $replace['#set_program_id#'] = $cmd->getId();
             $programs = $cmd->getConfiguration('listValue');
+
+            $options = '';
             foreach ($ProgramsList as $program)
             {
                 $display = $program['title'];
