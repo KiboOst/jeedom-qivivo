@@ -113,7 +113,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
     <form class="form-horizontal col-sm-3">
       <fieldset>
         <div class="form-group">
-          <img src="' . $plugin->getPathImgIcon() . '" id="img_qivivoModel" style="width:200px;" />
+          <img id="img_qivivoModel" style="width:200px;" />
         </div>
       </fieldset>
     </form>
