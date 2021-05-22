@@ -33,7 +33,7 @@ https://github.com/KiboOst/php-qivivoAPI
 
 class qivivoAPI {
 
-    public $version = '2.11';
+    public $version = '2.5';
 
     //USER FUNCTIONS======================================================
     //GET FUNCTIONS:
@@ -692,10 +692,7 @@ class qivivoAPI {
                 'Accept: application/json, text/plain, */*',
                 'Content-Type: application/x-www-form-urlencoded',
                 'Origin: https://app.comapsmarthome.com',
-                'referer: https://app.comapsmarthome.com/real-time',
-                'sec-fetch-dest: empty',
-                'sec-fetch-mode: cors',
-                'sec-fetch-site: same-site',
+                'referer: https://app.comapsmarthome.com',
                 'Host: api.comapsmarthome.com',
                 'Authorization: Bearer '.$this->_token
             ];
@@ -747,36 +744,69 @@ class qivivoAPI {
 
     public $_houseData = null;
 
-    protected $_qivivo_user;
-    protected $_qivivo_pass;
-    protected $_urlAuth = 'https://authentication.comapsmarthome.com/auth/realms/smarthome-prod/protocol/openid-connect/token';
+    protected $_comapUser;
+    protected $_comapUserPass;
+    protected $_urlAuth = 'https://cognito-idp.eu-west-3.amazonaws.com';
     protected $_urlRoot = 'https://api.comapsmarthome.com';
     protected $_curlHdl = null;
     protected $_zoneModes = ['Thermostat', null, null, 'Confort', 'Eco', 'Arret', 'Hors-gel', 'Confort -1', 'Confort -2'];
 
     protected function connect() {
         $this->_curlHdl = curl_init();
+        curl_setopt($this->_curlHdl, CURLOPT_HEADER, 0);
         curl_setopt($this->_curlHdl, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($this->_curlHdl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($this->_curlHdl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->_curlHdl, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($this->_curlHdl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($this->_curlHdl, CURLOPT_HTTPGET, true);
 
-        $post = 'username='.$this->_qivivo_user.'&password='.$this->_qivivo_pass.'&client_id=smarthome-webapp&grant_type=password';
-        $answer = $this->_request('POST', $this->_urlAuth, $post);
+        $post = '{
+            "AuthFlow":"USER_PASSWORD_AUTH",
+            "AuthParameters":{"USERNAME":"'.$this->_comapUser.'", "PASSWORD":"'.$this->_comapUserPass.'"},
+            "ClientId":"56jcvrtejpracljtirq7qnob44"
+        }';
+        curl_setopt($this->_curlHdl, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($this->_curlHdl, CURLOPT_POSTFIELDS, $post);
+
+        $headers = [
+            'access-control-request-method: POST',
+            'origin: https://app.comapsmarthome.com',
+            'referer: https://app.comapsmarthome.com/',
+            'accept-encoding: gzip, deflate, br',
+            'content-type: application/x-amz-json-1.1',
+            'x-amz-target: AWSCognitoIdentityProviderService.InitiateAuth',
+        ];
+        curl_setopt($this->_curlHdl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($this->_curlHdl, CURLOPT_URL, $this->_urlAuth);
+        $answer = curl_exec($this->_curlHdl);
 
         if ($this->isJson($answer))
         {
             $json = json_decode($answer, true);
-            if (isset($json['access_token']))
+            //error ?
+            if (isset($json['__type']))
             {
-                $this->_token = $json['access_token'];
+                $this->error = 'Unknown error';
+                if ($json['__type'] == 'UserNotFoundException')
+                {
+                    $this->error = 'User does not exist';
+                }
+                if ($json['__type'] == 'NotAuthorizedException')
+                {
+                    $this->error = 'Incorrect username or password';
+                }
+                return false;
+            }
+
+            //get idToken:
+            if (isset($json['AuthenticationResult']['IdToken']))
+            {
+                $this->_token = $json['AuthenticationResult']['IdToken'];
                 return true;
             }
             else
             {
-                $this->error = 'Cannot find access_token.';
+                $this->error = 'Cannot find IdToken.';
                 return false;
             }
         }
@@ -787,9 +817,9 @@ class qivivoAPI {
         }
     }
 
-    public function __construct($qivivo_user, $qivivo_pass) {
-        $this->_qivivo_user = urlencode($qivivo_user);
-        $this->_qivivo_pass = urlencode($qivivo_pass);
+    public function __construct($comapUser, $comapUserPass) {
+        $this->_comapUser = $comapUser;
+        $this->_comapUserPass = urlencode($comapUserPass);
 
         if ($this->connect() == true)
         {

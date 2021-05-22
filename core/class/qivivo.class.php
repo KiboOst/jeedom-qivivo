@@ -18,7 +18,7 @@
 
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 if (!class_exists('qivivoAPI')) {
-    require_once dirname(__FILE__) . '/../../3rdparty/qivivoAPIv2.php';
+    require_once dirname(__FILE__) . '/../../3rdparty/comapAPI.php';
 }
 
 class qivivo extends eqLogic {
