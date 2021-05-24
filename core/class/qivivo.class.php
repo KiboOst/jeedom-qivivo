@@ -1193,6 +1193,8 @@ class qivivo extends eqLogic {
 
             $replace['#temperature_name#'] = __('Température', __FILE__);
             $replace['#humidity_name#'] = __('Humidité', __FILE__);
+            $replace['#order_name#'] = __('Consigne', __FILE__);
+            $replace['#during_name#'] = __('Pendant', __FILE__);
 
             $cmd = $this->getCmd(null, 'temperature_order');
             $tmpConsigne = $cmd->execCmd();
@@ -1581,9 +1583,17 @@ class qivivoCmd extends cmd {
 
             if ($_action == 'set_plus_one')
             {
-                $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
-                $temp += 1;
-                $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                if (isset($_options['minutes']))
+                {
+                    $temp = $_options['order'];
+                    $duree_temp = $_options['minutes'];
+                }
+                else
+                {
+                    $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
+                    $temp += 1;
+                    $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                }
                 $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
                 qivivo::logger($message);
 
@@ -1617,9 +1627,17 @@ class qivivoCmd extends cmd {
 
             if ($_action == 'set_minus_one')
             {
-                $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
-                $temp -= 1;
-                $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                if (isset($_options['minutes']))
+                {
+                    $temp = $_options['order'];
+                    $duree_temp = $_options['minutes'];
+                }
+                else
+                {
+                    $temp = $eqLogic->getCmd(null, 'temperature_order')->execCmd();
+                    $temp += 1;
+                    $duree_temp = $eqLogic->getCmd(null, 'duree_temp')->execCmd();
+                }
                 $message = $_action.' to '.$temp.' during '.$duree_temp.' mins';
                 qivivo::logger($message);
 

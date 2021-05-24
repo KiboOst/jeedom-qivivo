@@ -50,10 +50,27 @@
         <span title="#lastpres_collectDate#">#lastpres#</span>
       </div>
     </center>
+
+
+  </div>
+
+  <div class="form-group thermoOrder shadowed" style="display:none; position:absolute; top:0; left:5px; right:5px; padding:10px; background-color: rgb(var(--eq-bg-color));">
+    <center>
+      <span>#order_name# </span> <input type="number" class="form-control inputOrder" size="3" min="0" max="40" step="0.5"> °C<br>
+      <span>#during_name# </span>
+       <input type="number" class="form-control inputHour" size="2" min="0" max="72" step="1" value="2"> h
+       <input type="number" class="form-control inputMinute" size="2" min="0" max="60" step="1" value="0"> min<br>
+      <br>
+      <a class="btn btn-xs bt_thermoOrderCancel">Cancel</a> <a class="btn btn-xs bt_thermoOrderOk">OK</a>
+    </center>
   </div>
 
   <script type="text/javascript">
-    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
+    $('div[data-eqLogic_id="#id#"] .thermoOrder input[type="number"]').spinner({
+      icons: { down: "ui-icon-triangle-1-s", up: "ui-icon-triangle-1-n"}
+    })
+
+    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove()
 
     //change theme event handler for images:
     $('body').on('changeThemeEvent', function (event, theme) {
@@ -80,25 +97,40 @@
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
       jeedom.cmd.execute({id: '#refresh_id#'})
-    });
+    })
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_up').on('click', function () {
-      jeedom.cmd.execute({id: '#set_plus_one_id#'})
-      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
-      newTemp = parseFloat(temp) + 1
-      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
-    });
+      var temp = $("div[data-cmd_id='#temperature_order_id#'] .state").html()
+      var dialog = $('div[data-eqLogic_id="#id#"]').find('.thermoOrder')
+      dialog.find('.inputOrder').val(parseFloat(temp) + 1)
+      dialog.show()
+    })
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_down').on('click', function () {
-      jeedom.cmd.execute({id: '#set_minus_one_id#'})
-      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
-      newTemp = parseFloat(temp) - 1
-      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
-    });
+      var temp = $("div[data-cmd_id='#temperature_order_id#'] .state").html()
+      var dialog = $('div[data-eqLogic_id="#id#"]').find('.thermoOrder')
+      dialog.find('.inputOrder').val(parseFloat(temp) - 1)
+      dialog.show()
+    })
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
       jeedom.cmd.execute({id: '#cancel_id#'})
-    });
+    })
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] .bt_thermoOrderCancel').on('click', function () {
+      $('div[data-eqLogic_id="#id#"]').find('.thermoOrder').hide()
+    })
+    $('.eqLogic[data-eqLogic_uid=#uid#] .bt_thermoOrderOk').on('click', function () {
+      var dialog = $('div[data-eqLogic_id="#id#"]').find('.thermoOrder')
+      var order = dialog.find('.inputOrder').val()
+      var hours = dialog.find('.inputHour').val()
+      var minutes = dialog.find('.inputMinute').val()
+      minutes = parseInt(minutes) + (parseInt(hours)*60)
+
+      jeedom.cmd.execute({id: '#set_plus_one_id#', value: {order, minutes}})
+
+      $('div[data-eqLogic_id="#id#"]').find('.thermoOrder').hide()
+    })
 
     $(".cmd[data-cmd_id=#set_program_id#] select").on('change', function () {
       jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}})
