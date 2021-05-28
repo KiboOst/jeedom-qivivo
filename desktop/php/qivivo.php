@@ -19,22 +19,32 @@ $eqLogics = eqLogic::byType($plugin->getId());
     </div>
 
     <legend><i class="fa fa-table"></i> {{Mes Modules}}</legend>
-    <input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
+    <div class="input-group" style="margin-bottom:5px;">
+      <input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic"/>
+      <div class="input-group-btn">
+          <a id="bt_resetObjectSearch" class="btn" style="width:30px"><i class="fas fa-times"></i>
+          </a><a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>
+      </div>
+    </div>
+
     <div class="eqLogicThumbnailContainer">
         <?php
           foreach ($eqLogics as $eqLogic) {
+            $div = '';
             $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
-            echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+            $div .= '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 
             $imgPath = $plugin->getPathImgIcon();
             if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
             if ($eqLogic->getConfiguration('type', '') == 'Module Chauffage') $imgPath = 'plugins/qivivo/core/img/module.png';
             if ($eqLogic->getConfiguration('type', '') == 'Passerelle') $imgPath = 'plugins/qivivo/core/img/gateway.png';
-            echo '<img src="' . $imgPath . '"/>';
+            $div .= '<img src="' . $imgPath . '"/>';
 
-            echo '<br>';
-            echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-            echo '</div>';
+            $div .= '<br>';
+            $div .= '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+            $div .= '<span class="hidden hiddenAsCard displayTableRight">'.$eqLogic->getConfiguration('zone_name').'</span>';
+            $div .= '</div>';
+            echo $div;
           }
         ?>
     </div>

@@ -45,7 +45,8 @@
         "Température": "Température",
         "Humidité": "Humidité",
         "Presence": "Presence",
-        "Temporaire": "Temporaire"
+        "Temporaire": "Temporaire",
+        "Pendant": "Pendant"
     },
     "plugins\/qivivo\/desktop\/js\/qivivo.js": {
         "Nom du programme ?": "Nom du programme ?",
@@ -58,9 +59,6 @@
         "Export program": "Export program",
         "Export": "Export",
         "Cancel": "Cancel",
-        "Successfully exported!": "Successfully exported!",
-        "Please specify a name!": "Please specify a name!",
-        "Importation de programme": "Importation de programme",
         "Nom": "Nom",
         "Historiser": "Historiser",
         "Tester": "Tester",
@@ -79,17 +77,6 @@
         "Module Chauffage": "Module Chauffage",
         "Passerelle": "Passerelle"
     },
-    "plugins\/qivivo\/desktop\/modal\/importProgram.php": {
-        "401 - Accès non autorisé": "401 - Accès non autorisé",
-        "Importer": "Importer",
-        "Oui": "Oui",
-        "Non": "Non",
-        "Fichier": "Fichier",
-        "Zone Thermostat": "Zone Thermostat",
-        "Origine": "Origine",
-        "Programme": "Programme",
-        "Actions": "Actions"
-    },
     "plugins\/qivivo\/desktop\/php\/qivivo.php": {
         "401 - Accès non autorisé": "401 - Accès non autorisé",
         "Gestion": "Gestion",
@@ -102,8 +89,8 @@
         "Equipement": "Equipement",
         "Programmes": "Programmes",
         "Commandes": "Commandes",
-        "Nom de l'équipement Qivivo": "Nom de l'équipement Qivivo",
-        "Nom de l'équipement Qivivo": "Nom de l'équipement Qivivo",
+        "Nom de l\\'équipement Qivivo": "Nom de l\\'équipement Qivivo",
+        "Nom de l\\'équipement Qivivo": "Nom de l\\'équipement Qivivo",
         "Objet parent": "Objet parent",
         "Aucun": "Aucun",
         "Catégorie": "Catégorie",
@@ -131,6 +118,15 @@
         "Options": "Options",
         "Action": "Action",
         "Commandes Actions": "Commandes Actions"
+    },
+    "plugins\/qivivo\/plugin_info\/configuration.php": {
+        "Login": "Login",
+        "Password": "Password",
+        "Client ID": "Client ID",
+        "Client secret": "Client secret",
+        "Synchroniser": "Synchroniser",
+        "Synchroniser mes équipements": "Synchroniser mes équipements",
+        "Synchronisation réussie : Veuillez rafraîchir cette page (F5).": "Synchronisation réussie : Veuillez rafraîchir cette page (F5)."
     },
     "plugins\/qivivo\/plugin_info\/configuration.php": {
         "Login": "Login",

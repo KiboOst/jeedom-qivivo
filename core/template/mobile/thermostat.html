@@ -15,9 +15,9 @@
   <center>
     <div>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
-      <a class="cmd btn qivivo_temperature_order_down cursor" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="26px" style="vertical-align:middle;"></a>
+      <a href="#thermoOrder#id#" data-rel="popup" class="cmd btn qivivo_temperature_order_down cursor" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="26px" style="vertical-align:middle;"></a>
       <strong class="cmd state #temperature_order_history# #history#" data-type="info" data-cmd_id="#temperature_order_id#" title="#temperature_order_collectDate#" style="vertical-align:middle;font-size:1.5em!important">#temperature_order#</strong> °C
-      <a class="cmd btn qivivo_temperature_order_up cursor" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="26px" style="vertical-align:middle;"></a>
+      <a href="#thermoOrder#id#" data-rel="popup" class="cmd btn qivivo_temperature_order_up cursor" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="26px" style="vertical-align:middle;"></a>
       <a class="cmd btn qivivo_temperature_order_cancel cursor" data-cmd_id="#cancel_id#" style="margin-left:5px;opacity: #cancel_opacity#;"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="26px" style="vertical-align:middle;"></a>
       <hr style="height:5px; visibility:hidden; padding:0; margin:0">
     </div>
@@ -46,6 +46,16 @@
     </div>
   </center>
 
+  <div data-enhance="false" data-role="popup" id="thermoOrder#id#" style="padding: 10px; background-color: rgb(var(--eq-bg-color))!important;">
+    #order_name# <input data-role="none" type="number" class="inputOrder" size="3" min="0" max="40" step="0.5" style="width: 50px;" value="#temperature_order#"> °C
+    <br><br>
+    #during_name#
+      <input data-role="none" type="number" class="inputHour" size="2" min="0" max="72" step="1" value="2" style="width: 50px;"> h
+      <input data-role="none" type="number" class="inputMinute" size="2" min="0" max="60" step="1" value="0" style="width: 50px;"> min<br>
+    <br>
+    <center><a class="ui-btn ui-mini ui-btn-inline bt_thermoOrderCancel">Cancel</a> <a class="ui-btn ui-mini ui-btn-inline bt_thermoOrderOk">OK</a></center>
+  </div>
+
   <script type="text/javascript">
     //change theme event handler for images:
     $('body').on('changeThemeEvent', function (event, theme) {
@@ -72,25 +82,33 @@
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
       jeedom.cmd.execute({id: '#refresh_id#'});
-    });
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_up').on('click', function () {
-      jeedom.cmd.execute({id: '#set_plus_one_id#'});
-      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
-      newTemp = parseFloat(temp) + 1
-      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
-    });
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_down').on('click', function () {
-      jeedom.cmd.execute({id: '#set_minus_one_id#'});
-      temp = $(".state[data-cmd_id='#temperature_order_id#']").html()
-      newTemp = parseFloat(temp) - 1
-      $(".state[data-cmd_id='#temperature_order_id#']").html(newTemp)
-    });
+    })
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
-      jeedom.cmd.execute({id: '#cancel_id#'});
-    });
+      jeedom.cmd.execute({id: '#cancel_id#'})
+    })
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_up').on('click', function () {
+      var temp = $("[data-cmd_id='#temperature_order_id#']").html()
+      $('#thermoOrder#id#').find('.inputOrder').val(parseFloat(temp) + 1)
+    })
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_down').on('click', function () {
+      var temp = $("[data-cmd_id='#temperature_order_id#']").html()
+      $('#thermoOrder#id#').find('.inputOrder').val(parseFloat(temp) - 1)
+    })
+    $('#thermoOrder#id# .bt_thermoOrderCancel').on('click', function () {
+      $('#thermoOrder#id#').popup('close')
+    })
+    $('#thermoOrder#id# .bt_thermoOrderOk').on('click', function () {
+      var dialog = $('#thermoOrder#id#')
+      var order = dialog.find('.inputOrder').val()
+      var hours = dialog.find('.inputHour').val()
+      var minutes = dialog.find('.inputMinute').val()
+      minutes = parseInt(minutes) + (parseInt(hours)*60)
+      jeedom.cmd.execute({id: '#set_plus_one_id#', value: {order, minutes}})
+      $('#thermoOrder#id#').popup('close')
+    })
 
     $(".cmd[data-cmd_id=#set_program_id#] select").on('change', function () {
       jeedom.cmd.execute({id: '#set_program_id#', value: {select: $(this).value()}});
