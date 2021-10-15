@@ -1200,7 +1200,7 @@ class qivivo extends eqLogic {
             $tmpConsigne = $cmd->execCmd();
             $replace['#temperature_order#'] = $tmpConsigne;
             $replace['#temperature_order_id#'] = $cmd->getId();
-            $replace['#temperature_order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
+            $replace['#order_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
             if ($cmd->getIsHistorized() == 1)
             {
                 $replace['#temperature_order_history#'] = 'history cursor';
