@@ -27,12 +27,12 @@
         <select>#set_program_listValue#</select>
     </span>
 
-    <div>
-      <span class="cmdName">#temperature_name#  </span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#temperature_id#">#temperature#</strong> °C
+    <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;display:block;">
+      <div class="cmdName">#temperature_name#  <strong class="state">#temperature#</strong> °C</div>
     </div>
 
-    <div>
-      <span class="cmdName">#humidity_name#  </span>  <strong class="cmd state #history#" data-type="info" data-cmd_id="#humidity_id#">#humidity#</strong> %
+    <div class="cmd cmd-widget #humidity_history#" data-type="info" data-cmd_id="#humidity_id#" title="#humidity_collectDate#" style="line-height:16px;display:block;">
+      <div class="cmdName">#humidity_name#  <strong class="state">#humidity#</strong> %</div>
     </div>
 
     <div>
