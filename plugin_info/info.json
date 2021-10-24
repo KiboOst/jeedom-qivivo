@@ -1,19 +1,22 @@
 {
 	"id" : "qivivo",
 	"name" : "Qivivo",
-	"description" : "Intégration du Thermostat Qivivo",
+	"description": {
+        "fr_FR": "Intégration du Thermostat Qivivo/Comap.",
+        "en_US": "Qivivo/Comap Thermostat integration."
+    },
 	"licence" : "AGPL",
 	"author" : "KiboOst",
 	"require" : "3.3",
 	"category" : "wellness",
-	"hasDependency" : false,
-	"hasOwnDeamon" : false,
-	"maxDependancyInstallTime" : 0,
+	"language" : [
+		"fr_FR",
+		"en_US"
+	],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"],
 	"changelog" : "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/changelog.html",
 	"documentation" : "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/",
-	"language" : ["fr_FR","en_US"],
-	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"],
-	"link" : {
-		"forum": "https://www.jeedom.com/forum/viewtopic.php?f=144&t=35997"
-	}
+    "changelog_beta": "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/changelog.html",
+    "documentation_beta": "https://kiboost.github.io/jeedom_docs/plugins/qivivo/fr_FR/"
+
 }
