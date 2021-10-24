@@ -1185,6 +1185,10 @@ class qivivo extends eqLogic {
         //only custom template for thermostat dashboard:
         $_thisType = $this->getConfiguration('type');
         $replace['#category#'] = $this->getPrimaryCategory();
+        //pre 4.2 preToHtml() without graph:
+        if (!array_key_exists('#divGraphInfo#', $replace)) {
+            $replace['#divGraphInfo#'] = '';
+        }
 
         if ($_thisType == 'Thermostat')
         {
