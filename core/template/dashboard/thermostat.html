@@ -34,11 +34,11 @@
       </div>
 
       <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;display:block;">
-        <span>#temperature_name#  <strong class="state">#temperature#</strong> °C</span>
+        <div class="cmdName">#temperature_name#  <strong class="state">#temperature#</strong> °C</div>
       </div>
 
       <div class="cmd cmd-widget #humidity_history#" data-type="info" data-cmd_id="#humidity_id#" title="#humidity_collectDate#" style="line-height:16px;display:block;">
-        <span>#humidity_name#  <strong class="state">#humidity#</strong> %</span>
+        <div class="cmdName">#humidity_name#  <strong class="state">#humidity#</strong> %</div>
       </div>
 
       <div class="cmd cmd-widget #heating_history#" data-type="info" data-cmd_id="#heating_id#" style="position:absolute; right:0px; bottom:0px;">
@@ -64,7 +64,7 @@
       <a class="btn btn-xs bt_thermoOrderCancel">Cancel</a> <a class="btn btn-xs bt_thermoOrderOk">OK</a>
     </center>
   </div>
-
+  #divGraphInfo#
   <script type="text/javascript">
     $('div[data-eqLogic_id="#id#"] .thermoOrder input[type="number"]').spinner({
       icons: { down: "ui-icon-triangle-1-s", up: "ui-icon-triangle-1-n"}
