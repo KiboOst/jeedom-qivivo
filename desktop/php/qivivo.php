@@ -42,7 +42,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
             $div .= '<br>';
             $div .= '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-            $div .= '<span class="hidden hiddenAsCard displayTableRight">'.$eqLogic->getConfiguration('zone_name').'</span>';
+
+            $div .= '<span class="hidden hiddenAsCard displayTableRight"><span>'.$eqLogic->getConfiguration('zone_name') . '</span>';
+            $cats = $eqLogic->getCategory();
+            unset($cats['default']);
+            $div .= '<span> ' . implode(array_keys($cats, 1), ', ') . '</span>';
+            if ($eqLogic->getIsVisible() == 1) {
+              $div .= ' <i class="fas fa-eye"></i>';
+            } else {
+              $div .= ' <i class="fas fa-eye-slash"></i>';
+            }
+            $div .= '</span>';
+
             $div .= '</div>';
             echo $div;
           }
@@ -88,10 +99,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
                       <?php
                         $options = '';
                         foreach ((jeeObject::buildTree(null, false)) as $object) {
-                          $decay = $object->getConfiguration('parentNumber');
-                          $options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $decay) . $object->getName() . '</option>';
+                          $options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
                         }
-                        echo $options;
+                      echo $options;
                       ?>
                  </select>
              </div>
