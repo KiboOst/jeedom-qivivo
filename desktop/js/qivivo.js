@@ -14,11 +14,12 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+"use strict"
 
 //show module image:
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change',function(){
     $("#bt_tab_programs").hide()
-    type = $(this).value()
+    var type = $(this).value()
     if (type == 'Thermostat') $('#img_qivivoModel').attr('src','plugins/qivivo/core/img/thermostat.png')
     if (type == 'Passerelle') $('#img_qivivoModel').attr('src','plugins/qivivo/core/img/gateway.png')
     if (type == 'Module Chauffage') $('#img_qivivoModel').attr('src','plugins/qivivo/core/img/module.png')
@@ -26,25 +27,10 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change',functio
 
 //command infos values:
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=serial]').on('change',function(){
-    serial = $(this).value()
+    var serial = $(this).value()
     if (serial == null) return
 
-    //hide all infos divs:
-    $("div[data-cmd_id='moduleOrder']").hide()
-    $("div[data-cmd_id='moduleZone']").hide()
-    $("div[data-cmd_id='last_communication']").hide()
-    $("div[data-cmd_id='firmware_version']").hide()
-    $("div[data-cmd_id='temperature_order']").hide()
-    $("div[data-cmd_id='dureeordre']").hide()
-
-    $("div[data-cmd_id='paramTempAbsence']").hide()
-    $("div[data-cmd_id='paramTempHG']").hide()
-    $("div[data-cmd_id='paramTempNuit']").hide()
-    $("div[data-cmd_id='paramTempPres1']").hide()
-    $("div[data-cmd_id='paramTempPres2']").hide()
-    $("div[data-cmd_id='paramTempPres3']").hide()
-    $("div[data-cmd_id='paramTempPres4']").hide()
-    $("div[data-cmd_id='battery']").hide()
+    $('div.qivivoConfig').hide()
 
     $.ajax({
         type: "POST",
@@ -55,78 +41,73 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=serial]').on('change',funct
             handleAjaxError(request, status, error)
         },
         success: function (data) {
-            if (data.result.type != undefined) serial_callback(data)
+            if (data.result.type != undefined) qivivo_serialCallback(data)
         }
     })
 })
 
-function serial_callback(data) {
-    _type = data.result.type
+function qivivo_serialCallback(data) {
+  var _type = data.result.type
 
-    //common infos:
-    $("div[data-cmd_id='last_communication']").show()
-    $("span[data-cmd_id='last_communication']").html(data.result.last_communication)
+  //common infos:
+  $("div[data-cmd_id='last_communication']").show()
+  $("span[data-cmd_id='last_communication']").html(data.result.last_communication)
 
-    $("div[data-cmd_id='firmware_version']").show()
-    $("span[data-cmd_id='firmware_version']").html(data.result.firmware_version)
+  $("div[data-cmd_id='firmware_version']").show()
+  $("span[data-cmd_id='firmware_version']").html(data.result.firmware_version)
 
-    //specific infos:
-    if (_type == 'Thermostat')
-    {
-        $("div[data-cmd_id='temperature_order']").show()
-        $("span[data-cmd_id='temperature_order']").html(data.result.temperature_order + ' °C')
+  //specific infos:
+  if (_type == 'Thermostat')
+  {
+      $("div[data-cmd_id='temperature_order']").show()
+      $("span[data-cmd_id='temperature_order']").html(data.result.temperature_order + ' °C')
 
-        $("div[data-cmd_id='dureeordre']").show()
-        $("span[data-cmd_id='dureeordre']").html(data.result.dureeordre + ' Mins')
+      $("div[data-cmd_id='dureeordre']").show()
+      $("span[data-cmd_id='dureeordre']").html(data.result.dureeordre + ' Mins')
 
-        $("div[data-cmd_id='paramTempAbsence']").show()
-        $("span[data-cmd_id='paramTempAbsence']").html(data.result.paramTempAbsence + ' °C')
+      $("div[data-cmd_id='paramTempAbsence']").show()
+      $("span[data-cmd_id='paramTempAbsence']").html(data.result.paramTempAbsence + ' °C')
 
-        $("div[data-cmd_id='paramTempHG']").show()
-        $("span[data-cmd_id='paramTempHG']").html(data.result.paramTempHG + ' °C')
+      $("div[data-cmd_id='paramTempHG']").show()
+      $("span[data-cmd_id='paramTempHG']").html(data.result.paramTempHG + ' °C')
 
-        $("div[data-cmd_id='paramTempNuit']").show()
-        $("span[data-cmd_id='paramTempNuit']").html(data.result.paramTempNuit + ' °C')
+      $("div[data-cmd_id='paramTempNuit']").show()
+      $("span[data-cmd_id='paramTempNuit']").html(data.result.paramTempNuit + ' °C')
 
-        $("div[data-cmd_id='paramTempPres1']").show()
-        $("span[data-cmd_id='paramTempPres1']").html(data.result.paramTempPres1 + ' °C')
+      $("div[data-cmd_id='paramTempPres1']").show()
+      $("span[data-cmd_id='paramTempPres1']").html(data.result.paramTempPres1 + ' °C')
 
-        $("div[data-cmd_id='paramTempPres2']").show()
-        $("span[data-cmd_id='paramTempPres2']").html(data.result.paramTempPres2 + ' °C')
+      $("div[data-cmd_id='paramTempPres2']").show()
+      $("span[data-cmd_id='paramTempPres2']").html(data.result.paramTempPres2 + ' °C')
 
-        $("div[data-cmd_id='paramTempPres3']").show()
-        $("span[data-cmd_id='paramTempPres3']").html(data.result.paramTempPres3 + ' °C')
+      $("div[data-cmd_id='paramTempPres3']").show()
+      $("span[data-cmd_id='paramTempPres3']").html(data.result.paramTempPres3 + ' °C')
 
-        $("div[data-cmd_id='paramTempPres4']").show()
-        $("span[data-cmd_id='paramTempPres4']").html(data.result.paramTempPres4 + ' °C')
+      $("div[data-cmd_id='paramTempPres4']").show()
+      $("span[data-cmd_id='paramTempPres4']").html(data.result.paramTempPres4 + ' °C')
 
-        $("div[data-cmd_id='battery']").show()
-        $("span[data-cmd_id='battery']").html(data.result.battery + ' %')
+      $("div[data-cmd_id='battery']").show()
+      $("span[data-cmd_id='battery']").html(data.result.battery + ' %')
 
-        $('#spanEqType').html("{{Thermostat}}")
-    }
+      $('#spanEqType').html("{{Thermostat}}")
+  }
 
-    if (_type == 'Module Chauffage')
-    {
-        $("div[data-cmd_id='moduleOrder']").show()
-        value = data.result.module_order
-        if (value == 'monozone') value += ' [Zone Thermostat]'
-        $("span[data-cmd_id='module_order']").html(value)
+  if (_type == 'Module Chauffage')
+  {
+      $("div[data-cmd_id='module_order']").show()
+      var value = data.result.module_order
+      if (value == 'monozone') value += ' [Zone Thermostat]'
+      $("span[data-cmd_id='module_order']").html(value)
 
-        $("div[data-cmd_id='moduleZone']").show()
+      $("div[data-cmd_id='moduleZone']").show()
 
-        $('#spanEqType').html("{{Module Chauffage}}")
-    }
+      $('#spanEqType').html("{{Module Chauffage}}")
+  }
 
-    if (_type == 'Passerelle')
-    {
-        $('#spanEqType').html("{{Passerelle}}")
-    }
-}
-
-
-function printEqLogic(_eqLogic) {
-
+  if (_type == 'Passerelle')
+  {
+      $('#spanEqType').html("{{Passerelle}}")
+  }
 }
 
 function saveEqLogic(_eqLogic) {
@@ -179,5 +160,4 @@ function addCmdToTable(_cmd) {
         if (isset(_cmd.type)) $('#table_actions tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type))
         jeedom.cmd.changeType($('#table_actions tbody tr:last'), init(_cmd.subType))
     }
-    if (_cmd.name == 'SetProgram') _setProgramId_ = _cmd.id
 }
