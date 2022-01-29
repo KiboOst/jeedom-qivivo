@@ -4,7 +4,6 @@ if (!isConnect('admin')) {
 }
 
 $plugin = plugin::byId('qivivo');
-sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
 
@@ -32,7 +31,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
           foreach ($eqLogics as $eqLogic) {
             $div = '';
             $opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
-            $div .= '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+            $div .= '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '" data-eqLogic_type="' . $plugin->getId() . '">';
 
             $imgPath = $plugin->getPathImgIcon();
             if ($eqLogic->getConfiguration('type', '') == 'Thermostat') $imgPath = 'plugins/qivivo/core/img/thermostat.png';
@@ -42,7 +41,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
             $div .= '<br>';
             $div .= '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-            $div .= '<span class="hidden hiddenAsCard displayTableRight">'.$eqLogic->getConfiguration('zone_name').'</span>';
+
+            $div .= '<span class="hidden hiddenAsCard displayTableRight"><span>'.$eqLogic->getConfiguration('zone_name') . '</span>';
+            $cats = $eqLogic->getCategory();
+            unset($cats['default']);
+            $div .= '<span> ' . implode(array_keys($cats, 1), ', ') . '</span>';
+            if ($eqLogic->getIsVisible() == 1) {
+              $div .= ' <i class="fas fa-eye"></i>';
+            } else {
+              $div .= ' <i class="fas fa-eye-slash"></i>';
+            }
+            $div .= '</span>';
+
             $div .= '</div>';
             echo $div;
           }
@@ -51,7 +61,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
   </div>
 
 <!--Equipement page-->
-<div class="col-xs-12 eqLogic" style="display: none;">
+<div class="col-xs-12 eqLogic qivivo" style="display: none;">
   <div class="input-group pull-right" style="display:inline-flex">
     <span class="input-group-btn">
       <a class="btn btn-sm btn-default eqLogicAction roundedLeft" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}
@@ -88,10 +98,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
                       <?php
                         $options = '';
                         foreach ((jeeObject::buildTree(null, false)) as $object) {
-                          $decay = $object->getConfiguration('parentNumber');
-                          $options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $decay) . $object->getName() . '</option>';
+                          $options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
                         }
-                        echo $options;
+                      echo $options;
                       ?>
                  </select>
              </div>
@@ -140,7 +149,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
           </div>
         </div>
 
-        <div class="form-group" style="display: none;" data-cmd_id="moduleZone">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="moduleZone">
           <label class="col-sm-3 control-label">{{Zone}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="zone_name"></span>
@@ -148,13 +157,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
         </div>
 
         <!--common infos but Passerelle-->
-        <div class="form-group" style="display: none;" data-cmd_id="module_order">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="module_order">
           <label class="col-sm-3 control-label">{{Ordre}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="module_order"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="last_communication">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="last_communication">
           <label class="col-sm-3 control-label">{{Dernière communication}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="last_communication"></span>
@@ -162,62 +171,62 @@ $eqLogics = eqLogic::byType($plugin->getId());
         </div>
 
         <!--thermostat infos-->
-        <div class="form-group" style="display: none;" data-cmd_id="temperature_order">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="temperature_order">
           <label class="col-sm-3 control-label">{{Consigne}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="temperature_order"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="dureeordre">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="dureeordre">
           <label class="col-sm-3 control-label">{{Durée Ordre}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="dureeordre"></span>
           </div>
         </div>
 
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempAbsence">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempAbsence">
           <label class="col-sm-3 control-label">{{Paramètre Température Absence}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempAbsence"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempHG">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempHG">
           <label class="col-sm-3 control-label">{{Paramètre Température Hors-gel}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempHG"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempNuit">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempNuit">
           <label class="col-sm-3 control-label">{{Paramètre Température Nuit}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempNuit"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempPres1">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempPres1">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 1}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres1"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempPres2">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempPres2">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 2}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres2"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempPres3">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempPres3">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 3}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres3"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="paramTempPres4">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="paramTempPres4">
           <label class="col-sm-3 control-label">{{Paramètre Température Présence 4}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="paramTempPres4"></span>
           </div>
         </div>
-        <div class="form-group" style="display: none;" data-cmd_id="battery">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="battery">
           <label class="col-sm-3 control-label">{{Batterie}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="battery"></span>
@@ -226,14 +235,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 
         <!--common infos but Passerelle-->
-        <div class="form-group" style="display: none;" data-cmd_id="firmware_version">
+        <div class="form-group qivivoConfig" style="display: none;" data-cmd_id="firmware_version">
           <label class="col-sm-3 control-label">{{Firmware}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-cmd_id="firmware_version"></span>
           </div>
         </div>
         <!--common info-->
-        <div class="form-group">
+        <div class="form-group qivivoConfig">
           <label class="col-sm-3 control-label">{{serial}}</label>
           <div class="col-sm-5">
            <span class="eqLogicAttr label label-info" data-l1key="configuration" data-l2key="serial"></span>
@@ -274,6 +283,5 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 <?php
   include_file('desktop', 'qivivo', 'js', 'qivivo');
-  include_file('desktop', 'qivivo', 'css', 'qivivo');
   include_file('core', 'plugin.template', 'js');
 ?>
