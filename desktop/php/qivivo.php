@@ -5,6 +5,7 @@ if (!isConnect('admin')) {
 
 $plugin = plugin::byId('qivivo');
 $eqLogics = eqLogic::byType($plugin->getId());
+sendVarToJS('eqType', $plugin->getId());
 ?>
 
 <div class="row row-overflow">
