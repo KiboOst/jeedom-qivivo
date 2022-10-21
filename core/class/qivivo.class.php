@@ -146,6 +146,7 @@ class qivivo extends eqLogic {
                 continue;
             }
 
+            //check does not exist:
             $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
             if (!is_object($eqLogic))
             {
@@ -158,12 +159,18 @@ class qivivo extends eqLogic {
             $type = $device['model'];
             if ($type == 'thermostat')
             {
-                if (!isset($device['zone']))
-                {
-                    continue;
-                }
                 $type = 'Thermostat';
-                $eqLogic->setName($type);
+                $name = $type;
+                if (isset($device['custom_name']))
+                {
+                    $name .= ' '.$device['custom_name'];
+                } else if (isset($device['zone']))
+                {
+                    $name .= ' '.$device['zone'];
+                } else {
+                    $name .= ' '.$serial; //ensure different name for each
+                }
+                $eqLogic->setName($name);
             }
             if ($type == 'heating_module')
             {
@@ -180,16 +187,26 @@ class qivivo extends eqLogic {
                 }
                 else
                 {
+                    $name = 'Zone ';
+                    if (isset($device['custom_name']))
+                    {
+                        $name = $device['custom_name'];
+                    } else if (isset($device['zone']))
+                    {
+                        $name .= ' '.$device['zone'];
+                    } else {
+                        $name .= ' '.$serial; //ensure different name for each
+                    }
                     $eqLogic->setConfiguration('zone_name', $device['zone']);
                     $eqLogic->setConfiguration('isModuleThermostat', 0);
-                    $eqLogic->setName('Zone '.$device['zone']);
+                    $eqLogic->setName($name);
                 }
             }
             if ($type == 'gateway')
             {
                 $type = 'Passerelle';
                 $eqLogic->setIsVisible(0);
-                $eqLogic->setName($type);
+                $eqLogic->setName($type . ' ' . $serial);
             }
 
             $eqLogic->setConfiguration('serial', $serial);
