@@ -260,7 +260,10 @@ sendVarToJS('eqType', $plugin->getId());
       <table id="table_infos" class="table table-bordered table-condensed">
         <thead>
           <tr>
-            <th width="65%">{{Nom}}</th><th width="25%" align="center">{{Options}}</th><th width="10%" align="right">{{Action}}</th>
+            <th width="50%">{{Nom}}</th>
+            <th width="20%" align="center">{{Options}}</th>
+            <th width="20%" align="center">{{Etat}}</th>
+            <th width="10%" align="center">{{Action}}</th>
           </tr>
         </thead>
       <tbody>
@@ -271,7 +274,9 @@ sendVarToJS('eqType', $plugin->getId());
       <table id="table_actions" class="table table-bordered table-condensed">
         <thead>
           <tr>
-            <th width="65%">{{Nom}}</th><th width="25%" align="center">{{Options}}</th><th width="10%" align="right">{{Action}}</th>
+            <th width="50%">{{Nom}}</th>
+            <th width="40%" align="center"></th>
+            <th width="10%" align="center">{{Action}}</th>
           </tr>
         </thead>
       <tbody>

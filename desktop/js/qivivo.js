@@ -128,7 +128,6 @@ function addCmdToTable(_cmd) {
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="subType" style="display : none">'
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" style="width : 60%" placeholder="{{Nom}}"></td>'
         tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="display : none" />'
-
         tr += '</td>'
 
         tr += '<td>'
@@ -136,6 +135,12 @@ function addCmdToTable(_cmd) {
             tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized"/>{{Historiser}}</label></span> '
         }
         tr += '</td>'
+
+        if (_cmd.type == "info") {
+            tr += '<td>'
+            tr += '<span class="cmdAttr" data-l1key="htmlstate"></span>'
+            tr += '</td>'
+        }
 
         tr += '<td>'
         if (is_numeric(_cmd.id))
