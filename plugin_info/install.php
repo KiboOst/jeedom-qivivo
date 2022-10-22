@@ -21,7 +21,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 function qivivo_install() {
 	config::save('functionality::cron5::enable', 0, 'qivivo');
 	config::save('functionality::cron15::enable', 1, 'qivivo');
-	config::save('pluginversion', 2.1, 'qivivo');
+	config::save('pluginversion', 2.2, 'qivivo');
 }
 
 function qivivo_update() {
@@ -39,8 +39,36 @@ function qivivo_update() {
 		foreach ($eqs as $eq) {
 			$eq->remove();
 		}
-
 	}
+
+	if ($pluginVersion < 2.2) {
+		//new custom API with multi home:
+		$currentProgram = config::byKey('currentProgram', 'qivivo');
+		if (is_string($currentProgram)) {
+			$currentProgram = array($currentProgram);
+			config::save('currentProgram', $currentProgram, 'qivivo');
+		}
+		$isMultizone = config::byKey('isMultizone', 'qivivo');
+		if (is_string($isMultizone)) {
+			$isMultizone = array($isMultizone);
+			config::save('isMultizone', $isMultizone, 'qivivo');
+		}
+		$programList = config::byKey('programList', 'qivivo');
+		$newProgList = array($programList);
+		config::save('programList', $newProgList, 'qivivo');
+
+		$eqLogics = eqLogic::byType('qivivo');
+		foreach ($eqLogics as $eqLogic) {
+			$eqLogic->setConfiguration('houseId', 0);
+			$eqLogic->save();
+		}
+	}
+
+	//clean old stuff:
+	config::remove('client_id', 'qivivo');
+	config::remove('client_secret', 'qivivo');
+	config::remove('username', 'qivivo');
+	config::remove('password', 'qivivo');
 
 	//resave eqs for new cmd:
 	try
@@ -57,7 +85,7 @@ function qivivo_update() {
 		log::add('qivivo', 'error', 'qivivo_update ERROR: '.$e);
 	}
 
-	config::save('pluginversion', 2.1, 'qivivo');
+	config::save('pluginversion', 2.2, 'qivivo');
 }
 
 function qivivo_remove() {
