@@ -1457,7 +1457,7 @@ class qivivoCmd extends cmd {
         $eqLogic = $this->getEqlogic();
         $_action = $this->getLogicalId();
         $_type = $eqLogic->getConfiguration('type');
-        $_houseId = $this->getConfiguration('houseId');
+        $_houseId = $eqLogic->getConfiguration('houseId');
         qivivo::logger('action: '.$_action.' options: '.json_encode($_options));
 
         if ($_type == 'Module Chauffage')
