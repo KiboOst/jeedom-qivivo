@@ -363,10 +363,14 @@ class qivivo extends eqLogic {
                                 $eqLogic->checkAndUpdateCmd('last_presence', $lastPresence);
 
                                 $heating = 0;
-                                $status = $zone['heating_status'];
-                                if ($status != 'cooling')
-                                {
-                                    $heating = 1;
+                                $houseHeating = $_fullQivivo->_houses[$houseId]['heating']['heating_system_state'];
+                                if ($houseHeating == 'off') {
+                                    $heating = 0;
+                                } else {
+                                    if ($zone['heating_status'] != 'cooling')
+                                    {
+                                        $heating = 1;
+                                    }
                                 }
                                 $eqLogic->checkAndUpdateCmd('heating', $heating);
 
