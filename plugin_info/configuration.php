@@ -44,23 +44,14 @@ if ($pluginVersion == '') {
     <div class="form-group">
         <label class="col-sm-2 control-label">{{Password}}</label>
         <div class="col-sm-10">
-            <input type="text" class="inputPassword configKey form-control" data-l1key="pass" placeholder="Account password"/>
+            <div class="input-group">
+                <input type="text" class="inputPassword configKey form-control" data-l1key="pass" placeholder="Account password" />
+                <span class="input-group-btn">
+                    <a class="btn btn-default form-control bt_showPass roundedRight"><i class="fas fa-eye"></i></a>
+                </span>
+            </div>
         </div>
     </div>
-    <!--
-    <div class="form-group">
-        <label class="col-sm-2 control-label">{{Client ID}}</label>
-        <div class="col-sm-10">
-            <input type="text" class="configKey form-control" data-l1key="client_id" placeholder="Client ID"/>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-2 control-label">{{Client secret}}</label>
-        <div class="col-sm-10">
-            <input type="text" class="inputPassword configKey form-control" data-l1key="client_secret" placeholder="Client Secret"/>
-        </div>
-    </div>
-    -->
 
     <div class="form-group">
         <label class="col-lg-2 control-label">{{Synchroniser}}</label>
@@ -68,7 +59,6 @@ if ($pluginVersion == '') {
         <a class="btn btn-warning" id="bt_syncWithQivivo"><i class='fa fa-refresh'></i> {{Synchroniser mes équipements}}</a>
         </div>
     </div>
-
 
     <hr>
 

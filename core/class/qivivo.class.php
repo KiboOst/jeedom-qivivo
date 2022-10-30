@@ -130,332 +130,374 @@ class qivivo extends eqLogic {
             qivivo::logger('could not get customAPI, ending.');
             return;
         }
+        qivivo::logger('Number of houses: '.count($_qivivo->_houses));
+        //Check each house:
+        $isMultizone = array();
+        for ($i=0; $i<count($_fullQivivo->_houses); ++$i) {
 
-        //store multizone or not:
-        $result = $_fullQivivo->isMultizone()['result'];
-        $isMultizone = $result ? 1 : 0;
-        config::save('isMultizone', $isMultizone, 'qivivo');
-        qivivo::logger('isMultizone: '.config::byKey('isMultizone', 'qivivo', -1));
+            $houseId = $i;
+            $houseName = $_fullQivivo->_houses[$houseId]['name'];
 
-        //store devices:
-        $devices = $_fullQivivo->getFullDevices()['result'];
-        foreach ($devices as $serial => $device) {
-            //do not support radiator_valve yet:
-            if (!in_array($device['model'], array('thermostat', 'heating_module', 'gateway')))
-            {
-                continue;
-            }
+            //store multizone or not:
+            $result = $_fullQivivo->isMultizone($houseId)['result'];
+            $isMultizone[$houseId] = $result ? 1 : 0;
+            qivivo::logger('isMultizone: '.$isMultizone[$houseId]);
 
-            $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
-            if (!is_object($eqLogic))
-            {
-                $eqLogic = new qivivo();
-                $eqLogic->setEqType_name('qivivo');
-                $eqLogic->setIsVisible(1);
-                $eqLogic->setIsEnable(1);
-            }
-
-            $type = $device['model'];
-            if ($type == 'thermostat')
-            {
-                if (!isset($device['zone']))
+            //store devices:
+            $devices = $_fullQivivo->getFullDevices($houseId)['result'];
+            foreach ($devices as $serial => $device) {
+                //do not support radiator_valve yet:
+                if (!in_array($device['model'], array('thermostat', 'heating_module', 'gateway')))
                 {
                     continue;
                 }
-                $type = 'Thermostat';
-                $eqLogic->setName($type);
-            }
-            if ($type == 'heating_module')
-            {
-                if (!isset($device['zone']) && $device['main_heating_module'] === false)
-                {
-                    continue;
-                }
-                $type = 'Module Chauffage';
-                if ($device['main_heating_module'])
-                {
-                    $eqLogic->setConfiguration('zone_name', 'Thermostat');
-                    $eqLogic->setConfiguration('isModuleThermostat', 1);
-                    $eqLogic->setName('Zone Thermostat');
-                }
-                else
-                {
-                    $eqLogic->setConfiguration('zone_name', $device['zone']);
-                    $eqLogic->setConfiguration('isModuleThermostat', 0);
-                    $eqLogic->setName('Zone '.$device['zone']);
-                }
-            }
-            if ($type == 'gateway')
-            {
-                $type = 'Passerelle';
-                $eqLogic->setIsVisible(0);
-                $eqLogic->setName($type);
-            }
 
-            $eqLogic->setConfiguration('serial', $serial);
-            $eqLogic->setConfiguration('type', $type);
-            $eqLogic->setCategory('heating', 1);
-            $eqLogic->setLogicalId($serial);
-            $eqLogic->save();
+                //check does not exist:
+                $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
+                if (!is_object($eqLogic))
+                {
+                    $eqLogic = new qivivo();
+                    $eqLogic->setEqType_name('qivivo');
+                    $eqLogic->setIsVisible(1);
+                    $eqLogic->setIsEnable(1);
+                }
+                $eqLogic->setConfiguration('houseId', $houseId);
+                $type = $device['model'];
+
+                if ($type == 'thermostat')
+                {
+                    $type = 'Thermostat';
+                    $name = $houseName . ' - ' .$type;
+                    if (isset($device['custom_name']))
+                    {
+                        $name .= ' '.$device['custom_name'];
+                    } else if (isset($device['zone']))
+                    {
+                        $name .= ' '.$device['zone'];
+                    } else {
+                        $name .= ' '.$serial; //ensure different name for each
+                    }
+                    $eqLogic->setName($name);
+                }
+                if ($type == 'heating_module')
+                {
+                    if (!isset($device['zone']) && $device['main_heating_module'] === false)
+                    {
+                        continue;
+                    }
+                    $type = 'Module Chauffage';
+                    if ($device['main_heating_module'])
+                    {
+                        $eqLogic->setConfiguration('zone_name', 'Thermostat');
+                        $eqLogic->setConfiguration('isModuleThermostat', 1);
+                        $eqLogic->setName('Zone Thermostat');
+                    }
+                    else
+                    {
+                        $name = $houseName . ' -  Zone ';
+                        if (isset($device['custom_name']))
+                        {
+                            $name = $device['custom_name'];
+                        } else if (isset($device['zone']))
+                        {
+                            $name .= ' '.$device['zone'];
+                        } else {
+                            $name .= ' '.$serial; //ensure different name for each
+                        }
+                        $eqLogic->setConfiguration('zone_name', $device['zone']);
+                        $eqLogic->setConfiguration('isModuleThermostat', 0);
+                        $eqLogic->setName($name);
+                    }
+                }
+                if ($type == 'gateway')
+                {
+                    $type = 'Passerelle';
+                    $name = $houseName . ' - ' . $type;
+                    $eqLogic->setIsVisible(0);
+                    $eqLogic->setName($name . ' ' . $serial);
+                }
+
+                $eqLogic->setConfiguration('serial', $serial);
+                $eqLogic->setConfiguration('type', $type);
+                $eqLogic->setCategory('heating', 1);
+                $eqLogic->setLogicalId($serial);
+                $eqLogic->save();
+            }
         }
-        qivivo::logger('done!');
+        config::save('isMultizone', $isMultizone, 'qivivo');
+        qivivo::logger('syncWithQivivo done!');
     }
 
     //called from cron5 or cron15 to refresh infos
     public static function refreshQivivoInfos() {
         try {
-            qivivo::logger('refresh');
+            qivivo::logger('refreshQivivoInfos');
             $_fullQivivo = qivivo::getCustomAPI();
             if ($_fullQivivo === false)
             {
                 qivivo::logger('could not get customAPI, ending.');
                 return;
             }
+            qivivo::logger('Number of houses: '.count($_fullQivivo->_houses));
+            $isMultizone = array();
+            $ProgramsList = array();
+            for ($i=0; $i<count($_fullQivivo->_houses); ++$i) {
 
-            //store multizone or not. In monozone config, only one zone, get and change schedules!
-            $result = $_fullQivivo->isMultizone()['result'];
-            $isMultizone = $result ? 1 : 0;
-            config::save('isMultizone', $isMultizone, 'qivivo');
-            qivivo::logger('isMultizone: '.$isMultizone);
+                $houseId = $i;
 
-            //get program list:
-            if ($isMultizone)
-            {
-                $currentProgram = $_fullQivivo->getCurrentProgram()['result']['title'];
-                $programs = $_fullQivivo->getPrograms()['result'];
-                $ProgramsList = [];
-                foreach ($programs as $program) {
-                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
-                }
-            }
-            else
-            {
-                $currentProgram = $_fullQivivo->getCurrentSchedule()['result']['title'];
-                $programs = $_fullQivivo->getSchedules()['result'];
-                $ProgramsList = [];
-                foreach ($programs as $program) {
-                    array_push($ProgramsList, ['id'=>$program['id'], 'title'=>$program['title']]);
-                }
-            }
-            config::save('programList', $ProgramsList, 'qivivo');
-            qivivo::logger('ProgramsList: '.json_encode($ProgramsList));
+                //store multizone or not. In monozone config, only one zone, get and change schedules!
+                $result = $_fullQivivo->isMultizone($houseId)['result'];
+                $isMultizone[$houseId] = $result ? 1 : 0;
+                qivivo::logger('isMultizone: '.$isMultizone[$houseId]);
 
-
-            $devices = $_fullQivivo->getFullDevices()['result'];
-            qivivo::logger('devices: '.json_encode($devices));
-            foreach ($devices as $serial => $device) {
-                $_type = $device['model'];
-                $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
-                if (!is_object($eqLogic))
+                //get program list:
+                $ProgramsList[$houseId] = array();
+                if ($isMultizone[$houseId])
                 {
-                    continue;
-                }
-
-                if (isset($device['zone']))
-                {
-                    qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: '.$device['zone']);
-                    $eqLogic->setConfiguration('zone_name', $device['zone']);
+                    $currentProgram = $_fullQivivo->getCurrentProgram($houseId)['result']['title'];
+                    $programs = $_fullQivivo->getPrograms($houseId)['result'];
+                    foreach ($programs as $program) {
+                        array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
+                    }
                 }
                 else
                 {
-                    qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: Thermostat');
-                    //$eqLogic->setConfiguration('zone_name', 'Thermostat');
-                }
-
-                if ($_type == 'gateway')
-                {
-                    $firmware_version = $device['firmware_version'];
-                    if (!is_null($firmware_version))
-                    {
-                        $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
-                    }
-
-                    $last_communication = $device['last_communication_time'];
-                    $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    if (!is_null($last_communication))
-                    {
-                        $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                    $currentProgram = $_fullQivivo->getCurrentSchedule($houseId)['result']['title'];
+                    $programs = $_fullQivivo->getSchedules($houseId)['result'];
+                    foreach ($programs as $program) {
+                        array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
                     }
                 }
 
-                if ($_type == 'thermostat')
-                {
-                    //default:
-                    $eqLogic->getCmd(null, 'duree_temp')->event(120);
+                qivivo::logger('ProgramsList: '.json_encode($ProgramsList[$houseId]));
 
-                    $last_communication = $device['last_communication_time'];
-                    $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    if (!is_null($last_communication))
+                $devices = $_fullQivivo->getFullDevices($houseId)['result'];
+                qivivo::logger('devices: '.json_encode($devices));
+                foreach ($devices as $serial => $device) {
+                    $_type = $device['model'];
+                    $eqLogic = eqLogic::byLogicalId($serial, 'qivivo');
+                    if (!is_object($eqLogic))
                     {
-                        $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                        continue;
                     }
-                    $firmware_version = $device['firmware_version'];
-                    if (!is_null($firmware_version))
-                    {
-                        $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
-                    }
-                    $battery_percent = $device['voltage_percent'];
-                    if (!is_null($battery_percent))
-                    {
-                        $eqLogic->checkAndUpdateCmd('battery', $battery_percent);
-                        $eqLogic->batteryStatus($battery_percent);
+                    $eqLogic->setConfiguration('houseId', $houseId);
+                    if ($eqLogic->getIsEnable() == "0") {
+                        qivivo::logger('disable equipement, skip: '.$eqLogic->getName());
+                        continue;
                     }
 
-                    $eqLogic->checkAndUpdateCmd('current_program', $currentProgram);
+                    if (isset($device['zone']))
+                    {
+                        qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: '.$device['zone']);
+                        $eqLogic->setConfiguration('zone_name', $device['zone']);
+                    }
+                    else
+                    {
+                        qivivo::logger('type: '.$_type.' serial: '.$serial.' zone: Thermostat');
+                        //$eqLogic->setConfiguration('zone_name', 'Thermostat');
+                    }
 
-                    $zoneName = $device['zone'];
-                    $zones = $_fullQivivo->getZones();
-                    foreach ($_fullQivivo->_houseData['heating']['zones'] as $zone) {
-                        if ($zone['title'] == $zoneName)
+                    if ($_type == 'gateway')
+                    {
+                        $firmware_version = $device['firmware_version'];
+                        if (!is_null($firmware_version))
                         {
-                            qivivo::logger('zone: '.json_encode($zone));
-                            $temperature = $zone['temperature'];
-                            qivivo::logger('temperature: '.$temperature);
-                            if (!is_null($temperature))
-                            {
-                                $eqLogic->checkAndUpdateCmd('temperature', round($temperature, 1));
-                            }
+                            $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                        }
 
-                            $humidity = $zone['humidity'];
-                            qivivo::logger('humidity: '.$humidity);
-                            if (!is_null($humidity))
-                            {
-                                $eqLogic->checkAndUpdateCmd('humidity', $humidity);
-                            }
-
-                            $lastPresence = date("d-m-Y H:i", strtotime($zone['last_presence_detected']));
-                            qivivo::logger('lastPresence: '.$lastPresence);
-                            $eqLogic->checkAndUpdateCmd('last_presence', $lastPresence);
-
-                            $heating = 0;
-                            $status = $zone['heating_status'];
-                            if ($status != 'cooling')
-                            {
-                                $heating = 1;
-                            }
-                            $eqLogic->checkAndUpdateCmd('heating', $heating);
-
-                            $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
-                            $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
-                            break;
+                        $last_communication = $device['last_communication_time'];
+                        $last_communication = date("d-m-Y H:i", strtotime($last_communication));
+                        if (!is_null($last_communication))
+                        {
+                            $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                         }
                     }
 
-                    $settings = $_fullQivivo->getTempSettings()['result'];
-                    qivivo::logger('settings: '.json_encode($settings));
-                    $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['custom_temperatures']['frost_protection']);
-                    $eqLogic->getCmd(null, 'absence_temperature')->event($settings['custom_temperatures']['away']);
-                    $eqLogic->getCmd(null, 'night_temperature')->event($settings['custom_temperatures']['night']);
-                    $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['custom_temperatures']['presence_1']);
-                    $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['custom_temperatures']['presence_2']);
-                    $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['custom_temperatures']['presence_3']);
-                    $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['custom_temperatures']['presence_4']);
-
-                    $order = $device['order'];
-                    if ($order == 'frost_protection') $order = $settings['custom_temperatures']['frost_protection'];
-                    if ($order == 'away') $order = $settings['custom_temperatures']['away'];
-                    if ($order == 'night') $order = $settings['custom_temperatures']['night'];
-                    if ($order == 'presence_1') $order = $settings['custom_temperatures']['presence_1'];
-                    if ($order == 'presence_2') $order = $settings['custom_temperatures']['presence_2'];
-                    if ($order == 'presence_3') $order = $settings['custom_temperatures']['presence_3'];
-                    if ($order == 'presence_4') $order = $settings['custom_temperatures']['presence_4'];
-                    $eqLogic->checkAndUpdateCmd('temperature_order', $order);
-
-                    $qivivoCmd = $eqLogic->getCmd(null, 'set_program');
-                    if (count($ProgramsList) == 0)
+                    if ($_type == 'thermostat')
                     {
-                        $listValue = 'Aucun|Aucun programme;';
-                    }
-                    else
-                    {
-                        $listValue = '';
-                        foreach ($ProgramsList as $program) {
-                            $pName = $program['title'];
-                            $listValue .= $pName.'|'.$pName.';';
+                        //default:
+                        $eqLogic->getCmd(null, 'duree_temp')->event(120);
+
+                        $last_communication = $device['last_communication_time'];
+                        $last_communication = date("d-m-Y H:i", strtotime($last_communication));
+                        if (!is_null($last_communication))
+                        {
+                            $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
                         }
-                    }
-                    $qivivoCmd->setConfiguration('listValue', $listValue);
-                    $qivivoCmd->save();
-                }
+                        $firmware_version = $device['firmware_version'];
+                        if (!is_null($firmware_version))
+                        {
+                            $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                        }
+                        $battery_percent = $device['voltage_percent'];
+                        if (!is_null($battery_percent))
+                        {
+                            $eqLogic->checkAndUpdateCmd('battery', $battery_percent);
+                            $eqLogic->batteryStatus($battery_percent);
+                        }
 
-                if ($_type == 'heating_module')
-                {
-                    $order = false;
-                    $isMainModule = isset($device['order']) ? false : true;
-                    if (!$isMainModule)
-                    {
-                        $order = $device['order'];
-                        qivivo::logger('order: '.json_encode($order));
-                    }
-
-                    $firmware_version = $device['firmware_version'];
-                    if (!is_null($firmware_version))
-                    {
-                        $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
-                    }
-
-                    $last_communication = $device['last_communication_time'];
-                    $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                    if (!is_null($last_communication))
-                    {
-                        $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
-                    }
-
-                    $order_num = 0;
-                    if ($order == 'stop')
-                    {
-                        $order_num = 0;
-                        $order = 'Arrêt';
-                    }
-                    if ($order == 'frost_protection')
-                    {
-                        $order_num = 1;
-                        $order = 'Hors-Gel';
-                    }
-                    if ($order == 'eco')
-                    {
-                        $order_num = 2;
-                        $order = 'Eco';
-                    }
-                    if ($order == 'comfort_minus2')
-                    {
-                        $order_num = 3;
-                        $order = 'Confort -2';
-                    }
-                    if ($order == 'comfort_minus1')
-                    {
-                        $order_num = 4;
-                        $order = 'Confort -1';
-                    }
-                    if ($order == 'comfort')
-                    {
-                        $order_num = 5;
-                        $order = 'Confort';
-                    }
-                    if ($isMainModule)
-                    {
-                        $eqLogic->setConfiguration('isModuleThermostat', 1);
-                    }
-                    else
-                    {
-                        $eqLogic->setConfiguration('isModuleThermostat', 0);
-                        if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
-                        if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
+                        $eqLogic->checkAndUpdateCmd('current_program', $currentProgram);
 
                         $zoneName = $device['zone'];
-                        $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName)['result'];
-                        $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
-                    }
-                }
+                        $zones = $_fullQivivo->getZones($houseId);
+                        foreach ($_fullQivivo->_houses[$houseId]['heating']['zones'] as $zone) {
+                            if ($zone['title'] == $zoneName)
+                            {
+                                qivivo::logger('zone: '.json_encode($zone));
+                                $temperature = $zone['temperature'];
+                                qivivo::logger('temperature: '.$temperature);
+                                if (!is_null($temperature))
+                                {
+                                    $eqLogic->checkAndUpdateCmd('temperature', round($temperature, 1));
+                                }
 
-                $eqLogic->save();
-                $eqLogic->refreshWidget();
+                                $humidity = $zone['humidity'];
+                                qivivo::logger('humidity: '.$humidity);
+                                if (!is_null($humidity))
+                                {
+                                    $eqLogic->checkAndUpdateCmd('humidity', $humidity);
+                                }
+
+                                $lastPresence = date("d-m-Y H:i", strtotime($zone['last_presence_detected']));
+                                qivivo::logger('lastPresence: '.$lastPresence);
+                                $eqLogic->checkAndUpdateCmd('last_presence', $lastPresence);
+
+                                $heating = 0;
+                                $houseHeating = $_fullQivivo->_houses[$houseId]['heating']['heating_system_state'];
+                                if ($houseHeating == 'off') {
+                                    $heating = 0;
+                                } else {
+                                    if ($zone['heating_status'] != 'cooling')
+                                    {
+                                        $heating = 1;
+                                    }
+                                }
+                                $eqLogic->checkAndUpdateCmd('heating', $heating);
+
+                                $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName, $houseId)['result'];
+                                $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
+                                break;
+                            }
+                        }
+
+                        $settings = $_fullQivivo->getTempSettings($houseId)['result'];
+                        qivivo::logger('settings: '.json_encode($settings));
+                        $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['custom_temperatures']['frost_protection']);
+                        $eqLogic->getCmd(null, 'absence_temperature')->event($settings['custom_temperatures']['away']);
+                        $eqLogic->getCmd(null, 'night_temperature')->event($settings['custom_temperatures']['night']);
+                        $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['custom_temperatures']['presence_1']);
+                        $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['custom_temperatures']['presence_2']);
+                        $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['custom_temperatures']['presence_3']);
+                        $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['custom_temperatures']['presence_4']);
+
+                        $order = $device['order'];
+                        if ($order == 'frost_protection') $order = $settings['custom_temperatures']['frost_protection'];
+                        if ($order == 'away') $order = $settings['custom_temperatures']['away'];
+                        if ($order == 'night') $order = $settings['custom_temperatures']['night'];
+                        if ($order == 'presence_1') $order = $settings['custom_temperatures']['presence_1'];
+                        if ($order == 'presence_2') $order = $settings['custom_temperatures']['presence_2'];
+                        if ($order == 'presence_3') $order = $settings['custom_temperatures']['presence_3'];
+                        if ($order == 'presence_4') $order = $settings['custom_temperatures']['presence_4'];
+                        $eqLogic->checkAndUpdateCmd('temperature_order', $order);
+
+                        $qivivoCmd = $eqLogic->getCmd(null, 'set_program');
+                        if (count($ProgramsList) == 0)
+                        {
+                            $listValue = 'Aucun|Aucun programme;';
+                        }
+                        else
+                        {
+                            $listValue = '';
+                            foreach ($ProgramsList as $program) {
+                                $pName = $program['title'];
+                                $listValue .= $pName.'|'.$pName.';';
+                            }
+                        }
+                        $qivivoCmd->setConfiguration('listValue', $listValue);
+                        $qivivoCmd->save();
+                    }
+
+                    if ($_type == 'heating_module')
+                    {
+                        $order = false;
+                        $isMainModule = isset($device['order']) ? false : true;
+                        if (!$isMainModule)
+                        {
+                            $order = $device['order'];
+                            qivivo::logger('order: '.json_encode($order));
+                        }
+
+                        $firmware_version = $device['firmware_version'];
+                        if (!is_null($firmware_version))
+                        {
+                            $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
+                        }
+
+                        $last_communication = $device['last_communication_time'];
+                        $last_communication = date("d-m-Y H:i", strtotime($last_communication));
+                        if (!is_null($last_communication))
+                        {
+                            $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                        }
+
+                        $order_num = 0;
+                        if ($order == 'stop')
+                        {
+                            $order_num = 0;
+                            $order = 'Arrêt';
+                        }
+                        if ($order == 'frost_protection')
+                        {
+                            $order_num = 1;
+                            $order = 'Hors-Gel';
+                        }
+                        if ($order == 'eco')
+                        {
+                            $order_num = 2;
+                            $order = 'Eco';
+                        }
+                        if ($order == 'comfort_minus2')
+                        {
+                            $order_num = 3;
+                            $order = 'Confort -2';
+                        }
+                        if ($order == 'comfort_minus1')
+                        {
+                            $order_num = 4;
+                            $order = 'Confort -1';
+                        }
+                        if ($order == 'comfort')
+                        {
+                            $order_num = 5;
+                            $order = 'Confort';
+                        }
+                        if ($isMainModule)
+                        {
+                            $eqLogic->setConfiguration('isModuleThermostat', 1);
+                        }
+                        else
+                        {
+                            $eqLogic->setConfiguration('isModuleThermostat', 0);
+                            if (!is_null($order)) $eqLogic->checkAndUpdateCmd('module_order', $order);
+                            if (!is_null($order_num)) $eqLogic->checkAndUpdateCmd('order_num', $order_num);
+
+                            $zoneName = $device['zone'];
+                            $hasTimeOrder = $_fullQivivo->hasTimeOrder($zoneName, $houseId)['result'];
+                            $eqLogic->checkAndUpdateCmd('hasTimeOrder', $hasTimeOrder);
+                        }
+                    }
+
+                    $eqLogic->save();
+                    $eqLogic->refreshWidget();
+                }
             }
-            qivivo::logger('refresh end');
         } catch (Exception $e) {
             qivivo::logger('Exception: '.$e->getMessage(), 'warning');
             return;
         }
+        config::save('isMultizone', $isMultizone, 'qivivo');
+        config::save('programList', $ProgramsList, 'qivivo');
+        qivivo::logger('refreshQivivoInfos done');
     }
 
     public static function cron5($_eqlogic_id = null) {
@@ -488,12 +530,21 @@ class qivivo extends eqLogic {
         $data = json_encode($_fullQivivo, JSON_PRETTY_PRINT);
         log::add('qivivo_debug', 'error', 'getCustomAPI: '.$data);
 
-        $getFullDevices = $_fullQivivo->getFullDevices();
+        $getFullDevices = array();
+        for ($i=0; $i<count($_fullQivivo->_houses); ++$i) {
+            $fullDevices = $_fullQivivo->getFullDevices($i);
+            array_push($getFullDevices, array($fullDevices));
+        }
         $data = json_encode($getFullDevices, JSON_PRETTY_PRINT);
         log::add('qivivo_debug', 'error', 'customAPI.getFullDevices: '.$data);
 
-        $getPrograms = $_fullQivivo->getPrograms();
-        log::add('qivivo_debug', 'error', 'customAPI.getPrograms: '.json_encode($getPrograms));
+        $getFullPrograms = array();
+        for ($i=0; $i<count($_fullQivivo->_houses); ++$i) {
+            $getPrograms = $_fullQivivo->getPrograms($i);
+            array_push($getFullPrograms, array($getPrograms));
+        }
+        $data = json_encode($getFullPrograms, JSON_PRETTY_PRINT);
+        log::add('qivivo_debug', 'error', 'customAPI.getPrograms: '.$data);
     }
 
     public function preSave() {
@@ -1264,7 +1315,8 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'current_program');
             $current_program = $cmd->execCmd();
             $replace['#program_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
-            $ProgramsList = config::byKey('programList', 'qivivo');
+            $houseId = $this->getConfiguration('houseId');
+            $ProgramsList = config::byKey('programList', 'qivivo')[$houseId];
             $cmd = $this->getCmd(null, 'set_program');
             $replace['#set_program_id#'] = $cmd->getId();
             $programs = $cmd->getConfiguration('listValue');
@@ -1409,6 +1461,7 @@ class qivivoCmd extends cmd {
         $eqLogic = $this->getEqlogic();
         $_action = $this->getLogicalId();
         $_type = $eqLogic->getConfiguration('type');
+        $_houseId = $eqLogic->getConfiguration('houseId');
         qivivo::logger('action: '.$_action.' options: '.json_encode($_options));
 
         if ($_type == 'Module Chauffage')
@@ -1458,13 +1511,13 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                if ($_fullQivivo->hasTimeOrder($zone_name)['result'])
+                if ($_fullQivivo->hasTimeOrder($zone_name, $_houseId)['result'])
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
-                    $_fullQivivo->cancelZoneOrder($zone_name);
+                    $_fullQivivo->cancelZoneOrder($zone_name, $_houseId);
                 }
 
-                $result = $_fullQivivo->setZoneMode($orderString, 120, $zone_name);
+                $result = $_fullQivivo->setZoneMode($orderString, 120, $zone_name, $_houseId);
 
                 if ($result['result']==True)
                 {
@@ -1494,10 +1547,10 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                if ($_fullQivivo->hasTimeOrder($zone_name)['result'])
+                if ($_fullQivivo->hasTimeOrder($zone_name, $_houseId)['result'])
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
-                    $result = $_fullQivivo->cancelZoneOrder($zone_name);
+                    $result = $_fullQivivo->cancelZoneOrder($zone_name, $_houseId);
                     if (isset($result['result']))
                     {
                         $newOrder = $result['result'];
@@ -1555,11 +1608,11 @@ class qivivoCmd extends cmd {
                 $isMultizone = config::byKey('isMultizone', 'qivivo', -1);
                 if ($isMultizone)
                 {
-                    $result = $_fullQivivo->setProgram($program);
+                    $result = $_fullQivivo->setProgram($program, $_houseId);
                 }
                 else
                 {
-                    $result = $_fullQivivo->setSchedule($program);
+                    $result = $_fullQivivo->setSchedule($program, $_houseId);
                 }
 
 
@@ -1609,13 +1662,13 @@ class qivivoCmd extends cmd {
                 }
 
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                if ($_fullQivivo->hasTimeOrder($zone_name)['result'])
+                if ($_fullQivivo->hasTimeOrder($zone_name, $_houseId)['result'])
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
-                    $_fullQivivo->cancelZoneOrder($zone_name);
+                    $_fullQivivo->cancelZoneOrder($zone_name, $_houseId);
                 }
 
-                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name, $_houseId);
                 if ($result['result']==True)
                 {
                     $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
@@ -1653,13 +1706,13 @@ class qivivoCmd extends cmd {
                 }
 
                 $zone_name = $eqLogic->getConfiguration('zone_name');
-                if ($_fullQivivo->hasTimeOrder($zone_name)['result'])
+                if ($_fullQivivo->hasTimeOrder($zone_name, $_houseId)['result'])
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
-                    $_fullQivivo->cancelZoneOrder($zone_name);
+                    $_fullQivivo->cancelZoneOrder($zone_name, $_houseId);
                 }
 
-                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name, $_houseId);
                 if ($result['result']==True)
                 {
                     $eqLogic->checkAndUpdateCmd('hasTimeOrder', 1);
@@ -1686,10 +1739,10 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                if ($_fullQivivo->hasTimeOrder($zone_name)['result'])
+                if ($_fullQivivo->hasTimeOrder($zone_name, $_houseId)['result'])
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
-                    $result = $_fullQivivo->cancelZoneOrder($zone_name);
+                    $result = $_fullQivivo->cancelZoneOrder($zone_name, $_houseId);
                     if (isset($result['result']))
                     {
                         $newOrder = $result['result'];
@@ -1746,14 +1799,14 @@ class qivivoCmd extends cmd {
                     return;
                 }
 
-                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name);
+                $zoneEvents = $_fullQivivo->getZoneEvents($zone_name, $_houseId);
                 if (isset($zoneEvents['result']['temporary_instruction']['set_point']))
                 {
                     qivivo::logger('Zone with temporary_instruction, canceling it.');
                     $_fullQivivo->cancelZoneOrder($zone_name);
                 }
 
-                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name);
+                $result = $_fullQivivo->setTemperature($temp, $duree_temp, $zone_name, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1791,7 +1844,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1829,7 +1882,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1866,7 +1919,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1904,7 +1957,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1942,7 +1995,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -1979,7 +2032,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
@@ -2017,7 +2070,7 @@ class qivivoCmd extends cmd {
                                 )
                 );
 
-                $result = $_fullQivivo->setTempSettings($settingsAr);
+                $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
                 if ($result['result']==True)
                 {
                     qivivo::logger($_action.': success');
