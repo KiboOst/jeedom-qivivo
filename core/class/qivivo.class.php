@@ -268,7 +268,6 @@ class qivivo extends eqLogic {
                         array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
                     }
                 }
-
                 qivivo::logger('ProgramsList: '.json_encode($ProgramsList[$houseId]));
 
                 $devices = $_fullQivivo->getFullDevices($houseId)['result'];
@@ -401,14 +400,14 @@ class qivivo extends eqLogic {
                         $eqLogic->checkAndUpdateCmd('temperature_order', $order);
 
                         $qivivoCmd = $eqLogic->getCmd(null, 'set_program');
-                        if (count($ProgramsList) == 0)
+                        if (count($ProgramsList[$houseId]) == 0)
                         {
                             $listValue = 'Aucun|Aucun programme;';
                         }
                         else
                         {
                             $listValue = '';
-                            foreach ($ProgramsList as $program) {
+                            foreach ($ProgramsList[$houseId] as $program) {
                                 $pName = $program['title'];
                                 $listValue .= $pName.'|'.$pName.';';
                             }
@@ -1315,11 +1314,11 @@ class qivivo extends eqLogic {
             $cmd = $this->getCmd(null, 'current_program');
             $current_program = $cmd->execCmd();
             $replace['#program_collectDate#'] = __('Date de valeur', __FILE__).' : '.$cmd->getValueDate().'<br>'.__('Date de collecte', __FILE__).' : '.$cmd->getCollectDate();
-            $houseId = $this->getConfiguration('houseId');
-            $ProgramsList = config::byKey('programList', 'qivivo')[$houseId];
+
             $cmd = $this->getCmd(null, 'set_program');
             $replace['#set_program_id#'] = $cmd->getId();
-            $programs = $cmd->getConfiguration('listValue');
+            $houseId = $this->getConfiguration('houseId');
+            $ProgramsList = config::byKey('programList', 'qivivo')[$houseId];
 
             $options = '';
             foreach ($ProgramsList as $program) {
