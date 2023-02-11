@@ -15,13 +15,13 @@
   <div class="verticalAlign">
     <center>
       <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_order_id#" data-version="#version#" data-eqLogic_id="#id#" title="#order_collectDate#" style="width:100%!important;">
-        <div class="content-xs" style="display: flex;">
+        <div class="content-xs" style="display: flex !important;width:100%">
           <i class="divers-thermometer31" style="font-size:16px;padding-top:4px;padding-left:5px;width: 20px;"></i>
           <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important;color:initial;">#set_order_listValue#</select>
         </div>
       </div>
 
-      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px">
+      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px;">
         <a class="cmd btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;opacity: #cancel_opacity#;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
 
@@ -38,35 +38,42 @@
   </div>
   #divGraphInfo#
   <script>
-    $('div[data-eqLogic_id="#id#"] select option').filter(function() { return !this.value || $.trim(this.value).length == 0;}).remove();
+    document.querySelectorAll('div[data-eqLogic_id="#id#"] select > option').forEach(_opt => {
+      if (!_opt.hasAttribute('value') || _opt.value.trim() == '') _opt.remove()
+    })
 
     //change theme event handler for images:
-    $('body').on('changeThemeEvent', function (event, theme) {
-      var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
-      if (theme == 'Light') {
-        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+    if (typeof jQuery === 'function') {
+      $('body').on('changeThemeEvent', changeThemeEvent#uid#)
+    } else {
+      document.body.addEventListener('changeThemeEvent', changeThemeEvent#uid#)
+    }
+
+    function changeThemeEvent#uid#() {
+      var eqlogic = document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"]')
+      if (document.body.getAttribute('data-theme').endsWith('Light')) {
+        eqlogic.querySelector('.qivivo_temperature_order_cancel > img').setAttribute('src', '/plugins/qivivo/core/img/icon_cross_light.png')
       } else {
-        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_dark.png')
-      }
-    })
-    //set icons to light:
-    if ($('body')[0].hasAttribute('data-theme')) {
-      if ($('body').attr('data-theme').endsWith('Light')) {
-        var eqlogic = $('.eqLogic[data-eqLogic_uid=#uid#]')
-        eqlogic.find('.qivivo_temperature_order_cancel > img').attr('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+        eqlogic.querySelector('.qivivo_temperature_order_cancel > img').setAttribute('src', '/plugins/qivivo/core/img/icon_cross_dark.png')
       }
     }
 
-    $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
+    //set icons to light:
+    if (document.body.getAttribute('data-theme').endsWith('Light')) {
+      var eqlogic = document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"]')
+      eqlogic.querySelector('.qivivo_temperature_order_cancel > img').setAttribute('src', '/plugins/qivivo/core/img/icon_cross_light.png')
+    }
+
+    document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"] .refresh').addEventListener('click', function(event) {
         jeedom.cmd.execute({id: '#refresh_id#'})
     })
 
-    $('.eqLogic[data-eqLogic_uid=#uid#] .qivivo_temperature_order_cancel').on('click', function () {
+    document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"] .qivivo_temperature_order_cancel').addEventListener('click', function(event) {
       jeedom.cmd.execute({id: '#cancel_id#'})
-    });
+    })
 
-    $(".cmd[data-cmd_id=#set_order_id#] select").on('change', function () {
-      jeedom.cmd.execute({id: '#set_order_id#', value: {select: $(this).value()}})
+    document.querySelector('.cmd[data-cmd_id="#set_order_id#"] select.selectCmd').addEventListener('change', function(event) {
+      jeedom.cmd.execute({id: '#set_order_id#', value: {select: event.target.value}})
     })
   </script>
 </div>

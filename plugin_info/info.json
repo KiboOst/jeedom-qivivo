@@ -7,7 +7,7 @@
     },
 	"licence" : "AGPL",
 	"author" : "KiboOst",
-	"require" : "3.3",
+	"require" : "4.2",
 	"category" : "wellness",
 	"language" : [
 		"fr_FR",

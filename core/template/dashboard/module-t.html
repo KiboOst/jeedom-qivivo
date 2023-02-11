@@ -26,8 +26,8 @@
   </div>
 
   <script>
-    $('.eqLogic[data-eqLogic_uid=#uid#] .refresh').on('click', function () {
-        jeedom.cmd.execute({id: '#refresh_id#'});
-      })
+    document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"] .refresh').addEventListener('click', function () {
+      jeedom.cmd.execute({id: '#refresh_id#'});
+    })
   </script>
 </div>
