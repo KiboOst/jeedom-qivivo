@@ -170,7 +170,7 @@ if ($pluginVersion == '') {
         div += '</span>'
         div += '</div>'
         div += '</div>'
-        var actionOption_id = uniqId()
+        var actionOption_id = jeedomUtils.uniqId()
         div += '<div class="col-sm-5 actionOptions" id="'+actionOption_id+'">'
         div += '</div>'
         div += '</div>'
@@ -188,7 +188,7 @@ if ($pluginVersion == '') {
         var el = $(this);
         jeedom.cmd.displayActionOption($(this).value(), init(expression[0].options), function (html) {
             el.closest('.actionOnError').find('.actionOptions').html(html);
-            taAutosize();
+            jeedomUtils.taAutosize();
         })
     });
 
@@ -198,7 +198,7 @@ if ($pluginVersion == '') {
             el.value(result.human);
             jeedom.cmd.displayActionOption(el.value(), '', function (html) {
                 el.closest('.actionOnError').find('.actionOptions').html(html);
-                taAutosize();
+                jeedomUtils.taAutosize();
             });
         });
     });
@@ -209,7 +209,7 @@ if ($pluginVersion == '') {
             el.value(result.human);
             jeedom.cmd.displayActionOption(el.value(), '', function (html) {
                 el.closest('.actionOnError').find('.actionOptions').html(html);
-                taAutosize();
+                jeedomUtils.taAutosize();
             });
         });
     });
@@ -245,7 +245,7 @@ if ($pluginVersion == '') {
                         for(var i in data){
                             $('#'+data[i].id).append(data[i].html.html)
                         }
-                        taAutosize()
+                        jeedomUtils.taAutosize()
                     }
                 })
             }
