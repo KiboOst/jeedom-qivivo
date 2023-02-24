@@ -50,6 +50,7 @@
     }
 
     function changeThemeEvent#uid#() {
+      if (eqlogic === null) return
       var eqlogic = document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"]')
       if (document.body.getAttribute('data-theme').endsWith('Light')) {
         eqlogic.querySelector('.qivivo_temperature_order_cancel > img').setAttribute('src', '/plugins/qivivo/core/img/icon_cross_light.png')

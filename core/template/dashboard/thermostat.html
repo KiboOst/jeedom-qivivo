@@ -78,6 +78,7 @@
 
     function changeThemeEvent#uid#() {
       var eqlogic = document.querySelector('.eqLogic[data-eqLogic_uid="#uid#"]')
+      if (eqlogic === null) return
       if (document.body.getAttribute('data-theme').endsWith('Light')) {
         eqlogic.querySelector('.qivivo_temperature_order_down > img').setAttribute('src', '/plugins/qivivo/core/img/icon_down_light.png')
         eqlogic.querySelector('.qivivo_temperature_order_up > img').setAttribute('src', '/plugins/qivivo/core/img/icon_up_light.png')
