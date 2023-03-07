@@ -33,7 +33,7 @@ https://github.com/KiboOst/php-qivivoAPI
 
 class qivivoAPI {
 
-    public $version = '3.0';
+    public $version = '3.1';
 
     //USER FUNCTIONS======================================================
     //GET FUNCTIONS:
@@ -79,7 +79,7 @@ class qivivoAPI {
             return array('result'=>$this->_houses[$houseId]['temperatures']);
         }
 
-        $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId]['id'].'/thermal-settings';
+        $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId]['id'].'/custom-temperatures';
         $answer = $this->_request('GET', $url);
         $jsonData = json_decode($answer, true);
 
@@ -500,10 +500,12 @@ class qivivoAPI {
 
     //@name string, @datas array | @return['result'] true, @return['error'] if any
     public function setProgram($name='', $houseId=0) {
+        /*
         if ($this->isMultizone()['result'] === false)
         {
             return $this->setSchedule($name, $houseId);
         }
+        */
 
         if (isset($this->_houses[$houseId]['programs']))
         {
@@ -559,9 +561,6 @@ class qivivoAPI {
                     "programming_type"=>"connected",
                     "schedule_id"=>$id
                 );
-
-                echo 'setSchedule -> '.$id;
-
 
                 $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId]['id'].'/programs/'.$programId.'/zones/'.$zoneId;
                 $post = json_encode($data);
@@ -835,7 +834,7 @@ class qivivoAPI {
 
     public function __construct($comapUser, $comapUserPass) {
         $this->_comapUser = $comapUser;
-        $this->_comapUserPass = $comapUserPass;
+        $this->_comapUserPass = urlencode($comapUserPass);
 
         if ($this->connect() == true)
         {
