@@ -262,8 +262,8 @@ class qivivo extends eqLogic {
                 }
                 else
                 {
-                    $currentProgram = $_fullQivivo->getCurrentSchedule($houseId)['result']['title'];
-                    $programs = $_fullQivivo->getSchedules($houseId)['result'];
+                    $currentProgram = $_fullQivivo->getCurrentProgram($houseId)['result']['title'];
+                    $programs = $_fullQivivo->getPrograms($houseId)['result'];
                     foreach ($programs as $program) {
                         array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
                     }
@@ -380,23 +380,23 @@ class qivivo extends eqLogic {
                         }
 
                         $settings = $_fullQivivo->getTempSettings($houseId)['result'];
-                        qivivo::logger('settings: '.json_encode($settings));
-                        $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['custom_temperatures']['frost_protection']);
-                        $eqLogic->getCmd(null, 'absence_temperature')->event($settings['custom_temperatures']['away']);
-                        $eqLogic->getCmd(null, 'night_temperature')->event($settings['custom_temperatures']['night']);
-                        $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['custom_temperatures']['presence_1']);
-                        $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['custom_temperatures']['presence_2']);
-                        $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['custom_temperatures']['presence_3']);
-                        $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['custom_temperatures']['presence_4']);
+                        qivivo::logger('getTempSettings: '.json_encode($settings));
+                        $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['frost_protection']);
+                        $eqLogic->getCmd(null, 'absence_temperature')->event($settings['away']);
+                        $eqLogic->getCmd(null, 'night_temperature')->event($settings['night']);
+                        $eqLogic->getCmd(null, 'presence_temperature_1')->event($settings['connected']['presence_1']);
+                        $eqLogic->getCmd(null, 'presence_temperature_2')->event($settings['connected']['presence_2']);
+                        $eqLogic->getCmd(null, 'presence_temperature_3')->event($settings['connected']['presence_3']);
+                        $eqLogic->getCmd(null, 'presence_temperature_4')->event($settings['connected']['presence_4']);
 
                         $order = $device['order'];
-                        if ($order == 'frost_protection') $order = $settings['custom_temperatures']['frost_protection'];
-                        if ($order == 'away') $order = $settings['custom_temperatures']['away'];
-                        if ($order == 'night') $order = $settings['custom_temperatures']['night'];
-                        if ($order == 'presence_1') $order = $settings['custom_temperatures']['presence_1'];
-                        if ($order == 'presence_2') $order = $settings['custom_temperatures']['presence_2'];
-                        if ($order == 'presence_3') $order = $settings['custom_temperatures']['presence_3'];
-                        if ($order == 'presence_4') $order = $settings['custom_temperatures']['presence_4'];
+                        if ($order == 'frost_protection') $order = $settings['temperatures']['frost_protection'];
+                        if ($order == 'away') $order = $settings['away'];
+                        if ($order == 'night') $order = $settings['night'];
+                        if ($order == 'presence_1') $order = $settings['connected']['presence_1'];
+                        if ($order == 'presence_2') $order = $settings['connected']['presence_2'];
+                        if ($order == 'presence_3') $order = $settings['connected']['presence_3'];
+                        if ($order == 'presence_4') $order = $settings['connected']['presence_4'];
                         $eqLogic->checkAndUpdateCmd('temperature_order', $order);
 
                         $qivivoCmd = $eqLogic->getCmd(null, 'set_program');
