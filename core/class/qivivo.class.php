@@ -574,7 +574,7 @@ class qivivo extends eqLogic {
                 $order ++;
             }
             $qivivoCmd->setEqLogic_id($this->getId());
-            $qivivoCmd->setUnite('°C');
+            $qivivoCmd->setUnite('');
             $qivivoCmd->setLogicalId('current_program');
             $qivivoCmd->setType('info');
             $qivivoCmd->setSubType('string');
