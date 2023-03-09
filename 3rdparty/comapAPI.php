@@ -586,7 +586,7 @@ class qivivoAPI {
 
         $post = json_encode($settingsAr);
         $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId]['id'].'/custom-temperatures';
-        $answer = $this->_request('PUT', $url, $post);
+        $answer = $this->_request('PATCH', $url, $post);
 
         if ($this->isJson($answer))
         {

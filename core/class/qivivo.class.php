@@ -1835,12 +1835,10 @@ class qivivoCmd extends cmd {
                     "away"=>$tempValue,
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -1873,12 +1871,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$tempValue,
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -1910,12 +1906,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$tempValue,
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -1948,12 +1942,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$tempValue,
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$tempValue,
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -1986,12 +1978,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$tempValue,
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$tempValue,
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -2023,12 +2013,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$tempValue,
-                                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$tempValue,
+                    "presence_4"=>$eqLogic->getCmd(null, 'presence_temperature_4')->execCmd()
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
@@ -2061,12 +2049,10 @@ class qivivoCmd extends cmd {
                     "away"=>$eqLogic->getCmd(null, 'absence_temperature')->execCmd(),
                     "frost_protection"=>$eqLogic->getCmd(null, 'frost_protection_temperature')->execCmd(),
                     "night"=>$eqLogic->getCmd(null, 'night_temperature')->execCmd(),
-                    "connected"=>array(
-                                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
-                                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
-                                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
-                                    "presence_4"=>$tempValue
-                                )
+                    "presence_1"=>$eqLogic->getCmd(null, 'presence_temperature_1')->execCmd(),
+                    "presence_2"=>$eqLogic->getCmd(null, 'presence_temperature_2')->execCmd(),
+                    "presence_3"=>$eqLogic->getCmd(null, 'presence_temperature_3')->execCmd(),
+                    "presence_4"=>$tempValue
                 );
 
                 $result = $_fullQivivo->setTempSettings($settingsAr, $_houseId);
