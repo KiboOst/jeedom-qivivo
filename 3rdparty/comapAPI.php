@@ -813,15 +813,15 @@ class qivivoAPI {
                 return false;
             }
 
-            //get idToken:
-            if (isset($json['AuthenticationResult']['IdToken']))
+            //get AccessToken:
+            if (isset($json['AuthenticationResult']['AccessToken']))
             {
-                $this->_token = $json['AuthenticationResult']['IdToken'];
+                $this->_token = $json['AuthenticationResult']['AccessToken'];
                 return true;
             }
             else
             {
-                $this->error = 'Cannot find IdToken.';
+                $this->error = 'Cannot find AccessToken.';
                 return false;
             }
         }
