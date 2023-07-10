@@ -709,7 +709,8 @@ class qivivoAPI {
                 'Origin: https://app.comapsmarthome.com',
                 'referer: https://app.comapsmarthome.com',
                 'Host: api.comapsmarthome.com',
-                'Authorization: Bearer '.$this->_token
+                'User-Agent: JeedomPlugin',
+                'Authorization: Bearer '.$this->_token,
             ];
             if ($method == 'POST')
             {
@@ -790,6 +791,7 @@ class qivivoAPI {
             'accept-encoding: gzip, deflate, br',
             'content-type: application/x-amz-json-1.1',
             'x-amz-target: AWSCognitoIdentityProviderService.InitiateAuth',
+            'User-Agent: JeedomPlugin',
         ];
         curl_setopt($this->_curlHdl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($this->_curlHdl, CURLOPT_URL, $this->_urlAuth);

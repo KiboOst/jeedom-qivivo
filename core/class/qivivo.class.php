@@ -40,7 +40,7 @@ class qivivo extends eqLogic {
         if (isset($_customQivivo->error))
         {
             $_apiError = $_customQivivo->error;
-            qivivo::logger('custom Qivivo API error: '.$_apiError, 'warning');
+            qivivo::logger('custom ComapSmartHome API error: '.$_apiError, 'warning');
             if ($_typeCmd == 'action')
             {
                 if ($_msg)
