@@ -379,7 +379,7 @@ class qivivo extends eqLogic {
                             }
                         }
 
-                        $settings = $_fullQivivo->getTempSettings($houseId)['result'];
+                        $settings = $_fullQivivo->getTempSettings($houseId)['result']['settings'];
                         qivivo::logger('getTempSettings: '.json_encode($settings));
                         $eqLogic->getCmd(null, 'frost_protection_temperature')->event($settings['frost_protection']);
                         $eqLogic->getCmd(null, 'absence_temperature')->event($settings['away']);
