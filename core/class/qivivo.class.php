@@ -40,7 +40,7 @@ class qivivo extends eqLogic {
         if (isset($_customQivivo->error))
         {
             $_apiError = $_customQivivo->error;
-            qivivo::logger('custom Qivivo API error: '.$_apiError, 'warning');
+            qivivo::logger('custom ComapSmartHome API error: '.$_apiError, 'warning');
             if ($_typeCmd == 'action')
             {
                 if ($_msg)
@@ -54,6 +54,7 @@ class qivivo extends eqLogic {
             }
             return False;
         }
+        qivivo::logger('custom ComapSmartHome API version: '.$_customQivivo->version);
         return $_customQivivo;
     }
 
@@ -127,7 +128,7 @@ class qivivo extends eqLogic {
         $_fullQivivo = qivivo::getCustomAPI();
         if ($_fullQivivo === false)
         {
-            qivivo::logger('could not get customAPI, ending.');
+            qivivo::logger('could not get ComapSmartHome customAPI, ending.');
             return;
         }
         qivivo::logger('Number of houses: '.count($_qivivo->_houses));
@@ -225,13 +226,13 @@ class qivivo extends eqLogic {
             }
         }
         config::save('isMultizone', $isMultizone, 'qivivo');
-        qivivo::logger('syncWithQivivo done!');
+        qivivo::logger('syncWith Comap done!');
     }
 
     //called from cron5 or cron15 to refresh infos
     public static function refreshQivivoInfos() {
         try {
-            qivivo::logger('refreshQivivoInfos');
+            qivivo::logger('refresh ComapSmartHome Infos');
             $_fullQivivo = qivivo::getCustomAPI();
             if ($_fullQivivo === false)
             {
@@ -496,7 +497,7 @@ class qivivo extends eqLogic {
         }
         config::save('isMultizone', $isMultizone, 'qivivo');
         config::save('programList', $ProgramsList, 'qivivo');
-        qivivo::logger('refreshQivivoInfos done');
+        qivivo::logger('refresh ComapSmartHome Infos done');
     }
 
     public static function cron5($_eqlogic_id = null) {
