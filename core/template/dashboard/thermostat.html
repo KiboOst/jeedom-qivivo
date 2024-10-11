@@ -14,30 +14,30 @@
 
   <div class="verticalAlign">
     <center>
-      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px;">
+      <div class="cmd-widget" data-type="action" style="min-width:20px; margin-bottom:5px; display:inline-block;">
         <a class="cmd btn qivivo_temperature_order_down" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_plus_one_id#"><img src="/plugins/qivivo/core/img/icon_down_dark.png" title="-1°C" width="24px"></a>
       </div>
       <div class="cmd cmd-widget #temperature_order_history#" data-type="info" data-cmd_id="#temperature_order_id#" style="min-width: 20px;">
-          <strong class="state"  title="#temperature_order_collectDate#" style="position:relative; top:12px;vertical-align:middle;font-size:1.5em">#temperature_order# °C</strong>
+          <strong class="state"  title="#temperature_order_collectDate#" style="position:relative; top:12px; vertical-align:middle; font-size:1.5em">#temperature_order# °C</strong>
       </div>
-      <div class="cmd-widget" data-type="action" style="min-width: 20px;margin-bottom:5px;display: inline;">
+      <div class="cmd-widget" data-type="action" style="min-width: 20px; margin-bottom:5px; display:inline-block;">
         <a class="cmd btn qivivo_temperature_order_up" style="background-color:transparent !important; background-image:none !important" data-cmd_id="#set_minus_one_id#"><img src="/plugins/qivivo/core/img/icon_up_dark.png" title="+1°C" width="24px"></a>
-        <a class="cmd btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important;margin-left:-10px;opacity: #cancel_opacity#;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
+        <a class="cmd btn qivivo_temperature_order_cancel" style="background-color:transparent !important; background-image:none !important; margin-left:-10px; opacity: #cancel_opacity#;" data-cmd_id="#cancel_id#"><img src="/plugins/qivivo/core/img/icon_cross_dark.png" title="Cancel" width="24px"></a>
       </div>
 
       <hr style="height:7px; visibility:hidden; padding:0; margin:0">
       <div class="cmd cmd-widget reportModeHidden" data-type="action" data-subtype="select" data-cmd_id="#set_program_id#" data-version="#version#" data-eqLogic_id="#id#" title="#program_collectDate#" style="width:100%!important;">
         <div class="content-xs" style="display: flex !important;width:100%">
-          <i class="divers-today1" style="font-size:20px;padding-top:1px;padding-left:5px;width: 20px;"></i>
-          <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important;color:initial;">#set_program_listValue#</select>
+          <i class="divers-today1" style="font-size:20px; padding-top:1px; padding-left:5px; width:20px;"></i>
+          <select class="selectCmd" data-l2key="graphColor" style="width:calc(100% - 24px) !important; color:initial;">#set_program_listValue#</select>
         </div>
       </div>
 
-      <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px;display:block;">
+      <div class="cmd cmd-widget #temperature_history#" data-type="info" data-cmd_id="#temperature_id#" title="#temperature_collectDate#" style="line-height:16px; display:block;">
         <div class="cmdName">#temperature_name#  <strong class="state">#temperature#</strong> °C</div>
       </div>
 
-      <div class="cmd cmd-widget #humidity_history#" data-type="info" data-cmd_id="#humidity_id#" title="#humidity_collectDate#" style="line-height:16px;display:block;">
+      <div class="cmd cmd-widget #humidity_history#" data-type="info" data-cmd_id="#humidity_id#" title="#humidity_collectDate#" style="line-height:16px; display:block;">
         <div class="cmdName">#humidity_name#  <strong class="state">#humidity#</strong> %</div>
       </div>
 
@@ -54,10 +54,10 @@
 
   <div class="form-group thermoOrder shadowed" style="display:none; position:absolute; top:0; left:5px; right:5px; padding:10px; background-color: rgb(var(--eq-bg-color));">
     <center>
-      <span>#order_name# </span> <input type="number" class="inputOrder ui-spinner ispin" size="3" min="0" max="40" step="0.5"> °C<br>
+      <span>#order_name# </span> <input type="number" class="inputOrder ispin" size="3" min="0" max="40" step="0.5"> °C<br>
       <span>#during_name# </span>
-       <input type="number" class="inputHour ui-spinner ispin" size="2" min="0" max="72" step="1" value="2"> h
-       <input type="number" class="inputMinute ui-spinner ispin" size="2" min="0" max="60" step="1" value="0"> min<br>
+       <input type="number" class="inputHour ispin" size="2" min="0" max="72" step="1" value="2"> h
+       <input type="number" class="inputMinute ispin" size="2" min="0" max="60" step="1" value="0"> min<br>
       <a class="btn btn-xs bt_thermoOrderCancel">Cancel</a> <a class="btn btn-xs bt_thermoOrderOk">OK</a>
     </center>
   </div>
@@ -137,5 +137,18 @@
     document.querySelector('.cmd[data-cmd_id="#set_program_id#"] select.selectCmd').addEventListener('change', function(event) {
       jeedom.cmd.execute({id: '#set_program_id#', value: {select: event.target.value}})
     })
+
+    //Disable core spin width:
+    document.querySelectorAll('.eqLogic[data-eqLogic_uid="#uid#"] .form-group.thermoOrder div.ispin-wrapper')?.forEach(function(wrapper) {
+      wrapper.style.display = 'inline-block'
+    })
+    document.querySelectorAll('.eqLogic[data-eqLogic_uid="#uid#"] .form-group.thermoOrder button.ispin-button-inc')?.forEach(function(button) {
+      button.style.top = '-2px'
+    })
+    document.querySelectorAll('.eqLogic[data-eqLogic_uid="#uid#"] .form-group.thermoOrder button.ispin-button-dec')?.forEach(function(button) {
+      button.style.top = '8px'
+    })
+
+
   </script>
 </div>
