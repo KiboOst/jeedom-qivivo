@@ -24,11 +24,13 @@ if (!class_exists('qivivoAPI')) {
 class qivivo extends eqLogic {
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => false);
 
-    public static function logger($str = '', $level = 'debug') {
+    public static function logger($str = '', $level = 'debug')
+    {
         if (is_array($str)) $str = json_encode($str);
-        $function_name = debug_backtrace(false, 2)[1]['function'];
-        $class_name = debug_backtrace(false, 2)[1]['class'];
-        $msg = '['.$class_name.'] <'. $function_name .'> '.$str;
+        $trace = debug_backtrace(false, 2)[1] ?? [];
+        $function_name = $trace['function'] ?? 'unknown';
+        $class_name = $trace['class'] ?? '';
+        $msg = '['.$class_name.'] '. $function_name .'() > '.$str;
         log::add('qivivo', $level, $msg);
     }
 
@@ -52,7 +54,7 @@ class qivivo extends eqLogic {
                     qivivo::checkAndRetryAction($_action, $_options);
                 }
             }
-            return False;
+            return false;
         }
         qivivo::logger('custom ComapSmartHome API version: '.$_customQivivo->version);
         return $_customQivivo;
@@ -131,7 +133,7 @@ class qivivo extends eqLogic {
             qivivo::logger('could not get ComapSmartHome customAPI, ending.');
             return;
         }
-        qivivo::logger('Number of houses: '.count($_qivivo->_houses));
+        qivivo::logger('Number of houses: '.count($_fullQivivo->_houses));
         //Check each house:
         $isMultizone = array();
         for ($i=0; $i<count($_fullQivivo->_houses); ++$i) {
@@ -253,22 +255,47 @@ class qivivo extends eqLogic {
 
                 //get program list:
                 $ProgramsList[$houseId] = array();
-                if ($isMultizone[$houseId])
-                {
-                    $currentProgram = $_fullQivivo->getCurrentProgram($houseId)['result']['title'];
-                    $programs = $_fullQivivo->getPrograms($houseId)['result'];
-                    foreach ($programs as $program) {
-                        array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
-                    }
+                $response = $_fullQivivo->getCurrentProgram($houseId);
+                if (isset($response['error']) || !isset($response['result']['title'])) {
+                    qivivo::logger(
+                        'getCurrentProgram, house '.$houseId.' : '
+                        .($response['error'] ?? 'No program answer'),
+                        'warning'
+                    );
+                    continue;
                 }
-                else
-                {
-                    $currentProgram = $_fullQivivo->getCurrentProgram($houseId)['result']['title'];
-                    $programs = $_fullQivivo->getPrograms($houseId)['result'];
-                    foreach ($programs as $program) {
-                        array_push($ProgramsList[$houseId], array('id'=>$program['id'], 'title'=>$program['title']));
-                    }
+                $currentProgram = $response['result']['title'];
+
+                $response = $_fullQivivo->getPrograms($houseId);
+                if (
+                    isset($response['error'])
+                    || !isset($response['result'])
+                    || !is_array($response['result'])
+                ) {
+                    qivivo::logger(
+                        'getPrograms, house '.$houseId.' : '
+                        .($response['error'] ?? 'Invalid list of programs'),
+                        'warning'
+                    );
+                    continue;
                 }
+
+                $programs = $response['result'];
+                foreach ($programs as $program) {
+                    if (!is_array($program) || !isset($program['id'], $program['title'])) {
+                        qivivo::logger(
+                            'getPrograms, house '.$houseId.' : no id or title for program',
+                            'warning'
+                        );
+                        continue;
+                    }
+
+                    $ProgramsList[$houseId][] = array(
+                        'id'    => $program['id'],
+                        'title' => $program['title'],
+                    );
+                }
+
                 qivivo::logger('ProgramsList: '.json_encode($ProgramsList[$houseId]));
 
                 $devices = $_fullQivivo->getFullDevices($houseId)['result'];
@@ -305,24 +332,25 @@ class qivivo extends eqLogic {
                             $eqLogic->checkAndUpdateCmd('firmware_version', $firmware_version);
                         }
 
-                        $last_communication = $device['last_communication_time'];
-                        $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                        if (!is_null($last_communication))
-                        {
-                            $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
-                        }
-                    }
+                        $rawDate = $device['last_communication_time'] ?? null;
+                        if (is_string($rawDate) && $rawDate !== '') {
+                            $timestamp = strtotime($rawDate);
+                            if ($timestamp !== false) {
+                                $eqLogic->checkAndUpdateCmd('last_communication', date('d-m-Y H:i', $timestamp));
+                            }
+                        }                    }
 
                     if ($_type == 'thermostat')
                     {
                         //default:
                         $eqLogic->getCmd(null, 'duree_temp')->event(120);
 
-                        $last_communication = $device['last_communication_time'];
-                        $last_communication = date("d-m-Y H:i", strtotime($last_communication));
-                        if (!is_null($last_communication))
-                        {
-                            $eqLogic->checkAndUpdateCmd('last_communication', $last_communication);
+                        $rawDate = $device['last_communication_time'] ?? null;
+                        if (is_string($rawDate) && $rawDate !== '') {
+                            $timestamp = strtotime($rawDate);
+                            if ($timestamp !== false) {
+                                $eqLogic->checkAndUpdateCmd('last_communication', date('d-m-Y H:i', $timestamp));
+                            }
                         }
                         $firmware_version = $device['firmware_version'];
                         if (!is_null($firmware_version))
@@ -500,12 +528,21 @@ class qivivo extends eqLogic {
         qivivo::logger('refresh ComapSmartHome Infos done');
     }
 
-    public static function cron5($_eqlogic_id = null) {
+    public static function cron5() {
         qivivo::logger();
         qivivo::refreshQivivoInfos();
+
+        foreach (eqLogic::byType('qivivo', true) as $eqLogic) {
+          $_type = $eqLogic->getConfiguration('type');
+          if ($_type == 'Passerelle')
+          {
+              qivivo::logger('refresh: '.$eqLogic->getName());
+              $eqLogic->refresh();
+          }
+        }
     }
 
-    public static function cron15($_eqlogic_id = null) {
+    public static function cron15() {
         qivivo::logger();
 
         //no both cron5 and cron15 enabled:
@@ -515,12 +552,25 @@ class qivivo extends eqLogic {
             return;
         }
         qivivo::refreshQivivoInfos();
+        foreach (eqLogic::byType('qivivo', true) as $eqLogic) {
+          $_type = $eqLogic->getConfiguration('type');
+          if ($_type == 'Passerelle')
+          {
+              qivivo::logger('refresh: '.$eqLogic->getName());
+              $eqLogic->refresh();
+          }
+        }
+    }
+
+    public function refresh() {
+      qivivo::logger();
+      qivivo::refreshQivivoInfos();
     }
 
     //log both APIs data to debug user configuration
     public static function getDebugInfos() {
         //custom API:
-        $_fullQivivo = qivivo::getCustomAPI('action', null, $_options, $message);
+        $_fullQivivo = qivivo::getCustomAPI();
         if ($_fullQivivo === false)
         {
             log::add('qivivo_debug', 'error', 'getCustomAPI() error!');

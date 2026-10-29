@@ -33,7 +33,7 @@ https://github.com/KiboOst/php-qivivoAPI
 
 class qivivoAPI {
 
-    public $version = '3.22';
+    public $version = '3.5';
 
     //USER FUNCTIONS======================================================
     //GET FUNCTIONS:
@@ -167,11 +167,11 @@ class qivivoAPI {
 
     //@return['result'] array with current program selection
     public function getCurrentSchedule($houseId=0) {
-        $currentProgram = $this->getCurrentProgram($houseId)['result'];
-        if (isset($currentProgram['error']))
-        {
-            return $currentProgram;
+        $response = $this->getCurrentProgram($houseId);
+        if (isset($response['error'])) {
+            return $response;
         }
+        $currentProgram = $response['result'];
 
         if (isset($this->_houses[$houseId]['schedules']))
         {
@@ -329,7 +329,7 @@ class qivivoAPI {
             return array('result'=>null, 'error'=>'Got wrong value, should be in '.implode(', ', $availValues));
         }
 
-        if ($state == true)
+        if ($state == 'true')
         {
             $post = '{"state":"on"}';
         }
@@ -746,6 +746,10 @@ class qivivoAPI {
         {
             curl_setopt($this->_curlHdl, CURLOPT_CUSTOMREQUEST, 'GET');
             curl_setopt($this->_curlHdl, CURLOPT_HTTPGET, true);
+        }
+        if ($method == 'PATCH') {
+            curl_setopt($this->_curlHdl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+            curl_setopt($this->_curlHdl, CURLOPT_POSTFIELDS, $post ?? '');
         }
         if ($method == 'POST')
         {
