@@ -322,23 +322,9 @@ class qivivoAPI {
 
     //@state false/true | @return['result'] true, @return['error'] if any
     public function setHeating($state=true, $houseId=0) {
-        $state = var_export($state, true);
-        $availValues = ['false', 'true'];
-        if (!in_array($state, $availValues))
-        {
-            return array('result'=>null, 'error'=>'Got wrong value, should be in '.implode(', ', $availValues));
-        }
-
-        if ($state == 'true')
-        {
-            $post = '{"state":"on"}';
-        }
-        else
-        {
-            $post = '{"state":"off"}';
-        }
-
-        $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId].'/thermal-control/heating-system-state';
+        if (!is_bool($state)) return array('result'=>null, 'error'=>'Got wrong value, should be in (true, false)');
+        $post = ($state === true) ? '{"state":"on"}' : '{"state":"off"}';
+        $url = $this->_urlRoot.'/thermal/housings/'.$this->_houses[$houseId]['id'].'/thermal-control/heating-system-state';
         $answer = $this->_request('PUT', $url, $post);
 
         if ($this->isJson($answer))
